@@ -1,0 +1,40 @@
+/* styles/print.css */
+@media print {
+  @page {
+    size: landscape;
+  }
+
+  body * {
+    visibility: hidden;
+  }
+
+  .print-section,
+  .print-section * {
+    visibility: visible;
+  }
+
+  .print-section {
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th,
+  td {
+    padding: 1px;
+    text-align: left;
+  }
+
+  th {
+    background-color: #f2f2f2;
+  }
+}

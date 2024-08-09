@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Scrollbar stili */
+::-webkit-scrollbar {
+    width: 12px; /* Scrollbar genişliği */
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1; /* Scrollbar arkaplanı */
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background-color: #888; /* Scrollbar thumb rengi */
+    border-radius: 10px; /* Scrollbar thumb yuvarlaklığı */
+    border: 2px solid #f1f1f1; /* Scrollbar thumb kenarlığı */
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: #555; /* Hover sırasında scrollbar thumb rengi */
+  }
+  
