@@ -50,7 +50,7 @@ function OrderDetails() {
           <div className="flex items-center mt-[3.15rem] justify-center text-[35px] md:text-[48px] text-CustomGray leading-[41px] font-bold italic mb-[60px]">
             Sipariş Detay Sayfası
           </div>
-          <Navbar orderNo={orderDetails[0].ORDERNO} />
+          <Navbar id={orderDetails[0].CARKOD} />
           <div className="flex flex-col md:gap-4 md:mt-4 md:mx-8 xl:mx-32">
             <TopSection
               day={orderDetails[0].ORDERGUN}
