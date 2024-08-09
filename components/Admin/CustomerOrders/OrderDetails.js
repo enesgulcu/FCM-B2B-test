@@ -5,7 +5,7 @@ import Navbar from "./OrderDetailsComponents/Navbar";
 import TopSection from "./OrderDetailsComponents/TopSection";
 import ProductSummary from "./OrderDetailsComponents/ProductSummary";
 import { getAPI } from "@/services/fetchAPI";
-import Loading from "../Loading";
+import Loading from "@/components/Loading";
 
 function OrderDetails() {
   const searchParams = useSearchParams();
