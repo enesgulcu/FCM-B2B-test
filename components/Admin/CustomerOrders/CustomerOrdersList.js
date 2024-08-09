@@ -15,6 +15,7 @@ import Loading from "@/components/Loading";
 const CustomerOrdersList = () => {
   const [orders, setOrders] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [searchTermUnvan, setSearchTermUnvan] = useState("");
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [page, setPage] = useState(0);
   const rowsPerPage = 10;
@@ -106,12 +107,13 @@ const CustomerOrdersList = () => {
   const totalPages = Math.ceil(filteredOrders.length / rowsPerPage);
 
   useEffect(() => {
-    const filteredResults = orders.filter((order) =>
-      order.CARKOD.toLowerCase().includes(searchTerm.toLowerCase())
+    const filteredResults = orders.filter(
+      (order) =>
+        order.CARKOD.toLowerCase().includes(searchTerm.toLowerCase()) &&
+        order.CARUNVAN.toLowerCase().includes(searchTermUnvan.toLowerCase())
     );
     setFilteredOrders(filteredResults);
-  }, [searchTerm, orders]);
-
+  }, [searchTerm, searchTermUnvan, orders]);
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
   };
@@ -145,6 +147,13 @@ const CustomerOrdersList = () => {
             placeholder="Cari Koda Göre Filtrele.."
             value={searchTerm}
             onChange={handleSearch}
+            className="p-2 border rounded-md border-NavyBlue text-BaseDark focus:outline-none focus:border-NavyBlue focus:ring-1 focus:ring-NavyBlue"
+          />
+          <input
+            type="text"
+            placeholder="Cari Unvana Göre Filtrele.."
+            value={searchTermUnvan}
+            onChange={(e) => setSearchTermUnvan(e.target.value)}
             className="p-2 border rounded-md border-NavyBlue text-BaseDark focus:outline-none focus:border-NavyBlue focus:ring-1 focus:ring-NavyBlue"
           />
         </div>

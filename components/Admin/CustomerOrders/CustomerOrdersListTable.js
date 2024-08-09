@@ -78,9 +78,13 @@ const CustomerOrdersListTable = ({ orders, products }) => {
               <th className="px-6 py-3 text-center text-base font-medium  ">
                 Sipariş No
               </th>
-              <th className="px-6 py-3 text-center text-base font-medium">
-                Cari Kod
+              <th className="px-6 py-3 text-center text-base font-medium  ">
+                Cari Kodu
               </th>
+              <th className="px-6 py-3 text-center text-base font-medium  ">
+                Cari Unvanı
+              </th>
+
               <th className="px-6 py-3  text-base font-medium  text-center">
                 Tarih
               </th>
@@ -122,6 +126,9 @@ const CustomerOrdersListTable = ({ orders, products }) => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       {order.CARKOD}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {order.CARUNVAN}
                     </td>
 
                     <td className="px-6 py-4 whitespace-nowrap ">

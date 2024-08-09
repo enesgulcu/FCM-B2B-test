@@ -15,7 +15,7 @@ function OrderDetails() {
   useEffect(() => {
     const fetchOrderDetails = async () => {
       try {
-        const data = await getAPI("/allorders");
+        const data = await getAPI("/adminorders");
         const filteredOrders = data.filter(
           (order) => order.ORDERNO === orderno
         );

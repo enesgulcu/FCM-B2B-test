@@ -18,6 +18,19 @@ export default withAuth(async function middleware(req) {
   ) {
     return NextResponse.next(); // İşlemi geçmesine izin veriyoruz.
   }
+  if (
+    session &&
+    session.email === "caliskanariyayinlari@gmail.com" &&
+    currentPath.startsWith("/customer-orders-admin")
+  ) {
+    return NextResponse.next();
+  }
+  if (
+    session.email !== "caliskanariyayinlari@gmail.com" &&
+    currentPath.startsWith("/customer-orders-admin")
+  ) {
+    return NextResponse.redirect(`http://localhost:3000/`);
+  }
 
   if (!session) {
     // Kullanıcının giriş yapıp yapmadığını kontrol ediyoruz.
@@ -33,6 +46,7 @@ export const config = {
     "/urun-kategori/:path*",
     "/billings/:path*",
     "/customer-orders/:path*",
+    "/customer-orders-admin/:path*",
     "/orders/:path*",
     "/products/:path*",
     "/api/:path*",
