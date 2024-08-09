@@ -5,13 +5,6 @@ import {
   getDataByUnique,
 } from "@/services/serviceOperations";
 
-const start = performance.now();
-
-// Burada asenkron işlemler veya veritabanı sorguları yapabilirsiniz
-await new Promise(resolve => setTimeout(resolve, 1000)); // Örnek: 1 saniye bekleme
-
-
-
 const now = new Date(new Date().getTime() + 3 * 60 * 60 * 1000);
 console.log("SAAT:", now);
 
@@ -807,12 +800,12 @@ export default async function handler(req, res) {
       console.log("start 3");
       const createdOrders = [];
 
-      const [lastSTKFIS, lastIRSFIS, lastIRSHAR, lastSTKFISREFNO] = await Promise.all([
-        getLastSTKFIS(),
-        getLastIRSFIS(),
-        getLastIRSHAR(),
-        getStkFisRefNo(),
-      ]);
+     const [lastSTKFIS, lastIRSFIS, lastIRSHAR, lastSTKFISREFNO] = await Promise.all([
+  getLastSTKFIS(),
+  getLastIRSFIS(),
+  getLastIRSHAR(),
+  getStkFisRefNo(),
+]);
 
       console.log("start 4");
 
@@ -848,12 +841,7 @@ export default async function handler(req, res) {
 
         createdOrders.push(entry);
 
-        // Bitiş zamanını al
-        const end = performance.now();
-
-        // Geçen süreyi hesapla
-        const duration = (end - start) / 1000; // saniye cinsinden
-        console.log("start 6", duration);
+        console.log("start 6");
 
         await updateSTKKART(item.STKKOD, item.STKADET);
       }
