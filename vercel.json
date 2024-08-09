@@ -1,7 +1,7 @@
 {
-    "functions": {
-      "pages/api/orders/index.js": {
-      "maxDuration": 30 
-        }
-    }
+  "functions": {
+    "pages/api/**/*": {
+    "maxDuration": 60
+      }
   }
+}
