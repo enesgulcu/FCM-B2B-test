@@ -121,7 +121,7 @@ function CategoryProducts({ showSearchAndCart = false }) {
         )
       );
 
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
       const updatedUrunler = urunler.map((item) =>
         item.STKKOD === urun.STKKOD

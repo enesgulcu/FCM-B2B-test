@@ -13,7 +13,7 @@ const generateOrderNo = (userId) => {
   const month = (now.getUTCMonth() + 1).toString().padStart(2, "0");
   const year = now.getUTCFullYear().toString();
   const hour = now.getUTCHours().toString().padStart(2, "0");
-  console.log("hour:", hour);
+
   const minute = now.getUTCMinutes().toString().padStart(2, "0");
   const randomLetters =
     String.fromCharCode(65 + Math.floor(Math.random() * 26)) +
@@ -779,7 +779,7 @@ const createIRSFIS = async (
 
   return newIRSFISREFNO;
 };
-
+console.log("start 1");
 export default async function handler(req, res) {
   if (req.method === "POST") {
     try {
@@ -787,7 +787,7 @@ export default async function handler(req, res) {
 
       const { harRefDeger, cikisFisEvrNo, satisIrsaliyesiEvrNo } =
         await getAndUpdateReferences();
-
+        console.log("start 2");
       const orderItems = prepareOrderData(
         cartItems,
         totalPrice,
@@ -797,7 +797,7 @@ export default async function handler(req, res) {
         cikisFisEvrNo,
         satisIrsaliyesiEvrNo
       );
-
+      console.log("start 3");
       const createdOrders = [];
 
       const lastSTKFIS = await getLastSTKFIS();
@@ -805,10 +805,14 @@ export default async function handler(req, res) {
       const lastIRSHAR = await getLastIRSHAR();
       const lastSTKFISREFNO = await getStkFisRefNo();
 
+      console.log("start 4");
+
       // console.log("Sipariş oluşturma işlemi başlıyor");
       const newSFNumber = parseInt(lastSTKFIS.STKFISEVRAKNO1.split("-")[1]) + 1;
       const newWEBNumber =
         parseInt(lastSTKFIS.STKFISEVRAKNO2.split("-")[1]) + 1;
+
+        console.log("start 5");
 
       for (const item of orderItems) {
         const entry = {
@@ -835,12 +839,16 @@ export default async function handler(req, res) {
 
         createdOrders.push(entry);
 
+        console.log("start 6");
+
         await updateSTKKART(item.STKKOD, item.STKADET);
       }
       // console.log("STKMIZDEGER güncellemesi başlıyor");
       // STKMIZDEGER tablosunu güncelle
       await updateSTKMIZDEGER(orderItems, now);
       // console.log("STKMIZDEGER güncellemesi tamamlandı");
+
+      console.log("start 7");
 
       // STKFIS ve SIRKETLOG oluştur
       const createdSTKFISREFNO = await createSTKFIS(
@@ -884,6 +892,8 @@ export default async function handler(req, res) {
         // console.log("IRSHAR tablosuna yazma sonucu:", createdIRSHAR);
       }
 
+      console.log("start 8");
+
       // CARKART tablosundaki CARCIKIRSTOP değerini güncelle
       const userCARKART = await getDataByUnique("CARKART", { CARKOD: userId });
       // console.log("Mevcut CARKART verisi:", userCARKART);
@@ -914,6 +924,8 @@ export default async function handler(req, res) {
         // console.log("CARKART verisi bulunamadı veya hata oluştu:", userId);
         // console.log("Hata detayı:", userCARKART.error);
       }
+
+      console.log("start 9");
 
       const allOrders = await getAllData("ALLORDERS");
 
@@ -954,4 +966,6 @@ export default async function handler(req, res) {
     res.setHeader("Allow", ["POST", "GET"]);
     res.status(405).end(`Method ${req.method} Not Allowed`);
   }
+
+  console.log("start 10");
 }
