@@ -28,13 +28,13 @@ export default withAuth(async function middleware(req) {
 //https://nextjs.org/docs/app/building-your-application/routing/middleware#matcher
 export const config = {
   matcher: [
-    "/cart/:path",
-    "/shop/:path",
-    "/urun-kategori/:path",
-    "/billings/:path",
-    "/customer-orders/:path",
-    "/orders/:path",
-    "/products/:path",
+    "/cart/:path*",
+    "/shop/:path*",
+    "/urun-kategori/:path*",
+    "/billings/:path*",
+    "/customer-orders/:path*",
+    "/orders/:path*",
+    "/products/:path*",
     "/api/:path*",
   ],
 };
