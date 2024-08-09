@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { React, useState, useEffect } from "react";
+import Image from "next/image";
 import { FaPlus, FaMinus, FaCheck } from "react-icons/fa";
 import { IoArrowBackCircleSharp } from "react-icons/io5";
 import ProductToggleButton from "./ProductToggleButton";
@@ -115,7 +116,7 @@ function ProdcutDetail({ product, img }) {
             >
               <div className="col-span-2 flex md:justify-center border border-dashed rounded-lg bg-white">
                 <div className=" max-w-xl">
-                  <img className="max-h-96" src={img} alt={img} />
+                  <Image className="max-h-96" src={img} alt={img} width={100} height={100} />
                 </div>
               </div>
               <div className="flex flex-col justify-center col-span-2 md:ml-5  pt-5">

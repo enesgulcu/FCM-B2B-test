@@ -45,7 +45,7 @@ const OrderListTable = ({ orders, setSelectedOrders, selectedOrders }) => {
     } else {
       setSelectedOrders([]);
     }
-  }, [selectAll]);
+  }, [orders, selectAll, setSelectedOrders]);
 
   const handleSelectAll = () => {
     setSelectAll(!selectAll);

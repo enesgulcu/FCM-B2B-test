@@ -173,14 +173,15 @@ function SearchPanel({ toggleSearchPanel }) {
           <div className="w-[310px] sm:w-[400px] mt-4 overflow-y-auto max-h-80">
             <ul>
               {/* Her bir ürün için liste elemanı */}
-              {searchResults.map((product) => (
+              {searchResults.map((product, index) => (
                 <Link
                   onClick={() => changeProductDetail(product.STKKOD)}
                   href={`/products/productDetail`}
+                  key={index} // Add key prop with unique value
                 >
                   <li
                     className="p-5 shadow-b shadow-sm flex flex-row justify-start gap-4"
-                    key={product.STKKOD}
+                    key={index} // Add key prop with unique value
                   >
                     {/* Ürün resmi */}
                     <Image

@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import React from 'react';
 import useProductDetailStore from "@/utils/productDetailStore"; // ürün detayına gitmek için
+import Image from "next/image";
 
 function ProductModal({ setIsOpenModal, productImage, productStkkod }) {
   const handleCloseModal = () => {
@@ -21,7 +22,7 @@ function ProductModal({ setIsOpenModal, productImage, productStkkod }) {
             <div className="flex justify-center items-center">
               <div className="mx-auto flex-shrink-0  flex items-center justify-center  max-h-96 overflow-hidden  sm:mx-0">
                 {/* Product Image */}
-                <img src={productImage} alt="Product" className='max-h-80' />
+                <Image src={productImage} alt="Product" className='max-h-80' width={100} height={100} />
               </div>
               
             </div>

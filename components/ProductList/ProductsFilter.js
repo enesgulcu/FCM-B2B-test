@@ -27,6 +27,7 @@ function ProductsFilter({
 
   useEffect(() => {
     handleFilters();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedCategory, selectedProductType]);
 
  // STKOZKOD2'leri toplama fonksiyonu

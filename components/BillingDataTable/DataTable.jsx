@@ -37,6 +37,7 @@ export default function DataTable() {
     if (session?.user?.id) {
       fetchData();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session?.user?.id]);
 
   // Verileri API'den çeken asenkron fonksiyon

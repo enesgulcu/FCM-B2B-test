@@ -142,7 +142,7 @@ function ProdcutsTable({ currentProducts, loading, img }) {
                     handleOpenModal(img[product.STKKOD],product.STKKOD);
                   }}
                 >
-                  <Image width={40} height={40} src={img[product.STKKOD]} />
+                  <Image width={40} height={40} src={img[product.STKKOD]} alt="image"/>
                 </td>
 
                 <td className="px-6 py-4 whitespace-nowrap  ">
