@@ -9,7 +9,7 @@ export default function HomeLayout({ children }) {
       </div>
       <div className="bg-white">{children}</div>
 
-      <Banner />
+      {/* <Banner /> */}
     </div>
   );
 }
