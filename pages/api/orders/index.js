@@ -800,10 +800,12 @@ export default async function handler(req, res) {
       console.log("start 3");
       const createdOrders = [];
 
-      const lastSTKFIS = await getLastSTKFIS();
-      const lastIRSFIS = await getLastIRSFIS();
-      const lastIRSHAR = await getLastIRSHAR();
-      const lastSTKFISREFNO = await getStkFisRefNo();
+      const [lastSTKFIS, lastIRSFIS, lastIRSHAR, lastSTKFISREFNO] = await Promise.all([
+        getLastSTKFIS(),
+        getLastIRSFIS(),
+        getLastIRSHAR(),
+        getStkFisRefNo(),
+      ]);
 
       console.log("start 4");
 
