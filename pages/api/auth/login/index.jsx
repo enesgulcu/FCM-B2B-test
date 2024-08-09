@@ -61,8 +61,7 @@ const handler = async (req, res) => {
         findUser.CAROZKOD5 !== " " &&
         findUser.CAROZKOD5 !== ""
       ) {
-        console.log("##### 1- KULLANICI EŞLEŞTİ");
-        console.log("##### 2- ŞİFRE KONTROL");
+
 
         // ADMIN ŞİFRE DOĞRULAMA // SADECE ADMİNE ÖZEL ÇALIŞIR.
         if (
@@ -79,14 +78,14 @@ const handler = async (req, res) => {
         );
 
         if (!passwordCheck) {
-          console.log("##### 3- ŞİFRE EŞLEŞMESİ BAŞARISIZ!");
+
           throw new Error(
             "Şifre eşleşmesi başarısız. Lütfen şifrenizi kontrol ediniz."
           );
         }
 
         // Şifre doğru ise kullanıcı bilgilerini döndür.
-        console.log("##### 3- ŞİFRE EŞLEŞMESİ BAŞARILI!");
+
         return res
           .status(200)
           .json({ success: true, message: "Giriş işlemi başarılı", findUser });
@@ -98,7 +97,7 @@ const handler = async (req, res) => {
         findUser.CAROZKOD5 === " " ||
         findUser.CAROZKOD5 === ""
       ) {
-        console.log("##### 1- ŞİFRE TANIMLAMA İŞLEMİ BAŞLATILIYOR...");
+
 
         // Şifre Sıfırlama işlemleri burada yapılacak
         const newPassword = await PasswordGenerator(data.email);
@@ -106,11 +105,11 @@ const handler = async (req, res) => {
 
         // Şifreleme işlemi
         const encryptedPassword = await EncryptPassword(newPassword);
-        console.log("##### 3- ŞİFRE BCRYPTED!");
+ 
 
         // Şifreleme işlemi başarılı mı kontrol et.
         if (!encryptedPassword) {
-          console.log("##### 1- ŞİFRE HASH SIRASINDA BİR HATA GERÇEKLEŞTİ!");
+
           throw new Error("Şifre hash sırasında bir hata oluştu.");
         }
 
@@ -120,11 +119,11 @@ const handler = async (req, res) => {
           { CARKOD: findUser?.CARKOD },
           { CAROZKOD5: encryptedPassword }
         );
-        console.log("##### 4- ŞİFRE VERİTABANINA KAYDEDİLİYOR...");
+
         console.log("updatePassword: ", updatePassword);
 
         if (!updatePassword) {
-          console.log("##### 5- ŞİFRE VERİTABANINA KAYDEDİLMEDİ HATA!");
+
           throw new Error("Şifre veritabanına kaydedilirken bir hata oluştu.");
         }
 

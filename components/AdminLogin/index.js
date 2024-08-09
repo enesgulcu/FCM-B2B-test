@@ -35,10 +35,10 @@ const AdminLogin = ({ pageRole }) => {
       redirect: false,
     }).then((res) => {
       setIsLoading(false);
-      // console.log("RES: ", res);
+
       if (!res) {
         // toast.error('Bir hata oluştu. Lütfen tekrar deneyiniz.');
-        console.log("Bir hata oluştu. Lütfen tekrar deneyiniz.");
+
         // setIsloading(false);
       } else if (!res.ok) {
         // toast.error(res.error);
@@ -49,7 +49,7 @@ const AdminLogin = ({ pageRole }) => {
         // setIsAccessing(true);
         // setIsloading(false);
         // toast.success('Giriş Başarılı (Yönlendiriliyorsunuz...)');
-        console.log("Giriş Başarılı Yönlendiriliyorsunuz...");
+
 
         const timeOut = setInterval(() => {
           router.push("/");

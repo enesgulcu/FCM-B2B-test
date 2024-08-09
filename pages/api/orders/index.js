@@ -20,9 +20,7 @@ const generateOrderNo = (userId) => {
     String.fromCharCode(65 + Math.floor(Math.random() * 26));
   const randomNumber = Math.floor(Math.random() * 89) + 10;
 
-  // console.log(
-  //   `${day}-${month}-${year}-${hour}-${minute}-${userId}-${randomLetters}-${randomNumber}`
-  // );
+
   return `${day}-${month}-${year}-${hour}-${minute}-${userId}-${randomLetters}-${randomNumber}`;
 };
 
