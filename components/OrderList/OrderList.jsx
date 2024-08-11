@@ -49,7 +49,6 @@ const OrderList = () => {
       counts[status] = orders.filter((order) => order.status === status).length;
     });
     setOrderCounts(counts);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [orders]);
 
   const filterOrders = (searchValue, status, date) => {

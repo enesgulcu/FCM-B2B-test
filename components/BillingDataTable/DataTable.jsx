@@ -37,7 +37,7 @@ export default function DataTable() {
     if (session?.user?.id) {
       fetchData();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session?.user?.id]);
 
   // Verileri API'den çeken asenkron fonksiyon
@@ -193,7 +193,7 @@ export default function DataTable() {
 
   // Ana bileşen render'ı
   return (
-    <div className="print-section pt-4 bg-[#dbdbdb]">
+    <div className="print-section  min-h-screen pt-4 bg-[#dbdbdb]">
       {/* Üst bilgi bölümü */}
       <div className="max-w-[80%] mx-auto flex flex-col justify-between bg-white rounded-xl border-2 border-dashed border-[#1e3b606e] items-center px-8 gap-4 md:flex-row p-4">
         <div className="flex flex-col w-full md:w-auto">
@@ -228,7 +228,7 @@ export default function DataTable() {
                 </div>
               </div>
             </div>
-            <div className="flex flex-col text-sm text-center lg:text-base md:text-left">
+            {/* <div className="flex flex-col text-sm text-center lg:text-base md:text-left">
               <div className="font-normal">
                 <span className="font-bold text-NavyBlue">Borç Toplam:</span>
                 <span className="ml-2 text-red-500">
@@ -252,7 +252,7 @@ export default function DataTable() {
                   {borcToplam > 0 ? " (B)" : " (A)"}
                 </span>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
 

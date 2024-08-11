@@ -9,11 +9,15 @@ const OrderSummary = ({
 }) => {
   return (
     <div className="flex flex-col items-center justify-center w-[400px] md:w-[600px] lg:w-[960px] mx-auto bg-slate-100 rounded-2xl shadow-lg p-10">
+      <div className="flex items-center justify-center md:justify-end w-full">
+        <h3 className="text-LightBlue">%60 Bayi indirimi uygulanmistir.</h3>
+      </div>
       <div className="flex items-center justify-end">
         <h1 className="text-[20px] md:text-[32px] font-bold text-CustomGray">
           Sipariş Özeti
         </h1>
       </div>
+
       <div className="flex justify-center sm:justify-end my-8 text-[16px] w-full">
         <div className="flex flex-col gap-3 w-full">
           {storedCart.map((item, index) => (
@@ -37,7 +41,7 @@ const OrderSummary = ({
               <span className="">₺{totalPrice}</span>
             </p>
           </div>
-          <div className="flex justify-between flex-row gap-12">
+          {/* <div className="flex justify-between flex-row gap-12">
             <p className="flex font-medium text-slate-400">
               <span className="">İndirim</span>
             </p>
@@ -52,7 +56,7 @@ const OrderSummary = ({
             <p className="flex justify-end font-medium text-slate-400">
               <span className="">₺0,00 </span>
             </p>
-          </div>
+          </div> */}
         </div>
       </div>
       <div className="w-[400px] md:w-[600px] lg:w-[960px] flex justify-center md:justify-end items-center mb-12 px-8">

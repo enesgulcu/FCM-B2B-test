@@ -24,6 +24,18 @@ export async function createNewData(tableName, newData) {
   }
 }
 
+export async function updateOrderStatus(tableName, where, newStatus) {
+  try {
+    const data = await prisma[tableName].updateMany({
+      where: where,
+      data: { ORDERSTATUS: newStatus },
+    });
+    return data;
+  } catch (error) {
+    return { error: error.message };
+  }
+}
+
 // GET BY UNIQUE ONE VALUE
 export async function getDataByUnique(tableName, where) {
   try {
@@ -102,4 +114,6 @@ export default {
   deleteDataByMany,
 
   deleteDataAll,
+
+  updateOrderStatus,
 };

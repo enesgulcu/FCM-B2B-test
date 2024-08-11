@@ -68,7 +68,6 @@ const CustomerOrdersList = () => {
 
         setIsLoading(false);
       } catch (err) {
-        
         setIsLoading(false);
       }
     };
@@ -89,6 +88,19 @@ const CustomerOrdersList = () => {
   const handleStatusChange = (e) => {
     const status = e.target.value;
     filteredProd(status);
+  };
+
+  const updateOrderStatus = (orderno, newStatus) => {
+    setOrders((prevOrders) =>
+      prevOrders.map((order) =>
+        order.ORDERNO === orderno ? { ...order, ORDERSTATUS: newStatus } : order
+      )
+    );
+    setFilteredOrders((prevFiltered) =>
+      prevFiltered.map((order) =>
+        order.ORDERNO === orderno ? { ...order, ORDERSTATUS: newStatus } : order
+      )
+    );
   };
 
   // for pagination process
@@ -210,7 +222,11 @@ const CustomerOrdersList = () => {
           </div>
         </div>
       </div>
-      <CustomerOrdersListTable orders={paginatedOrders} allOrders={orders} />
+      <CustomerOrdersListTable
+        orders={paginatedOrders}
+        allOrders={orders}
+        updateOrderStatus={updateOrderStatus}
+      />
     </>
   );
 };

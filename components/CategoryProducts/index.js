@@ -103,6 +103,15 @@ function CategoryProducts({ showSearchAndCart = false }) {
     ].filter(Boolean);
     return categories;
   };
+  const calculatePrices = (originalPrice) => {
+    const price = parseFloat(originalPrice);
+    const inflatedPrice = (price * 1.6).toFixed(2); // %60 artırılmış fiyat
+    return {
+      originalPrice: price.toFixed(2),
+      inflatedPrice: inflatedPrice,
+      discountedPrice: price.toFixed(2), // Orijinal fiyat, indirimli fiyat olarak gösterilecek
+    };
+  };
 
   // Sınıf kategori dropdown'unu aç/kapat
   const toggleDropdown = (classType) => {
@@ -302,160 +311,170 @@ function CategoryProducts({ showSearchAndCart = false }) {
           )}
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 justify-center sm:mx-[35px] mb-[30px] px-[15px] w-auto">
-          {filteredUrunler.map((urun) => (
-            <div
-              key={urun.STKKOD}
-              className="relative p-[10px] sm:p-[20px] border border-ProductsBorder rounded-md shadow-sm transition duration-300 ease-in-out transform hover:shadow-[0_0_20px_rgba(0,0,0,0.1)] overflow-hidden flex flex-row sm:flex-col items-center sm:justify-center"
-            >
-              {urun.discount && (
+          {filteredUrunler.map((urun) => {
+            const { originalPrice, inflatedPrice, discountedPrice } =
+              calculatePrices(urun.STKOZKOD5);
+
+            return (
+              <div
+                key={urun.STKKOD}
+                className="relative p-[10px] sm:p-[20px] border border-ProductsBorder rounded-md shadow-sm transition duration-300 ease-in-out transform hover:shadow-[0_0_20px_rgba(0,0,0,0.1)] overflow-hidden flex flex-row sm:flex-col items-center sm:justify-center"
+              >
                 <p className="absolute flex flex-col items-center justify-center top-16 -right-12 transform origin-top-right rotate-45 text-[12px] sm:text-[16px] font-bold text-white bg-gradient-to-r from-yellow-400 to-orange-600 px-2 w-40 shadow-md shadow-orange-200">
-                  %{urun.discount}
+                  %60
                   <span>İNDİRİM</span>
                 </p>
-              )}
 
-              {isInCart(urun) && (
-                <p className="absolute flex flex-row items-center gap-2 top-0 left-0 transform  stext-[12px] sm:text-[16px] font-bold text-CustomRed py-2 px-4 z-1000 bg-white rounded-md">
-                  <FaShoppingCart className="" />
-                  <span>Sepette</span>
-                </p>
-              )}
-              <div className="w-2/5 sm:w-full mr-[10px] sm:mr-0">
-                <span className="flex items-center justify-center">
-                  <Image
-                    src={
-                      imageMap[urun.STKKOD] || "/assets/images/resim-yok.jpg"
-                    }
-                    width={210}
-                    height={210}
-                    className="object-cover w-[140px] md:w-[210px] h-[140px] md:h-[210px]"
-                    alt={urun.STKCINSI || "Ürün resmi"}
-                  />
-                </span>
-              </div>
-              <div className="w-3/5 sm:w-full flex flex-col justify-between">
-                <div className={`text-left md:pt-[15px] min-h-12 md:min-h-20 `}>
-                  <Link
-                    onClick={() => changeProductDetail(urun.STKKOD)}
-                    href={`/products/productDetail`}
-                    className="font-bold text-[14px] md:text-[16px] text-CustomGray leading-tight"
-                  >
-                    <p>{urun.STKCINSI}</p>
-                  </Link>
+                {isInCart(urun) && (
+                  <p className="absolute flex flex-row items-center gap-2 top-0 left-0 transform  stext-[12px] sm:text-[16px] font-bold text-CustomRed py-2 px-4 z-1000 bg-white rounded-md">
+                    <FaShoppingCart className="" />
+                    <span>Sepette</span>
+                  </p>
+                )}
+                <div className="w-2/5 sm:w-full mr-[10px] sm:mr-0">
+                  <span className="flex items-center justify-center">
+                    <Image
+                      src={
+                        imageMap[urun.STKKOD] || "/assets/images/resim-yok.jpg"
+                      }
+                      width={210}
+                      height={210}
+                      className="object-cover w-[140px] md:w-[210px] h-[140px] md:h-[210px]"
+                      alt={urun.STKCINSI || "Ürün resmi"}
+                    />
+                  </span>
                 </div>
-                <div className="flex-none">
-                  <div>
-                    {urun.STKOZKOD5 && (
-                      <p className="italic text-LightBlue text-[20px] md:text-[23px] sm:pt-[20px] font-semibold">
-                        <span>₺</span>
-                        {urun.STKOZKOD5}
-                      </p>
-                    )}
+                <div className="w-3/5 sm:w-full flex flex-col justify-between">
+                  <div
+                    className={`text-left md:pt-[15px] min-h-12 md:min-h-20 `}
+                  >
+                    <Link
+                      onClick={() => changeProductDetail(urun.STKKOD)}
+                      href={`/products/productDetail`}
+                      className="font-bold text-[14px] md:text-[16px] text-CustomGray leading-tight"
+                    >
+                      <p>{urun.STKCINSI}</p>
+                    </Link>
                   </div>
-                </div>
-                <div className="flex mt-[20px]">
-                  <Formik
-                    initialValues={{ quantity: 1 }}
-                    validationSchema={Yup.object().shape({
-                      quantity: Yup.number()
-                        .min(1, "En az 1 olmalı")
-                        .required("Zorunlu alan"),
-                    })}
-                    onSubmit={(values, { resetForm }) => {
-                      handleAddToCart(values, urun);
-                      resetForm();
-                    }}
-                  >
-                    {({
-                      values,
-                      handleChange,
-                      handleSubmit,
-                      errors,
-                      touched,
-                    }) => (
-                      <Form>
-                        <div className="flex flex-col items-center justify-center text-LightBlue">
-                          <div className="flex flex-row items-center justify-center">
-                            <div className="flex items-center mt-2">
-                              <button
-                                type="button"
-                                className="text-sm sm:text-md text-LightBlue hover:scale-110 transition duration-500 ease-in-out transform"
-                                onClick={() => {
-                                  if (values.quantity > 1) {
+                  <div className="flex-none">
+                    <div>
+                      {urun.STKOZKOD5 && (
+                        <>
+                          <p className="line-through text-gray-500 text-[16px] md:text-[18px]">
+                            ₺{inflatedPrice}
+                          </p>
+                          <p className="italic text-LightBlue text-[20px] md:text-[23px] font-semibold">
+                            <span>₺</span>
+                            {discountedPrice}
+                          </p>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex mt-[20px]">
+                    <Formik
+                      initialValues={{ quantity: 1 }}
+                      validationSchema={Yup.object().shape({
+                        quantity: Yup.number()
+                          .min(1, "En az 1 olmalı")
+                          .required("Zorunlu alan"),
+                      })}
+                      onSubmit={(values, { resetForm }) => {
+                        handleAddToCart(values, urun);
+                        resetForm();
+                      }}
+                    >
+                      {({
+                        values,
+                        handleChange,
+                        handleSubmit,
+                        errors,
+                        touched,
+                      }) => (
+                        <Form>
+                          <div className="flex flex-col items-center justify-center text-LightBlue">
+                            <div className="flex flex-row items-center justify-center">
+                              <div className="flex items-center mt-2">
+                                <button
+                                  type="button"
+                                  className="text-sm sm:text-md text-LightBlue hover:scale-110 transition duration-500 ease-in-out transform"
+                                  onClick={() => {
+                                    if (values.quantity > 1) {
+                                      handleChange({
+                                        target: {
+                                          name: "quantity",
+                                          value: values.quantity - 1,
+                                        },
+                                      });
+                                    }
+                                  }}
+                                >
+                                  <FaMinus />
+                                </button>
+                                <Field
+                                  min="1"
+                                  name="quantity"
+                                  className="w-6 text-center outline-none text-CustomGray"
+                                />
+                                <button
+                                  type="button"
+                                  className="text-LightBlue hover:scale-110 text-sm sm:text-md transition duration-500 ease-in-out transform"
+                                  onClick={() =>
                                     handleChange({
                                       target: {
                                         name: "quantity",
-                                        value: values.quantity - 1,
+                                        value: values.quantity + 1,
                                       },
-                                    });
+                                    })
                                   }
-                                }}
-                              >
-                                <FaMinus />
-                              </button>
-                              <Field
-                                min="1"
-                                name="quantity"
-                                className="w-6 text-center outline-none text-CustomGray"
-                              />
+                                >
+                                  <FaPlus />
+                                </button>
+                              </div>
+                              {errors.quantity && touched.quantity && (
+                                <div className="text-red-500 mt-1">
+                                  {errors.quantity}
+                                </div>
+                              )}
                               <button
-                                type="button"
-                                className="text-LightBlue hover:scale-110 text-sm sm:text-md transition duration-500 ease-in-out transform"
-                                onClick={() =>
-                                  handleChange({
-                                    target: {
-                                      name: "quantity",
-                                      value: values.quantity + 1,
-                                    },
-                                  })
-                                }
+                                type="submit"
+                                className="flex flex-row items-center justify-center gap-2 ml-2 sm:ml-4 lg:ml-2 text-white font-bold hover:scale-105 transition-all transform easy-in-out duration-500 cursor-pointer bg-LightBlue/75 pl-2 pr-9 py-2 rounded-full relative w-[130px] sm:w-[160px] h-[40px] text-[13px] sm:text-[15px]"
+                                onClick={handleSubmit}
+                                disabled={urun.addingToCart}
                               >
-                                <FaPlus />
+                                {urun.addingToCart ? (
+                                  <div className="flex flex-row items-center justify-center gap-1">
+                                    <div className="h-2 w-2 rounded-full animate-pulse bg-blue-900"></div>
+                                    <div className="h-2 w-2 rounded-full animate-pulse bg-blue-900"></div>
+                                    <div className="h-2 w-2 rounded-full animate-pulse bg-blue-900"></div>
+                                  </div>
+                                ) : (
+                                  <>Sepete Ekle</>
+                                )}
+                                <span
+                                  className={`absolute -top-1 -right-2 text-white bg-gradient-to-r from-sky-600 to-cyan-700 p-3 border-4 border-white rounded-full transition-all duration-500 ease-out transform`}
+                                >
+                                  {isInCart(urun) ? (
+                                    <FaCheck
+                                      className={`transition-all duration-1000 ease-in-out transform ${
+                                        isInCart(urun) ? "scale-100" : "scale-0"
+                                      }`}
+                                    />
+                                  ) : (
+                                    <FaPlus />
+                                  )}
+                                </span>
                               </button>
                             </div>
-                            {errors.quantity && touched.quantity && (
-                              <div className="text-red-500 mt-1">
-                                {errors.quantity}
-                              </div>
-                            )}
-                            <button
-                              type="submit"
-                              className="flex flex-row items-center justify-center gap-2 ml-2 sm:ml-4 lg:ml-2 text-white font-bold hover:scale-105 transition-all transform easy-in-out duration-500 cursor-pointer bg-LightBlue/75 pl-2 pr-9 py-2 rounded-full relative w-[130px] sm:w-[160px] h-[40px] text-[13px] sm:text-[15px]"
-                              onClick={handleSubmit}
-                              disabled={urun.addingToCart}
-                            >
-                              {urun.addingToCart ? (
-                                <div className="flex flex-row items-center justify-center gap-1">
-                                  <div className="h-2 w-2 rounded-full animate-pulse bg-blue-900"></div>
-                                  <div className="h-2 w-2 rounded-full animate-pulse bg-blue-900"></div>
-                                  <div className="h-2 w-2 rounded-full animate-pulse bg-blue-900"></div>
-                                </div>
-                              ) : (
-                                <>Sepete Ekle</>
-                              )}
-                              <span
-                                className={`absolute -top-1 -right-2 text-white bg-gradient-to-r from-sky-600 to-cyan-700 p-3 border-4 border-white rounded-full transition-all duration-500 ease-out transform`}
-                              >
-                                {isInCart(urun) ? (
-                                  <FaCheck
-                                    className={`transition-all duration-1000 ease-in-out transform ${
-                                      isInCart(urun) ? "scale-100" : "scale-0"
-                                    }`}
-                                  />
-                                ) : (
-                                  <FaPlus />
-                                )}
-                              </span>
-                            </button>
                           </div>
-                        </div>
-                      </Form>
-                    )}
-                  </Formik>
+                        </Form>
+                      )}
+                    </Formik>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
         {isSearchOpen && showSearchAndCart && (
           <div className="absolute top-10 rounded-xl  right-0 md:right-0 z-[1000]	bg-white">

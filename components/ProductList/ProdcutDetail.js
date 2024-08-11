@@ -116,7 +116,13 @@ function ProdcutDetail({ product, img }) {
             >
               <div className="col-span-2 flex md:justify-center border border-dashed rounded-lg bg-white">
                 <div className=" max-w-xl">
-                  <Image className="max-h-96" src={img} alt={img} width={100} height={100} />
+                  <Image
+                    className="max-h-96"
+                    src={img}
+                    alt={img}
+                    width={350}
+                    height={350}
+                  />
                 </div>
               </div>
               <div className="flex flex-col justify-center col-span-2 md:ml-5  pt-5">
