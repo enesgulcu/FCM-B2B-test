@@ -7,6 +7,7 @@ import Footer from "@/components/Footer";
 import Banner from "@/components/Banner";
 import { ToastContainer } from "react-toastify";
 import { SpeedInsights } from "@vercel/speed-insights/next"
+import { Analytics } from "@vercel/analytics/react"
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,6 +24,7 @@ export default function RootLayout({ children, session }) {
         <Providers session={session}>
           {/* <Navbar links={links}/> */}
           <SpeedInsights/>
+          <Analytics/>
           <div className="bg-white">{children}</div>
           <Footer />
           <ToastContainer />
