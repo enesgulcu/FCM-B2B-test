@@ -56,7 +56,6 @@ const LoginComponent = ({ pageRole }) => {
   const initialValues = {
     email: "",
     password: "",
-    rememberMe: false,
   };
 
   const validationSchema = Yup.object({
@@ -181,13 +180,8 @@ const LoginComponent = ({ pageRole }) => {
                 className="text-red-500 text-xs mt-1"
               />
             </div>
-            <div className="mb-4 flex flex-row items-center justify-between">
-              <div className="flex flex-row items-center gap-2 justify-center">
-                <Field type="checkbox" name="rememberMe" />
-                <p className="text-[#9A9A9A] uppercase text-[11px] pt-[15px] pb-[10px] leading-[1px] tracking-[1px] font-bold mb-[1px]">
-                  Beni hatırla
-                </p>
-              </div>
+            <div className="mb-4 flex flex-row items-center justify-end">
+
 
               <button
                 type="submit"
@@ -207,7 +201,7 @@ const LoginComponent = ({ pageRole }) => {
         type={modalType}
       />
       <div className="clear" />
-      <p className="mt-4 text-CustomRed/75 text-[14px] hover:text-CustomRed  transition-all ease-in-out duration-700 transform ">
+      <p className="mt-4 text-CustomRed/75 text-[14px] hover:text-CustomRed  transition-all ease-in-out duration-700 transform hover:scale-105">
         <Link href="/auth/forgot-password">
           Yeni şifre talebi için buraya tıklayınız.
         </Link>

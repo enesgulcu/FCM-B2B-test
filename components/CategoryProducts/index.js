@@ -95,7 +95,7 @@ function CategoryProducts({ showSearchAndCart = false }) {
   const getClassCategories = (classType) => {
     // Sınıf tipine göre filtrelenmiş ürünleri al ve boş kategorileri hariç tut
     const filteredUrunler = urunler.filter(
-      (urun) => urun.STKOZKOD3 === classType && urun.STKOZKOD2.trim() !== ""
+      (urun) => urun.STKOZKOD3 === classType && urun.STKOZKOD2.trim() !== "" && parseFloat(urun.STKOZKOD5) > 0
     );
     // Benzersiz kategorileri çıkar
     const categories = [

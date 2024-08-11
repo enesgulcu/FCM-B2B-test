@@ -34,12 +34,14 @@ const Modal = ({ isOpen, onClose, message, type }) => {
           </h2>
           <div className="flex flex-col items-left justify-center">
             <p>{message}</p>
+            <Link href="/auth/login">
             <button
               onClick={onClose}
               className="mt-4 bg-CustomRed text-white w-1/2 font-bold rounded-md px-4 py-2 hover:bg-CustomRed/80"
             >
               Kapat
             </button>
+            </Link>
           </div>
         </div>
       </div>
@@ -127,7 +129,7 @@ const ResetPassword = () => {
                 className="text-red-500 text-xs mt-1"
               />
             </div>
-            <div className="mb-4 flex flex-col md:flex-row gap-4 items-center justify-center">
+            <div className="mb-4 flex flex-col md:flex-row gap-4 items-center justify-end">
               <button
                 type="submit"
                 className="bg-CustomRed text-white w-[175px] text-xs md:text-base font-bold rounded-md px-6 py-2 md:w-[225px] hover:scale-105 transition-all ease-in-out duration-700 transform"
