@@ -151,61 +151,129 @@ const updateSTKKART = async (STKKOD, quantity) => {
   }
 };
 
+// const updateSTKMIZDEGER = async (orderItems, currentDate) => {
+//   const currentYear = currentDate.getFullYear();
+//   const currentMonth = currentDate.getMonth() + 1;
+
+//   // En güncel STKMIZDEGER verilerini çek
+//   const latestSTKMIZDEGER = await getAllData('STKMIZDEGER');
+
+//   for (const item of orderItems) {
+//     const { STKKOD, STKADET, STKBIRIMFIYATTOPLAM } = item;
+
+//     // STKRAKTIP değerleri için döngü
+//     for (const STKRAKTIP of [1, 6, 8]) {
+//       // Mevcut ayda bu STKKOD ve STKRAKTIP için veri var mı kontrol et
+//       const existingRecord = latestSTKMIZDEGER.find((record) =>
+//           record.STKKOD === STKKOD &&
+//           record.STKRAKTIP === STKRAKTIP &&
+//           record.STKYIL === currentYear &&
+//           record.STKAY === currentMonth
+//       );
+
+//       if (existingRecord) {
+//         // Veri varsa güncelle
+//         let newSTKALACAK = existingRecord.STKALACAK;
+
+//         switch (STKRAKTIP) {
+//           case 1:
+//             newSTKALACAK += STKADET;
+//             break;
+//           case 6:
+//             newSTKALACAK += STKBIRIMFIYATTOPLAM;
+//             break;
+//           case 8:
+//             newSTKALACAK += 1;
+//             break;
+//         }
+
+//         await updateDataByAny(
+//           'STKMIZDEGER',
+//           { STKKOD, STKRAKTIP, STKYIL: currentYear, STKAY: currentMonth },
+//           { STKALACAK: newSTKALACAK }
+//         );
+//       } else {
+//         // Veri yoksa yeni kayıt oluştur
+
+//         const newSTKALACAK =
+//           STKRAKTIP === 1
+//             ? STKADET
+//             : STKRAKTIP === 6
+//             ? STKBIRIMFIYATTOPLAM
+//             : STKRAKTIP === 8
+//             ? 1
+//             : 0;
+
+//         const newRecord = {
+//           STKKOD,
+//           STKYIL: currentYear,
+//           STKAY: currentMonth,
+//           STKRAKTIP,
+//           STKDOVKOD: '',
+//           STKBORC: 0,
+//           STKALACAK: newSTKALACAK,
+//           STKDEPO: '',
+//         };
+        
+//         await createNewData('STKMIZDEGER', newRecord);
+//         console.log(`### 6 ### - ${Date.now()}`);
+//       }
+//     }
+//   }
+// };
+
 const updateSTKMIZDEGER = async (orderItems, currentDate) => {
   const currentYear = currentDate.getFullYear();
   const currentMonth = currentDate.getMonth() + 1;
 
-  // En güncel STKMIZDEGER verilerini çek
-  const latestSTKMIZDEGER = await getAllData('STKMIZDEGER');
+  // Tüm STKKOD değerlerini al
+  const stkkods = orderItems.map(item => item.STKKOD);
+  
+  // Gerekli STKMIZDEGER verilerini tek seferde çek
+  const latestSTKMIZDEGER = await getDataWithFilter('STKMIZDEGER', {
+    STKKOD: stkkods,
+    STKRAKTIP: [1, 6, 8],
+    STKYIL: currentYear,
+    STKAY: currentMonth
+  });
+
+  // Verileri topluca güncelleme veya ekleme işlemleri için gruplandır
+  const updates = [];
+  const inserts = [];
 
   for (const item of orderItems) {
     const { STKKOD, STKADET, STKBIRIMFIYATTOPLAM } = item;
 
-    // STKRAKTIP değerleri için döngü
     for (const STKRAKTIP of [1, 6, 8]) {
-      // Mevcut ayda bu STKKOD ve STKRAKTIP için veri var mı kontrol et
-      const existingRecord = latestSTKMIZDEGER.find(
-        (record) =>
-          record.STKKOD === STKKOD &&
-          record.STKRAKTIP === STKRAKTIP &&
-          record.STKYIL === currentYear &&
-          record.STKAY === currentMonth
+      const existingRecord = latestSTKMIZDEGER.find(record =>
+        record.STKKOD === STKKOD &&
+        record.STKRAKTIP === STKRAKTIP &&
+        record.STKYIL === currentYear &&
+        record.STKAY === currentMonth
       );
 
-      if (existingRecord) {
-        // Veri varsa güncelle
-        let newSTKALACAK = existingRecord.STKALACAK;
+      let newSTKALACAK = 0;
 
+      if (existingRecord) {
         switch (STKRAKTIP) {
           case 1:
-            newSTKALACAK += STKADET;
+            newSTKALACAK = existingRecord.STKALACAK + STKADET;
             break;
           case 6:
-            newSTKALACAK += STKBIRIMFIYATTOPLAM;
+            newSTKALACAK = existingRecord.STKALACAK + STKBIRIMFIYATTOPLAM;
             break;
           case 8:
-            newSTKALACAK += 1;
+            newSTKALACAK = existingRecord.STKALACAK + 1;
             break;
         }
-
-        await updateDataByAny(
-          'STKMIZDEGER',
-          { STKKOD, STKRAKTIP, STKYIL: currentYear, STKAY: currentMonth },
-          { STKALACAK: newSTKALACAK }
-        );
+        updates.push({ 
+          filter: { STKKOD, STKRAKTIP, STKYIL: currentYear, STKAY: currentMonth },
+          update: { STKALACAK: newSTKALACAK }
+        });
       } else {
-        // Veri yoksa yeni kayıt oluştur
+        newSTKALACAK = STKRAKTIP === 1 ? STKADET : STKRAKTIP === 6 ? STKBIRIMFIYATTOPLAM : 1;
 
-        const newSTKALACAK =
-          STKRAKTIP === 1
-            ? STKADET
-            : STKRAKTIP === 6
-            ? STKBIRIMFIYATTOPLAM
-            : STKRAKTIP === 8
-            ? 1
-            : 0;
-
-        const newRecord = {
+        inserts.push({
           STKKOD,
           STKYIL: currentYear,
           STKAY: currentMonth,
@@ -213,15 +281,23 @@ const updateSTKMIZDEGER = async (orderItems, currentDate) => {
           STKDOVKOD: '',
           STKBORC: 0,
           STKALACAK: newSTKALACAK,
-          STKDEPO: '',
-        };
-        
-        await createNewData('STKMIZDEGER', newRecord);
-        console.log(`### 6 ### - ${Date.now()}`);
+          STKDEPO: ''
+        });
       }
     }
   }
+
+  // Toplu güncellemeleri gerçekleştir
+  if (updates.length > 0) {
+    await bulkUpdateData('STKMIZDEGER', updates);
+  }
+
+  // Toplu eklemeleri gerçekleştir
+  if (inserts.length > 0) {
+    await bulkInsertData('STKMIZDEGER', inserts);
+  }
 };
+
 
 const getLastSTKFIS = async () => {
   const lastSTKFIS = await getDataByUniqueSingle(
@@ -795,6 +871,7 @@ export default async function handler(req, res) {
 
         await updateSTKKART(item.STKKOD, item.STKADET);
       }
+
       // console.log("STKMIZDEGER güncellemesi başlıyor");
       // STKMIZDEGER tablosunu güncelle
       await updateSTKMIZDEGER(orderItems, now);
@@ -884,7 +961,7 @@ export default async function handler(req, res) {
       // console.log("Sipariş oluşturma işlemi tamamlandı");
 
       console.log(`### 16 SON ### - ${Date.now()}`);
-      
+
       return res.status(200).json({
         success: true,
         message: 'Order items created successfully',
