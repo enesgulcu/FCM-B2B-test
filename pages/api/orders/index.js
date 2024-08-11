@@ -739,7 +739,6 @@ export default async function handler(req, res) {
       );
       console.log('start 3');
 
-
       const [lastSTKFIS, lastIRSFIS, lastIRSHAR, lastSTKFISREFNO] =
         await Promise.all([
           getLastSTKFIS(),
@@ -757,36 +756,31 @@ export default async function handler(req, res) {
 
       console.log('start 5');
 
-
-      const createdOrders = await Promise.all(orderItems.map(async (item) => {
+      for (const item of orderItems) {
         const entry = {
-            ...item,
-            STKFISREFNO: lastSTKFISREFNO,
-            STKFISEVRAKNO1: `SF-${newSFNumber.toString().padStart(6, '0')}`,
-            STKFISEVRAKNO2: `WEB-${newWEBNumber.toString().padStart(6, '0')}`,
-            ACIKLAMA: null,
-            ORDERSTATUS: 'Sipariş Oluşturuldu',
-            EKXTRA2: null,
-            EKXTRA3: null,
-            EKXTRA4: null,
-            EKXTRA5: null,
-            EKXTRA6: null,
-            EKXTRA7: null,
-            EKXTRA8: null,
-            EKXTRA9: null,
+          ...item,
+          STKFISREFNO: lastSTKFISREFNO,
+          STKFISEVRAKNO1: `SF-${newSFNumber.toString().padStart(6, '0')}`,
+          STKFISEVRAKNO2: `WEB-${newWEBNumber.toString().padStart(6, '0')}`,
+          ACIKLAMA: null,
+          ORDERSTATUS: 'Sipariş Oluşturuldu',
+          EKXTRA2: null,
+          EKXTRA3: null,
+          EKXTRA4: null,
+          EKXTRA5: null,
+          EKXTRA6: null,
+          EKXTRA7: null,
+          EKXTRA8: null,
+          EKXTRA9: null,
         };
-    
+
         const result = await createNewData('ALLORDERS', entry);
-    
-        console.log('start 6');
-    
+
+       
+
+        
         await updateSTKKART(item.STKKOD, item.STKADET);
-    
-        return entry;
-    }));
-
-
-      console.log('start 5-4');
+      }
 
       console.log('start 6');
       // console.log("STKMIZDEGER güncellemesi başlıyor");
@@ -875,6 +869,7 @@ export default async function handler(req, res) {
 
       console.log('start 9');
 
+
       // console.log("Sipariş oluşturma işlemi tamamlandı");
 
       console.log(`### 16 SON ### - ${Date.now()}`);
@@ -882,7 +877,6 @@ export default async function handler(req, res) {
       return res.status(200).json({
         success: true,
         message: 'Order items created successfully',
-
         createdSTKFISREFNO: createdSTKFISREFNO,
         createdIRSFISREFNO: createdIRSFISREFNO,
       });
