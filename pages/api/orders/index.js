@@ -9,6 +9,8 @@ import {
 const now = new Date(new Date().getTime() + 3 * 60 * 60 * 1000);
 console.log('SAAT:', now);
 
+console.log(`### 1 ### - ${Date.now()}`);
+
 const generateOrderNo = (userId) => {
   const day = now.getUTCDate().toString().padStart(2, '0');
   const month = (now.getUTCMonth() + 1).toString().padStart(2, '0');
@@ -20,7 +22,7 @@ const generateOrderNo = (userId) => {
     String.fromCharCode(65 + Math.floor(Math.random() * 26)) +
     String.fromCharCode(65 + Math.floor(Math.random() * 26));
   const randomNumber = Math.floor(Math.random() * 89) + 10;
-
+  console.log(`### 2 ### - ${Date.now()}`);
   return `${day}-${month}-${year}-${hour}-${minute}-${userId}-${randomLetters}-${randomNumber}`;
 };
 
@@ -62,7 +64,7 @@ const prepareOrderData = (
     SATISIRSEVRNO: satisIrsaliyesiEvrNo,
     HARREFDEGER1: harRefDeger,
   }));
-
+  console.log(`### 3 ### - ${Date.now()}`);
   return orderItems;
 };
 
@@ -110,7 +112,7 @@ const getAndUpdateReferences = async () => {
         { EVRNO: newSatisIrsaliyesiEvrNo }
       ),
     ]);
-
+    console.log(`### 4 ### - ${Date.now()}`);
     return {
       harRefDeger: newHarRefDeger,
       cikisFisEvrNo: newCikisFisEvrNo,
@@ -141,6 +143,8 @@ const updateSTKKART = async (STKKOD, quantity) => {
       const updatedStkKart = await getDataByUnique('STKKART', {
         STKKOD: STKKOD,
       });
+
+      console.log(`### 5 ### - ${Date.now()}`);
     }
   } catch (error) {
     console.error(`STKKART güncellenirken hata oluştu (${STKKOD}):`, error);
@@ -211,8 +215,9 @@ const updateSTKMIZDEGER = async (orderItems, currentDate) => {
           STKALACAK: newSTKALACAK,
           STKDEPO: '',
         };
-
+        
         await createNewData('STKMIZDEGER', newRecord);
+        console.log(`### 6 ### - ${Date.now()}`);
       }
     }
   }
@@ -232,11 +237,13 @@ const getLastSTKFIS = async () => {
     STKFISEVRAKNO2: 'WEB-000000',
     ...lastSTKFIS, // Eğer lastSTKFIS boş değilse, onun değerleri bu objeyi overwrite eder
   };
+  console.log(`### 7 ### - ${Date.now()}`);
   return reducedSTKFIS;
 };
 
 const getStkFisRefNo = async () => {
   const allSTKFIS = await getLastSTKFIS();
+  console.log(`### 8 ### - ${Date.now()}`);
   return allSTKFIS.STKFISREFNO + 1;
 };
 
@@ -297,7 +304,7 @@ const createSTKFIS = async (orderData, lastSTKFIS, lastSTKFISREFNO) => {
 
   // SIRKETLOG oluştur
   await createSIRKETLOG(newSTKFISREFNO, new Date());
-
+  console.log(`### 9 ### - ${Date.now()}`);
   return newSTKFISREFNO;
 };
 
@@ -335,7 +342,7 @@ const createSIRKETLOG = async (stkfisRefNo, orderDate) => {
     SIRLOGMUHACK4: 'ANAMAK\\adnan',
     SIRLOGMUHACK5: ' ',
   };
-
+  console.log(`### 10 ### - ${Date.now()}`);
   const newSirketlogData = await createNewData('SIRKETLOG', sirketlogEntry);
 };
 
@@ -444,6 +451,7 @@ const createSTKHAR = async (orderItem, lastSTKFISREFNO, siraNo) => {
 
   try {
     const newStkharData = await createNewData('STKHAR', stkharEntry);
+    console.log(`### 11 ### - ${Date.now()}`);
     return newStkharData;
   } catch (error) {
     console.error('Yeni STKHAR verisi oluşturulamadı:', error);
@@ -463,7 +471,7 @@ const getLastIRSHAR = async () => {
     IRSHARREFNO: 0,
     ...lastIRSHAR, // Eğer lastIRSHAR boş değilse, onun değerleri bu objeyi overwrite eder
   };
-
+  console.log(`### 12 ### - ${Date.now()}`);
   return reducedIRSHAR;
 };
 
@@ -580,6 +588,7 @@ const createIRSHAR = async (orderItem, createdIRSFISREFNO, siraNo) => {
 
   try {
     const newIrsharData = await createNewData('IRSHAR', irsharEntry);
+    console.log(`### 13 ### - ${Date.now()}`);
     return newIRSHARREFNO;
   } catch (error) {
     console.error('Yeni IRSHAR verisi oluşturulamadı:', error);
@@ -594,6 +603,7 @@ const getLastIRSFIS = async () => {
     { IRSFISREFNO: 0 }
   );
   // console.log("Önceki DBDE OLAN IRSFIS:", reducedIRSFIS);
+  console.log(`### 14 ### - ${Date.now()}`);
   return reducedIRSFIS;
 };
 
@@ -711,11 +721,11 @@ const createIRSFIS = async (
     IRSFISDISKOD: ' ',
   };
 
-  // console.log("IRSFIS verisi oluşturuluyor:", irsfisEntry);
+
 
   const newIrsfisData = await createNewData('IRSFIS', irsfisEntry);
-  // console.log("Yeni IRSFIS verisi oluşturuldu:", newIrsfisData);
 
+  console.log(`### 15 ### - ${Date.now()}`);
   return newIRSFISREFNO;
 };
 console.log('start 1');
@@ -873,7 +883,9 @@ export default async function handler(req, res) {
 
       // console.log("Sipariş oluşturma işlemi tamamlandı");
 
-      res.status(200).json({
+      console.log(`### 16 SON ### - ${Date.now()}`);
+      
+      return res.status(200).json({
         success: true,
         message: 'Order items created successfully',
         createdOrders: createdOrders,
@@ -881,6 +893,12 @@ export default async function handler(req, res) {
         createdSTKFISREFNO: createdSTKFISREFNO,
         createdIRSFISREFNO: createdIRSFISREFNO,
       });
+
+
+      
+
+
+
     } catch (error) {
       console.error('Order creation error:', error);
       res.status(500).json({
