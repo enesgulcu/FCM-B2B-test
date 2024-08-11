@@ -804,11 +804,11 @@ export default async function handler(req, res) {
 
         createdOrders.push(entry);
 
-        console.log('start 6');
-
+        
         await updateSTKKART(item.STKKOD, item.STKADET);
       }
-
+      
+      console.log('start 6');
       // console.log("STKMIZDEGER güncellemesi başlıyor");
       // STKMIZDEGER tablosunu güncelle
       await updateSTKMIZDEGER(orderItems, now);
