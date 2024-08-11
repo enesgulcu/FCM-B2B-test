@@ -30,7 +30,7 @@ const OrderSummary = ({
                 {item.STKCINSI} (x{item.quantity})
               </span>
               <span className="font-bold text-CustomGray">
-                ₺{parseFloat(item.STKOZKOD5) * item.quantity}
+                {parseFloat(item.STKOZKOD5) * item.quantity} <span className="mx-1">₺</span>
               </span>
             </div>
           ))}
@@ -55,7 +55,7 @@ const OrderSummary = ({
       <div className="w-[400px] md:w-[600px] lg:w-[960px] flex justify-center md:justify-end items-center mb-12 px-8">
         <div className="flex items-center gap-4 text-[24px] bg-CustomGray p-2 rounded-xl shadow-xl">
           <p className="font-extrabold text-white ">Toplam</p>
-          <p className="font-extrabold text-white">₺{totalPrice}</p>
+          <p className="font-extrabold text-white">{totalPrice}<span className="mx-1">₺</span></p>
         </div>
       </div>
       <div className="flex flex-row items-center gap-5 mt-12 mb-8">

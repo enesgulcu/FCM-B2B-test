@@ -27,7 +27,7 @@ function CartLoading() {
               fill="currentFill"
             />
           </svg>
-          <span className="text-white text-[24px]">Loading...</span>
+          <span className="text-white text-[24px]">Yükleniyor...</span>
         </div>
       </div>
     </div>

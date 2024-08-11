@@ -43,12 +43,6 @@ function Footer() {
             >
               Mağaza
             </Link>
-            <Link
-              className="hover:text-LightBlue/75 hover:underline underline-offset-3 transition-all duration-75"
-              href="/cart"
-            >
-              Sepet
-            </Link>
           </div>
           {/* Sosyal Medya */}
           <div className="flex flex-col items-center md:items-start gap-2 mt-4 md:mt-0">

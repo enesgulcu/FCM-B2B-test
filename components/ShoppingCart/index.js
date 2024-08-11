@@ -228,7 +228,7 @@ const ShoppingCart = () => {
   return (
     <div
       id="shoppingcart"
-      className="bg-white flex items-center flex-col py-[35px] sm:py-[60px] w-screen lg:w-[1188px] min-h-[600px]"
+      className="bg-white flex items-center flex-col py-[35px] sm:py-[60px] w-screen lg:w-[1188px] min-h-[900px]"
     >
       <div className="flex items-center justify-center text-[35px] md:text-[48px] text-CustomGray leading-[41px] font-bold italic mb-[60px]">
         Sepet
