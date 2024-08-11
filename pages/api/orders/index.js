@@ -134,17 +134,17 @@ const updateSTKKART = async (STKKOD, quantity) => {
 
 
 
-const updateSTKMIZDEGER = async (orderItems, currentDate) => {
+const updateSTKMIZDEGERYEDEK = async (orderItems, currentDate) => {
   const currentYear = currentDate.getFullYear();
   const currentMonth = currentDate.getMonth() + 1;
 
-  // En güncel STKMIZDEGER verilerini çek
-  const latestSTKMIZDEGER = await getDataByMany('STKMIZDEGER',{
+  // En güncel STKMIZDEGERYEDEK verilerini çek
+  const latestSTKMIZDEGERYEDEK = await getDataByMany('STKMIZDEGERYEDEK',{
     STKYIL: currentYear,
     STKAY: currentMonth,
   });
 
-  //console.log('latestSTKMIZDEGER :', latestSTKMIZDEGER);
+  //console.log('latestSTKMIZDEGERYEDEK :', latestSTKMIZDEGERYEDEK);
 
   for (const item of orderItems) {
     const { STKKOD, STKADET, STKBIRIMFIYATTOPLAM } = item;
@@ -152,7 +152,7 @@ const updateSTKMIZDEGER = async (orderItems, currentDate) => {
     // STKRAKTIP değerleri için döngü
     for (const STKRAKTIP of [1, 6, 8]) {
       // Mevcut ayda bu STKKOD ve STKRAKTIP için veri var mı kontrol et
-      const existingRecord = latestSTKMIZDEGER.find((record) =>
+      const existingRecord = latestSTKMIZDEGERYEDEK.find((record) =>
           record.STKKOD === STKKOD &&
           record.STKRAKTIP === STKRAKTIP &&
           record.STKYIL === currentYear &&
@@ -176,7 +176,7 @@ const updateSTKMIZDEGER = async (orderItems, currentDate) => {
         }
 
         await updateDataByAny(
-          'STKMIZDEGER',
+          'STKMIZDEGERYEDEK',
           { STKKOD, STKRAKTIP, STKYIL: currentYear, STKAY: currentMonth },
           { STKALACAK: newSTKALACAK }
         );
@@ -203,7 +203,7 @@ const updateSTKMIZDEGER = async (orderItems, currentDate) => {
           STKDEPO: '',
         };
         
-        await createNewData('STKMIZDEGER', newRecord);
+        await createNewData('STKMIZDEGERYEDEK', newRecord);
         console.log(`### 6 ### `);
       }
     }
@@ -780,10 +780,10 @@ export default async function handler(req, res) {
       }
 
       console.log('start 6');
-      // console.log("STKMIZDEGER güncellemesi başlıyor");
-      // STKMIZDEGER tablosunu güncelle
-      // ŞUAN BEKLEMEDE - await updateSTKMIZDEGER(orderItems, now);
-      // console.log("STKMIZDEGER güncellemesi tamamlandı");
+      // console.log("STKMIZDEGERYEDEK güncellemesi başlıyor");
+      // STKMIZDEGERYEDEK tablosunu güncelle
+      await updateSTKMIZDEGERYEDEK(orderItems, now);
+      // console.log("STKMIZDEGERYEDEK güncellemesi tamamlandı");
 
       console.log('start 7');
 
