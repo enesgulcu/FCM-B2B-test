@@ -105,7 +105,7 @@ function CategoryProducts({ showSearchAndCart = false }) {
   };
   const calculatePrices = (originalPrice) => {
     const price = parseFloat(originalPrice);
-    const inflatedPrice = (price * 1.6).toFixed(2); // %60 artırılmış fiyat
+    const inflatedPrice = (price * 2.5).toFixed(2); // %150 artırılmış fiyat (2.5 kat)
     return {
       originalPrice: price.toFixed(2),
       inflatedPrice: inflatedPrice,
