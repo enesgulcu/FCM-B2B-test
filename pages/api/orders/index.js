@@ -4,6 +4,7 @@ import {
   updateDataByAny,
   getDataByUnique,
   getDataByUniqueSingle,
+  getDataByMany,
 } from '@/services/serviceOperations';
 
 const now = new Date(new Date().getTime() + 3 * 60 * 60 * 1000);
@@ -151,129 +152,69 @@ const updateSTKKART = async (STKKOD, quantity) => {
   }
 };
 
-// const updateSTKMIZDEGER = async (orderItems, currentDate) => {
-//   const currentYear = currentDate.getFullYear();
-//   const currentMonth = currentDate.getMonth() + 1;
 
-//   // En güncel STKMIZDEGER verilerini çek
-//   const latestSTKMIZDEGER = await getAllData('STKMIZDEGER');
 
-//   for (const item of orderItems) {
-//     const { STKKOD, STKADET, STKBIRIMFIYATTOPLAM } = item;
 
-//     // STKRAKTIP değerleri için döngü
-//     for (const STKRAKTIP of [1, 6, 8]) {
-//       // Mevcut ayda bu STKKOD ve STKRAKTIP için veri var mı kontrol et
-//       const existingRecord = latestSTKMIZDEGER.find((record) =>
-//           record.STKKOD === STKKOD &&
-//           record.STKRAKTIP === STKRAKTIP &&
-//           record.STKYIL === currentYear &&
-//           record.STKAY === currentMonth
-//       );
-
-//       if (existingRecord) {
-//         // Veri varsa güncelle
-//         let newSTKALACAK = existingRecord.STKALACAK;
-
-//         switch (STKRAKTIP) {
-//           case 1:
-//             newSTKALACAK += STKADET;
-//             break;
-//           case 6:
-//             newSTKALACAK += STKBIRIMFIYATTOPLAM;
-//             break;
-//           case 8:
-//             newSTKALACAK += 1;
-//             break;
-//         }
-
-//         await updateDataByAny(
-//           'STKMIZDEGER',
-//           { STKKOD, STKRAKTIP, STKYIL: currentYear, STKAY: currentMonth },
-//           { STKALACAK: newSTKALACAK }
-//         );
-//       } else {
-//         // Veri yoksa yeni kayıt oluştur
-
-//         const newSTKALACAK =
-//           STKRAKTIP === 1
-//             ? STKADET
-//             : STKRAKTIP === 6
-//             ? STKBIRIMFIYATTOPLAM
-//             : STKRAKTIP === 8
-//             ? 1
-//             : 0;
-
-//         const newRecord = {
-//           STKKOD,
-//           STKYIL: currentYear,
-//           STKAY: currentMonth,
-//           STKRAKTIP,
-//           STKDOVKOD: '',
-//           STKBORC: 0,
-//           STKALACAK: newSTKALACAK,
-//           STKDEPO: '',
-//         };
-        
-//         await createNewData('STKMIZDEGER', newRecord);
-//         console.log(`### 6 ### - ${Date.now()}`);
-//       }
-//     }
-//   }
-// };
 
 const updateSTKMIZDEGER = async (orderItems, currentDate) => {
   const currentYear = currentDate.getFullYear();
   const currentMonth = currentDate.getMonth() + 1;
 
-  // Tüm STKKOD değerlerini al
-  const stkkods = orderItems.map(item => item.STKKOD);
-  
-  // Gerekli STKMIZDEGER verilerini tek seferde çek
-  const latestSTKMIZDEGER = await getDataWithFilter('STKMIZDEGER', {
-    STKKOD: stkkods,
-    STKRAKTIP: [1, 6, 8],
+  // En güncel STKMIZDEGER verilerini çek
+  const latestSTKMIZDEGER = await getDataByMany('STKMIZDEGER',{
     STKYIL: currentYear,
-    STKAY: currentMonth
+    STKAY: currentMonth,
   });
 
-  // Verileri topluca güncelleme veya ekleme işlemleri için gruplandır
-  const updates = [];
-  const inserts = [];
+  //console.log('latestSTKMIZDEGER :', latestSTKMIZDEGER);
 
   for (const item of orderItems) {
     const { STKKOD, STKADET, STKBIRIMFIYATTOPLAM } = item;
 
+    // STKRAKTIP değerleri için döngü
     for (const STKRAKTIP of [1, 6, 8]) {
-      const existingRecord = latestSTKMIZDEGER.find(record =>
-        record.STKKOD === STKKOD &&
-        record.STKRAKTIP === STKRAKTIP &&
-        record.STKYIL === currentYear &&
-        record.STKAY === currentMonth
+      // Mevcut ayda bu STKKOD ve STKRAKTIP için veri var mı kontrol et
+      const existingRecord = latestSTKMIZDEGER.find((record) =>
+          record.STKKOD === STKKOD &&
+          record.STKRAKTIP === STKRAKTIP &&
+          record.STKYIL === currentYear &&
+          record.STKAY === currentMonth
       );
 
-      let newSTKALACAK = 0;
-
       if (existingRecord) {
+        // Veri varsa güncelle
+        let newSTKALACAK = existingRecord.STKALACAK;
+
         switch (STKRAKTIP) {
           case 1:
-            newSTKALACAK = existingRecord.STKALACAK + STKADET;
+            newSTKALACAK += STKADET;
             break;
           case 6:
-            newSTKALACAK = existingRecord.STKALACAK + STKBIRIMFIYATTOPLAM;
+            newSTKALACAK += STKBIRIMFIYATTOPLAM;
             break;
           case 8:
-            newSTKALACAK = existingRecord.STKALACAK + 1;
+            newSTKALACAK += 1;
             break;
         }
-        updates.push({ 
-          filter: { STKKOD, STKRAKTIP, STKYIL: currentYear, STKAY: currentMonth },
-          update: { STKALACAK: newSTKALACAK }
-        });
-      } else {
-        newSTKALACAK = STKRAKTIP === 1 ? STKADET : STKRAKTIP === 6 ? STKBIRIMFIYATTOPLAM : 1;
 
-        inserts.push({
+        await updateDataByAny(
+          'STKMIZDEGER',
+          { STKKOD, STKRAKTIP, STKYIL: currentYear, STKAY: currentMonth },
+          { STKALACAK: newSTKALACAK }
+        );
+      } else {
+        // Veri yoksa yeni kayıt oluştur
+
+        const newSTKALACAK =
+          STKRAKTIP === 1
+            ? STKADET
+            : STKRAKTIP === 6
+            ? STKBIRIMFIYATTOPLAM
+            : STKRAKTIP === 8
+            ? 1
+            : 0;
+
+        const newRecord = {
           STKKOD,
           STKYIL: currentYear,
           STKAY: currentMonth,
@@ -281,22 +222,18 @@ const updateSTKMIZDEGER = async (orderItems, currentDate) => {
           STKDOVKOD: '',
           STKBORC: 0,
           STKALACAK: newSTKALACAK,
-          STKDEPO: ''
-        });
+          STKDEPO: '',
+        };
+        
+        await createNewData('STKMIZDEGER', newRecord);
+        console.log(`### 6 ### - ${Date.now()}`);
       }
     }
   }
-
-  // Toplu güncellemeleri gerçekleştir
-  if (updates.length > 0) {
-    await bulkUpdateData('STKMIZDEGER', updates);
-  }
-
-  // Toplu eklemeleri gerçekleştir
-  if (inserts.length > 0) {
-    await bulkInsertData('STKMIZDEGER', inserts);
-  }
 };
+
+
+
 
 
 const getLastSTKFIS = async () => {
