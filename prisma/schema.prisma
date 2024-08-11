@@ -356,6 +356,21 @@ model STKMIZDEGER {
   @@id([STKKOD, STKRAKTIP])
 }
 
+model STKMIZDEGERYEDEK {
+  ID         Int      @id @default(autoincrement())
+  DATE       DateTime @default(now())
+  STKKOD     String
+  STKYIL     Int?
+  STKAY      Int?
+  STKRAKTIP  Int
+  STKDOVKOD  String?
+  STKBORC    Float
+  STKALACAK  Float
+  STKDEPO    String?
+
+  @@unique([STKKOD, STKRAKTIP])
+}
+
 model EVRAKNO {
   EVRNOMODUL     Int
   EVRSIRANO      Int
