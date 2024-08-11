@@ -1,5 +1,6 @@
 import React from "react";
 import { RiShoppingCartLine } from "react-icons/ri";
+import { AiOutlineWarning } from 'react-icons/ai';
 
 const OrderSummary = ({
   storedCart,
@@ -10,7 +11,7 @@ const OrderSummary = ({
   return (
     <div className="flex flex-col items-center justify-center w-[400px] md:w-[600px] lg:w-[960px] mx-auto bg-slate-100 rounded-2xl shadow-lg p-10">
       <div className="flex items-center justify-center md:justify-end w-full">
-        <h3 className="text-LightBlue">%60 Bayi indirimi uygulanmistir.</h3>
+        <h3 className="text-LightBlue">%60 Bayi indirimi uygulanmıştır.</h3>
       </div>
       <div className="flex items-center justify-end">
         <h1 className="text-[20px] md:text-[32px] font-bold text-CustomGray">
@@ -33,14 +34,6 @@ const OrderSummary = ({
               </span>
             </div>
           ))}
-          <div className="flex justify-between flex-row gap-12 border-b border-slate-200 py-4">
-            <p className="flex justify-between font-bold text-CustomGray">
-              <span className="">Ara Toplam</span>
-            </p>
-            <p className="flex justify-between font-bold text-CustomGray">
-              <span className="">₺{totalPrice}</span>
-            </p>
-          </div>
           {/* <div className="flex justify-between flex-row gap-12">
             <p className="flex font-medium text-slate-400">
               <span className="">İndirim</span>
@@ -60,9 +53,9 @@ const OrderSummary = ({
         </div>
       </div>
       <div className="w-[400px] md:w-[600px] lg:w-[960px] flex justify-center md:justify-end items-center mb-12 px-8">
-        <div className="flex items-center gap-4 text-[24px]">
-          <p className="font-extrabold text-CustomGray">Toplam</p>
-          <p className="font-extrabold text-CustomGray">₺{totalPrice}</p>
+        <div className="flex items-center gap-4 text-[24px] bg-CustomGray p-2 rounded-xl shadow-xl">
+          <p className="font-extrabold text-white ">Toplam</p>
+          <p className="font-extrabold text-white">₺{totalPrice}</p>
         </div>
       </div>
       <div className="flex flex-row items-center gap-5 mt-12 mb-8">
@@ -71,18 +64,23 @@ const OrderSummary = ({
             type="button"
             disabled={isLoading}
             onClick={handleConfirmOrder}
-            className={`flex flex-row items-center justify-center gap-2 ml-3 text-white font-bold hover:scale-105 transition-all transform ease-out duration-500 cursor-pointer bg-gradient-to-r from-LightBlue
-             to-sky-700 pl-3 pr-11 py-2 rounded-full relative w-[250px] h-[58px] text-[18px] ${
+            className={`shadow-lg hover:shadow-2xl flex flex-row items-center justify-center gap-2 ml-3 text-white font-bold hover:scale-105 transition-all transform ease-out duration-500 cursor-pointer bg-gradient-to-r from-LightBlue
+             to-sky-700 pl-3 pr-11 py-2 rounded-full relative w-[260px] h-[58px] text-[18px] ${
                isLoading ? "cursor-not-allowed animate-bounce" : ""
              }`}
           >
             {isLoading ? "Siparişiniz alınıyor..." : "Sipariş Oluştur"}
-            <span className="absolute -right-2 text-white bg-gradient-to-r from-sky-700 to-LightBlue p-4  rounded-full group-hover:scale-110 transition-all duration-500 transform ease-in-out">
+            <span className="absolute -right-0 text-white bg-gradient-to-l from-sky-700 to-LightBlue p-4  rounded-full  transition-all duration-500 transform ease-in-out">
               <RiShoppingCartLine className="w-6 h-6" />
             </span>
           </button>
+          
         </div>
+        
       </div>
+      {isLoading && <div className="flex justify-center items-center relative p-4 bg-red-600 text-white font-bold text-lg rounded-lg shadow-lg animate-bounce">
+            <AiOutlineWarning size={30}/>  <span className="mx-4">Lütfen sipariş alınırken bekleyin, bu işlem biraz zaman alabilir.</span>
+          </div>}
     </div>
   );
 };

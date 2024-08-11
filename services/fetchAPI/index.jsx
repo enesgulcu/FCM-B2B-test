@@ -13,6 +13,7 @@ const apiRequest = async (
     const options = {
       method: method,
       headers: headers,
+      cache: "no-store",
     };
     // cache önemli! her çalıştığında cache'deki veri yerine -> güncel veriyi almasını sağlar.
     // bu olmaz ise üncel veriyi almayabiliyor dikkat et.

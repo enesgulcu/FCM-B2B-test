@@ -10,7 +10,7 @@ import {
 const now = new Date(new Date().getTime() + 3 * 60 * 60 * 1000);
 console.log('SAAT:', now);
 
-console.log(`### 1 ### - ${Date.now()}`);
+console.log(`### 1 ### `);
 
 const generateOrderNo = (userId) => {
   const day = now.getUTCDate().toString().padStart(2, '0');
@@ -23,7 +23,7 @@ const generateOrderNo = (userId) => {
     String.fromCharCode(65 + Math.floor(Math.random() * 26)) +
     String.fromCharCode(65 + Math.floor(Math.random() * 26));
   const randomNumber = Math.floor(Math.random() * 89) + 10;
-  console.log(`### 2 ### - ${Date.now()}`);
+  console.log(`### 2 ### `);
   return `${day}-${month}-${year}-${hour}-${minute}-${userId}-${randomLetters}-${randomNumber}`;
 };
 
@@ -65,7 +65,7 @@ const prepareOrderData = (
     SATISIRSEVRNO: satisIrsaliyesiEvrNo,
     HARREFDEGER1: harRefDeger,
   }));
-  console.log(`### 3 ### - ${Date.now()}`);
+  console.log(`### 3 ### `);
   return orderItems;
 };
 
@@ -95,7 +95,7 @@ const getAndUpdateReferences = async () => {
       updateDataByAny('EVRAKNO', { EVRACIKLAMA: 'Satış İrsaliyeleri' }, { EVRNO: newSatisIrsaliyesiEvrNo }),
     ]);
 
-    console.log(`### 4 ### - ${Date.now()}`);
+    console.log(`### 4 ### `);
     return {
       harRefDeger: newHarRefDeger,
       cikisFisEvrNo: newCikisFisEvrNo,
@@ -123,7 +123,7 @@ const updateSTKKART = async (STKKOD, quantity) => {
         }
       );
 
-      console.log(`### 5 ### - ${Date.now()}`);
+      console.log(`### 5 ### `);
     }
   } catch (error) {
     console.error(`STKKART güncellenirken hata oluştu (${STKKOD}):`, error);
@@ -204,7 +204,7 @@ const updateSTKMIZDEGER = async (orderItems, currentDate) => {
         };
         
         await createNewData('STKMIZDEGER', newRecord);
-        console.log(`### 6 ### - ${Date.now()}`);
+        console.log(`### 6 ### `);
       }
     }
   }
@@ -228,13 +228,13 @@ const getLastSTKFIS = async () => {
     STKFISEVRAKNO2: 'WEB-000000',
     ...lastSTKFIS, // Eğer lastSTKFIS boş değilse, onun değerleri bu objeyi overwrite eder
   };
-  console.log(`### 7 ### - ${Date.now()}`);
+  console.log(`### 7 ### `);
   return reducedSTKFIS;
 };
 
 const getStkFisRefNo = async () => {
   const allSTKFIS = await getLastSTKFIS();
-  console.log(`### 8 ### - ${Date.now()}`);
+  console.log(`### 8 ### `);
   return allSTKFIS.STKFISREFNO + 1;
 };
 
@@ -295,7 +295,7 @@ const createSTKFIS = async (orderData, lastSTKFIS, lastSTKFISREFNO) => {
 
   // SIRKETLOG oluştur
   await createSIRKETLOG(newSTKFISREFNO, new Date());
-  console.log(`### 9 ### - ${Date.now()}`);
+  console.log(`### 9 ### `);
   return newSTKFISREFNO;
 };
 
@@ -333,7 +333,7 @@ const createSIRKETLOG = async (stkfisRefNo, orderDate) => {
     SIRLOGMUHACK4: 'ANAMAK\\adnan',
     SIRLOGMUHACK5: ' ',
   };
-  console.log(`### 10 ### - ${Date.now()}`);
+  console.log(`### 10 ### `);
   const newSirketlogData = await createNewData('SIRKETLOG', sirketlogEntry);
 };
 
@@ -442,7 +442,7 @@ const createSTKHAR = async (orderItem, lastSTKFISREFNO, siraNo) => {
 
   try {
     const newStkharData = await createNewData('STKHAR', stkharEntry);
-    console.log(`### 11 ### - ${Date.now()}`);
+    console.log(`### 11 ### `);
     return newStkharData;
   } catch (error) {
     console.error('Yeni STKHAR verisi oluşturulamadı:', error);
@@ -462,7 +462,7 @@ const getLastIRSHAR = async () => {
     IRSHARREFNO: 0,
     ...lastIRSHAR, // Eğer lastIRSHAR boş değilse, onun değerleri bu objeyi overwrite eder
   };
-  console.log(`### 12 ### - ${Date.now()}`);
+  console.log(`### 12 ### `);
   return reducedIRSHAR;
 };
 
@@ -579,7 +579,7 @@ const createIRSHAR = async (orderItem, createdIRSFISREFNO, siraNo) => {
 
   try {
     const newIrsharData = await createNewData('IRSHAR', irsharEntry);
-    console.log(`### 13 ### - ${Date.now()}`);
+    console.log(`### 13 ### `);
     return newIRSHARREFNO;
   } catch (error) {
     console.error('Yeni IRSHAR verisi oluşturulamadı:', error);
@@ -594,7 +594,7 @@ const getLastIRSFIS = async () => {
     { IRSFISREFNO: 0 }
   );
   // console.log("Önceki DBDE OLAN IRSFIS:", reducedIRSFIS);
-  console.log(`### 14 ### - ${Date.now()}`);
+  console.log(`### 14 ### `);
   return reducedIRSFIS;
 };
 
@@ -716,7 +716,7 @@ const createIRSFIS = async (
 
   const newIrsfisData = await createNewData('IRSFIS', irsfisEntry);
 
-  console.log(`### 15 ### - ${Date.now()}`);
+  console.log(`### 15 ### `);
   return newIRSFISREFNO;
 };
 console.log('start 1');
@@ -782,7 +782,7 @@ export default async function handler(req, res) {
       console.log('start 6');
       // console.log("STKMIZDEGER güncellemesi başlıyor");
       // STKMIZDEGER tablosunu güncelle
-      await updateSTKMIZDEGER(orderItems, now);
+      // ŞUAN BEKLEMEDE - await updateSTKMIZDEGER(orderItems, now);
       // console.log("STKMIZDEGER güncellemesi tamamlandı");
 
       console.log('start 7');
@@ -869,7 +869,7 @@ export default async function handler(req, res) {
 
       // console.log("Sipariş oluşturma işlemi tamamlandı");
 
-      console.log(`### 16 SON ### - ${Date.now()}`);
+      console.log(`### 16 SON ### `);
 
       return res.status(200).json({
         success: true,
