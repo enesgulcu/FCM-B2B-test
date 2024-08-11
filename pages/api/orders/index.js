@@ -807,7 +807,7 @@ export default async function handler(req, res) {
         
         await updateSTKKART(item.STKKOD, item.STKADET);
       }
-      
+
       console.log('start 6');
       // console.log("STKMIZDEGER güncellemesi başlıyor");
       // STKMIZDEGER tablosunu güncelle
@@ -822,7 +822,7 @@ export default async function handler(req, res) {
         lastSTKFIS,
         lastSTKFISREFNO
       );
-
+      console.log('start 7-1');
       // IRSFIS oluştur
       const createdIRSFISREFNO = await createIRSFIS(
         orderItems[0],
@@ -830,6 +830,8 @@ export default async function handler(req, res) {
         createdSTKFISREFNO,
         lastSTKFIS
       );
+
+      console.log('start 7-2');
 
       // STKHAR ve IRSHAR oluştur
       const createdSTKHARs = [];
