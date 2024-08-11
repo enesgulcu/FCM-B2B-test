@@ -757,37 +757,45 @@ export default async function handler(req, res) {
 
       console.log('start 5');
 
-      for (const item of orderItems) {
-        const entry = {
-          ...item,
-          STKFISREFNO: lastSTKFISREFNO,
-          STKFISEVRAKNO1: `SF-${newSFNumber.toString().padStart(6, '0')}`,
-          STKFISEVRAKNO2: `WEB-${newWEBNumber.toString().padStart(6, '0')}`,
-          ACIKLAMA: null,
-          ORDERSTATUS: 'Sipariş Oluşturuldu',
-          EKXTRA2: null,
-          EKXTRA3: null,
-          EKXTRA4: null,
-          EKXTRA5: null,
-          EKXTRA6: null,
-          EKXTRA7: null,
-          EKXTRA8: null,
-          EKXTRA9: null,
-        };
+      const createOrderPromises = [];
+      const updateStockPromises = [];
 
-        console.log('start 5-1');
+// Verileri işleyin
+for (const item of orderItems) {
+    const entry = {
+        ...item,
+        STKFISREFNO: lastSTKFISREFNO,
+        STKFISEVRAKNO1: `SF-${newSFNumber.toString().padStart(6, '0')}`,
+        STKFISEVRAKNO2: `WEB-${newWEBNumber.toString().padStart(6, '0')}`,
+        ACIKLAMA: null,
+        ORDERSTATUS: 'Sipariş Oluşturuldu',
+        EKXTRA2: null,
+        EKXTRA3: null,
+        EKXTRA4: null,
+        EKXTRA5: null,
+        EKXTRA6: null,
+        EKXTRA7: null,
+        EKXTRA8: null,
+        EKXTRA9: null,
+    };
 
-        const result = await createNewData('ALLORDERS', entry);
-
-
+    // Her bir createNewData isteğini bir promise olarak oluşturun
+    createOrderPromises.push(createNewData('ALLORDERS', entry).then(result => {
         createdOrders.push(entry);
+        console.log('Order created:', result);
+    }));
 
-        console.log('start 5-2');
-        
-        await updateSTKKART(item.STKKOD, item.STKADET);
+    // Her bir updateSTKKART isteğini bir promise olarak oluşturun
+    updateStockPromises.push(updateSTKKART(item.STKKOD, item.STKADET).then(result => {
+        console.log('Stock updated:', result);
+    }));
+}
 
-        console.log('start 5-3');
-      }
+// Tüm createNewData ve updateSTKKART işlemlerinin bitmesini bekleyin
+await Promise.all(createOrderPromises);
+await Promise.all(updateStockPromises);
+
+console.log('All operations completed');
 
       console.log('start 6');
       // console.log("STKMIZDEGER güncellemesi başlıyor");
