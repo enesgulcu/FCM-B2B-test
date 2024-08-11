@@ -78,8 +78,8 @@ const OrderSummary = ({
         </div>
         
       </div>
-      {isLoading && <div className="flex justify-center items-center relative p-4 bg-red-600 text-white font-bold text-lg rounded-lg shadow-lg animate-bounce">
-            <AiOutlineWarning size={30}/>  <span className="mx-4">Lütfen sipariş alınırken bekleyin, bu işlem biraz zaman alabilir.</span>
+      {isLoading && <div className="flex justify-center items-center relative p-4 bg-LightBlue text-white font-bold text-lg rounded-lg shadow-lg animate-bounce">
+            <AiOutlineWarning size={30}/>  <span className="mx-4 shadow-2xl">Lütfen sipariş alınırken bekleyin, bu işlem biraz zaman alabilir.</span>
           </div>}
     </div>
   );
