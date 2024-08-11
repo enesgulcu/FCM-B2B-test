@@ -2,7 +2,7 @@
 // where:     eşleşecek tablodaki verinin anahtar değeri örn: {email: "enes.gulcu@hotmail.com"} (mail) değeri oluyor.
 // newData:   yeni eklenecek veya güncellenecek veri
 
-import prisma from "@/lib/prisma/index";
+import prisma from '@/lib/prisma/index';
 
 // GET ALL
 export async function getAllData(tableName) {
@@ -40,6 +40,19 @@ export async function updateOrderStatus(tableName, where, newStatus) {
 export async function getDataByUnique(tableName, where) {
   try {
     const data = await prisma[tableName].findFirst({ where: where });
+    return data;
+  } catch (error) {
+    return { error: error.message };
+  }
+}
+
+// GET SINGLE BY ORDER
+export async function getDataByUniqueSingle(tableName, where, orderBy) {
+  try {
+    const data = await prisma[tableName].findFirst({
+      where: where,
+      orderBy: orderBy,
+    });
     return data;
   } catch (error) {
     return { error: error.message };
@@ -106,6 +119,8 @@ export default {
   createNewData,
 
   getDataByUnique,
+
+  getDataByUniqueSingle,
 
   updateDataByAny,
 
