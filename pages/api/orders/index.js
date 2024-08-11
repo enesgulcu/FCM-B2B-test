@@ -757,40 +757,34 @@ export default async function handler(req, res) {
 
       console.log('start 5');
 
-      const createOrderPromises = [];
-      const updateStockPromises = [];
 
-      for (const item of orderItems) {
+      const createdOrders = await Promise.all(orderItems.map(async (item) => {
         const entry = {
-          ...item,
-          STKFISREFNO: lastSTKFISREFNO,
-          STKFISEVRAKNO1: `SF-${newSFNumber.toString().padStart(6, '0')}`,
-          STKFISEVRAKNO2: `WEB-${newWEBNumber.toString().padStart(6, '0')}`,
-          ACIKLAMA: null,
-          ORDERSTATUS: 'Sipariş Oluşturuldu',
-          EKXTRA2: null,
-          EKXTRA3: null,
-          EKXTRA4: null,
-          EKXTRA5: null,
-          EKXTRA6: null,
-          EKXTRA7: null,
-          EKXTRA8: null,
-          EKXTRA9: null,
+            ...item,
+            STKFISREFNO: lastSTKFISREFNO,
+            STKFISEVRAKNO1: `SF-${newSFNumber.toString().padStart(6, '0')}`,
+            STKFISEVRAKNO2: `WEB-${newWEBNumber.toString().padStart(6, '0')}`,
+            ACIKLAMA: null,
+            ORDERSTATUS: 'Sipariş Oluşturuldu',
+            EKXTRA2: null,
+            EKXTRA3: null,
+            EKXTRA4: null,
+            EKXTRA5: null,
+            EKXTRA6: null,
+            EKXTRA7: null,
+            EKXTRA8: null,
+            EKXTRA9: null,
         };
-
-        console.log('start 5-1');
-
     
-        createOrderPromises.push(createNewData('ALLORDERS', entry));
+        const result = await createNewData('ALLORDERS', entry);
+    
+        console.log('start 6');
+    
+        await updateSTKKART(item.STKKOD, item.STKADET);
+    
+        return entry;
+    }));
 
-        console.log('start 5-2');
-        
-        updateStockPromises.push(updateSTKKART(item.STKKOD, item.STKADET));
-
-        console.log('start 5-3');
-      }
-
-      await Promise.all([...createOrderPromises, ...updateStockPromises]);
 
       console.log('start 5-4');
 
