@@ -123,10 +123,6 @@ const updateSTKKART = async (STKKOD, quantity) => {
         }
       );
 
-      const updatedStkKart = await getDataByUnique('STKKART', {
-        STKKOD: STKKOD,
-      });
-
       console.log(`### 5 ### - ${Date.now()}`);
     }
   } catch (error) {
@@ -779,15 +775,18 @@ export default async function handler(req, res) {
           EKXTRA9: null,
         };
 
-        // console.log("ALLORDERS tablosuna yazılacak veri:", entry);
+        console.log('start 5-1');
 
         const result = await createNewData('ALLORDERS', entry);
-        // console.log("ALLORDERS tablosuna yazma sonucu:", result);
+
 
         createdOrders.push(entry);
 
+        console.log('start 5-2');
         
         await updateSTKKART(item.STKKOD, item.STKADET);
+
+        console.log('start 5-3');
       }
 
       console.log('start 6');
