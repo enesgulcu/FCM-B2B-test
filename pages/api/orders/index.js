@@ -811,7 +811,7 @@ export default async function handler(req, res) {
       console.log('start 6');
       // console.log("STKMIZDEGER güncellemesi başlıyor");
       // STKMIZDEGER tablosunu güncelle
-      await updateSTKMIZDEGER(orderItems, now);
+      // await updateSTKMIZDEGER(orderItems, now);
       // console.log("STKMIZDEGER güncellemesi tamamlandı");
 
       console.log('start 7');
