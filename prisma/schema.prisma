@@ -359,16 +359,16 @@ model STKMIZDEGER {
 model STKMIZDEGERYEDEK {
   ID         Int      @id @default(autoincrement())
   DATE       DateTime @default(now())
-  STKKOD     String
-  STKYIL     Int?
+  STKKOD     String @unique
+  STKYIL     Int? @unique
   STKAY      Int?
-  STKRAKTIP  Int
+  STKRAKTIP  Int @unique
   STKDOVKOD  String?
   STKBORC    Float
   STKALACAK  Float
   STKDEPO    String?
 
-  @@unique([STKKOD, STKRAKTIP])
+  @@unique([STKKOD, STKRAKTIP, STKYIL])
 }
 
 model EVRAKNO {

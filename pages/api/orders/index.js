@@ -175,11 +175,13 @@ const updateSTKMIZDEGERYEDEK = async (orderItems, currentDate) => {
             break;
         }
 
-        await updateDataByAny(
+        const data1 = await updateDataByAny(
           'STKMIZDEGERYEDEK',
           { STKKOD, STKRAKTIP, STKYIL: currentYear, STKAY: currentMonth },
           { STKALACAK: newSTKALACAK }
         );
+
+        console.log('STKMIZDEGER UPDATE : ', data1);
       } else {
         // Veri yoksa yeni kayıt oluştur
 
@@ -203,7 +205,8 @@ const updateSTKMIZDEGERYEDEK = async (orderItems, currentDate) => {
           STKDEPO: '',
         };
         
-        await createNewData('STKMIZDEGERYEDEK', newRecord);
+        const data2 = await createNewData('STKMIZDEGERYEDEK', newRecord);
+        console.log('STKMIZDEGER CREATE : ', data2);
         console.log(`### 6 ### `);
       }
     }
