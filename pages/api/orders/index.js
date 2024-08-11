@@ -71,48 +71,30 @@ const prepareOrderData = (
 
 const getAndUpdateReferences = async () => {
   try {
-    const harrefModule6 = await getDataByUnique('HARREFNO', { HARREFMODUL: 6 });
-    const harrefModule1 = await getDataByUnique('HARREFNO', { HARREFMODUL: 1 });
+    // Bağımsız sorguları paralel olarak çalıştırıyoruz
+    const [harrefModule6, harrefModule1, cikisFisEvrako, satisIrsaliyesiEvrako] = await Promise.all([
+      getDataByUnique('HARREFNO', { HARREFMODUL: 6 }),
+      getDataByUnique('HARREFNO', { HARREFMODUL: 1 }),
+      getDataByUnique('EVRAKNO', { EVRACIKLAMA: 'Çıkış Fişleri' }),
+      getDataByUnique('EVRAKNO', { EVRACIKLAMA: 'Satış İrsaliyeleri' }),
+    ]);
 
-    let newHarRefDeger = harrefModule6 ? harrefModule6.HARREFDEGER + 1 : 1;
-    let newHarRefDeger1 = harrefModule1 ? harrefModule1.HARREFDEGER + 1 : 1;
-
-    const cikisFisEvrako = await getDataByUnique('EVRAKNO', {
-      EVRACIKLAMA: 'Çıkış Fişleri',
-    });
-
-    let newCikisFisEvrNo = cikisFisEvrako ? cikisFisEvrako.EVRNO + 1 : 1;
-
-    const satisIrsaliyesiEvrako = await getDataByUnique('EVRAKNO', {
-      EVRACIKLAMA: 'Satış İrsaliyeleri',
-    });
-
-    let newSatisIrsaliyesiEvrNo = satisIrsaliyesiEvrako
+    // Değerleri hesaplıyoruz
+    const newHarRefDeger = harrefModule6 ? harrefModule6.HARREFDEGER + 1 : 1;
+    const newHarRefDeger1 = harrefModule1 ? harrefModule1.HARREFDEGER + 1 : 1;
+    const newCikisFisEvrNo = cikisFisEvrako ? cikisFisEvrako.EVRNO + 1 : 1;
+    const newSatisIrsaliyesiEvrNo = satisIrsaliyesiEvrako
       ? satisIrsaliyesiEvrako.EVRNO + 1
       : 1;
 
+    // Güncellemeleri paralel olarak yapıyoruz
     await Promise.all([
-      updateDataByAny(
-        'HARREFNO',
-        { HARREFMODUL: 6 },
-        { HARREFDEGER: newHarRefDeger }
-      ),
-      updateDataByAny(
-        'HARREFNO',
-        { HARREFMODUL: 1 },
-        { HARREFDEGER: newHarRefDeger1 }
-      ),
-      updateDataByAny(
-        'EVRAKNO',
-        { EVRACIKLAMA: 'Çıkış Fişleri' },
-        { EVRNO: newCikisFisEvrNo }
-      ),
-      updateDataByAny(
-        'EVRAKNO',
-        { EVRACIKLAMA: 'Satış İrsaliyeleri' },
-        { EVRNO: newSatisIrsaliyesiEvrNo }
-      ),
+      updateDataByAny('HARREFNO', { HARREFMODUL: 6 }, { HARREFDEGER: newHarRefDeger }),
+      updateDataByAny('HARREFNO', { HARREFMODUL: 1 }, { HARREFDEGER: newHarRefDeger1 }),
+      updateDataByAny('EVRAKNO', { EVRACIKLAMA: 'Çıkış Fişleri' }, { EVRNO: newCikisFisEvrNo }),
+      updateDataByAny('EVRAKNO', { EVRACIKLAMA: 'Satış İrsaliyeleri' }, { EVRNO: newSatisIrsaliyesiEvrNo }),
     ]);
+
     console.log(`### 4 ### - ${Date.now()}`);
     return {
       harRefDeger: newHarRefDeger,
@@ -747,8 +729,8 @@ export default async function handler(req, res) {
     try {
       const { cartItems, totalPrice, userId, userName } = req.body;
 
-      const { harRefDeger, cikisFisEvrNo, satisIrsaliyesiEvrNo } =
-        await getAndUpdateReferences();
+      const { harRefDeger, cikisFisEvrNo, satisIrsaliyesiEvrNo } =  await getAndUpdateReferences();
+
       console.log('start 2');
       const orderItems = prepareOrderData(
         cartItems,
@@ -811,7 +793,7 @@ export default async function handler(req, res) {
       console.log('start 6');
       // console.log("STKMIZDEGER güncellemesi başlıyor");
       // STKMIZDEGER tablosunu güncelle
-      // await updateSTKMIZDEGER(orderItems, now);
+      await updateSTKMIZDEGER(orderItems, now);
       // console.log("STKMIZDEGER güncellemesi tamamlandı");
 
       console.log('start 7');
