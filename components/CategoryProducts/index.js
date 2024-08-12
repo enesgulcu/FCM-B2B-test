@@ -15,9 +15,48 @@ import useCartItemCount from "@/utils/useCartItemCount";
 import { FaSearch } from "react-icons/fa";
 import SearchPanel from "@/components/SearchPanel";
 import Loading from "../Loading";
+import Lottie from "lottie-react";
+import SuccessAnimation from "../../public/successanimation.json";
+import WrongAnimation from "../../public/wronganimation.json";
+const Modal = ({ isOpen, onClose, message, type }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white px-6 flex items-center justify-center rounded-lg shadow-lg">
+        <div>
+          <Lottie
+            animationData={
+              type === "success" ? SuccessAnimation : WrongAnimation
+            }
+            className="w-60"
+            loop={false}
+          />
+        </div>
+        <div className="flex flex-col items-left">
+          <h2
+            className={`text-xl font-bold mb-4 ${
+              type === "success" ? "text-green-600" : "text-red-600"
+            }`}
+          >
+            {type === "success" ? "Başarılı" : "Hata"}
+          </h2>
+          <p>{message}</p>
+          <button
+            onClick={onClose}
+            className="mt-4 bg-CustomRed text-white font-bold rounded-md px-4 py-2 hover:bg-CustomRed/80"
+          >
+            Kapat
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 function CategoryProducts({ showSearchAndCart = false }) {
   // /shop için yapıldı searchPanel ve sepet kategorilerle beraber gözükür
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [urunler, setUrunler] = useState([]); // Ürünler için state
   const [selectedClass, setSelectedClass] = useState("1.SINIF"); // Seçili sınıf filtresi için state
   const [selectedCategory, setSelectedCategory] = useState(""); // Seçili kategori filtresi için state
@@ -95,7 +134,7 @@ function CategoryProducts({ showSearchAndCart = false }) {
   const getClassCategories = (classType) => {
     // Sınıf tipine göre filtrelenmiş ürünleri al ve boş kategorileri hariç tut
     const filteredUrunler = urunler.filter(
-      (urun) => urun.STKOZKOD3 === classType && urun.STKOZKOD2.trim() !== "" && parseFloat(urun.STKOZKOD5) > 0
+      (urun) => urun.STKOZKOD3 === classType && urun.STKOZKOD2.trim() !== ""
     );
     // Benzersiz kategorileri çıkar
     const categories = [
@@ -123,6 +162,10 @@ function CategoryProducts({ showSearchAndCart = false }) {
 
   // Sepete ürün ekleme işlemi
   const handleAddToCart = async (values, urun) => {
+    if (urun.STKOZKOD1 === "2") {
+      setIsModalOpen(true);
+      return;
+    }
     try {
       setUrunler((prevUrunler) =>
         prevUrunler.map((item) =>
@@ -190,7 +233,10 @@ function CategoryProducts({ showSearchAndCart = false }) {
     let filteredUrunler = urunler.filter(
       (urun) =>
         // BU KISIM KATEGORIDEKI FIYATI OLMAYAN URUNLERIN GOSTERILMESINI ENGELLER.
-        urun.STKOZKOD3 === selectedClass && parseFloat(urun.STKOZKOD5) > 0
+        urun.STKOZKOD3 === selectedClass && parseFloat(urun.STKOZKOD5)
+    );
+    filteredUrunler = filteredUrunler.filter(
+      (urun) => urun.STKOZKOD1 === "A" || urun.STKOZKOD1 === "2"
     );
 
     // ANASINIFI ve İNGİLİZCE dışında bir sınıf seçildiyse
@@ -321,8 +367,18 @@ function CategoryProducts({ showSearchAndCart = false }) {
                 className="relative p-[10px] sm:p-[20px] border border-ProductsBorder rounded-md shadow-sm transition duration-300 ease-in-out transform hover:shadow-[0_0_20px_rgba(0,0,0,0.1)] overflow-hidden flex flex-row sm:flex-col items-center sm:justify-center"
               >
                 <p className="absolute flex flex-col items-center justify-center top-16 -right-12 transform origin-top-right rotate-45 text-[12px] sm:text-[16px] font-bold text-white bg-gradient-to-r from-yellow-400 to-orange-600 px-2 w-40 shadow-md shadow-orange-200">
-                  %60
-                  <span>İNDİRİM</span>
+                  {urun.STKOZKOD1 === "A" ? (
+                    <>
+                      %60
+                      <span>İNDİRİM</span>
+                    </>
+                  ) : null}
+
+                  {urun.STKOZKOD1 === "2" ? (
+                    <>
+                      <span className="mt-3 md:mt-4">BASKIDA</span>
+                    </>
+                  ) : null}
                 </p>
 
                 {isInCart(urun) && (
@@ -356,9 +412,20 @@ function CategoryProducts({ showSearchAndCart = false }) {
                       <p>{urun.STKCINSI}</p>
                     </Link>
                   </div>
+                  <div className="mt-2">
+                    {urun.STKOZKOD1 === "2" ? (
+                      <span className="bg-yellow-500 text-white px-2 py-1 rounded-full text-xs font-semibold">
+                        BASKIDA
+                      </span>
+                    ) : urun.STKOZKOD1 === "A" ? (
+                      <span className="bg-green-500 text-white px-2 py-1 rounded-full text-xs font-semibold">
+                        SATIŞA HAZIR
+                      </span>
+                    ) : null}
+                  </div>
                   <div className="flex-none">
                     <div>
-                      {urun.STKOZKOD5 && (
+                      {urun.STKOZKOD5 !== " " ? (
                         <>
                           <p className="line-through text-gray-500 text-[16px] md:text-[18px]">
                             ₺{inflatedPrice}
@@ -368,6 +435,10 @@ function CategoryProducts({ showSearchAndCart = false }) {
                             {discountedPrice}
                           </p>
                         </>
+                      ) : (
+                        <p className="italic text-LightBlue text-[20px] md:text-[23px] font-semibold">
+                          Fiyat bilgisi yok.
+                        </p>
                       )}
                     </div>
                   </div>
@@ -438,9 +509,12 @@ function CategoryProducts({ showSearchAndCart = false }) {
                               )}
                               <button
                                 type="submit"
-                                className="flex flex-row items-center justify-center gap-2 ml-2 sm:ml-4 lg:ml-2 text-white font-bold hover:scale-105 transition-all transform easy-in-out duration-500 cursor-pointer bg-LightBlue/75 pl-2 pr-9 py-2 rounded-full relative w-[130px] sm:w-[160px] h-[40px] text-[13px] sm:text-[15px]"
+                                className={`flex flex-row items-center justify-center gap-2 ml-2 sm:ml-4 lg:ml-2 text-white font-bold hover:scale-105 transition-all transform easy-in-out duration-500 cursor-pointer ${
+                                  urun.STKOZKOD1 === "2"
+                                    ? "bg-gray-400"
+                                    : "bg-LightBlue/75"
+                                } pl-2 pr-9 py-2 rounded-full relative w-[130px] sm:w-[160px] h-[40px] text-[13px] sm:text-[15px]`}
                                 onClick={handleSubmit}
-                                disabled={urun.addingToCart}
                               >
                                 {urun.addingToCart ? (
                                   <div className="flex flex-row items-center justify-center gap-1">
@@ -452,7 +526,11 @@ function CategoryProducts({ showSearchAndCart = false }) {
                                   <>Sepete Ekle</>
                                 )}
                                 <span
-                                  className={`absolute -top-1 -right-2 text-white bg-gradient-to-r from-sky-600 to-cyan-700 p-3 border-4 border-white rounded-full transition-all duration-500 ease-out transform`}
+                                  className={`absolute -top-1 -right-2 text-white bg-gradient-to-r ${
+                                    urun.STKOZKOD1 === "2"
+                                      ? "from-gray-500 to-gray-600"
+                                      : "from-sky-600 to-cyan-700"
+                                  } p-3 border-4 border-white rounded-full transition-all duration-500 ease-out transform`}
                                 >
                                   {isInCart(urun) ? (
                                     <FaCheck
@@ -487,7 +565,18 @@ function CategoryProducts({ showSearchAndCart = false }) {
 
   if (loading) return <Loading />;
 
-  return <div>{renderBooks()}</div>;
+  return (
+    <div>
+      {renderBooks()}
+      <Modal
+        isOpen={isModalOpen}
+        message={
+          <p>Bu ürün baskı aşamasında. Şu anda sepete ekleyemezsiniz.</p>
+        }
+        onClose={() => setIsModalOpen(false)}
+      />
+    </div>
+  );
 }
 
 export default CategoryProducts;
