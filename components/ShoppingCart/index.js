@@ -282,117 +282,115 @@ const ShoppingCart = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {storedCart.map((item, index) =>
-                    ({}(
-                      <tr key={item.STKKOD} className="shadow-sm">
-                        <td className="px-2 sm:px-5 py-5 hidden sm:table-cell">
-                          <div className="w-24 h-24 mr-4">
-                            <Image
-                              src={
-                                item.imagePath ||
-                                "https://caliskanari.com/wp-content/uploads/2022/11/X7-420x420.png.webp"
+                  {storedCart.map((item, index) => (
+                    <tr key={item.STKKOD} className="shadow-sm">
+                      <td className="px-2 sm:px-5 py-5 hidden sm:table-cell">
+                        <div className="w-24 h-24 mr-4">
+                          <Image
+                            src={
+                              item.imagePath ||
+                              "https://caliskanari.com/wp-content/uploads/2022/11/X7-420x420.png.webp"
+                            }
+                            alt={item.STKCINSI}
+                            width={96}
+                            height={96}
+                            className="object-cover rounded"
+                          />
+                        </div>
+                      </td>
+                      <td className="px-2 sm:px-5 py-3">
+                        <div className="flex flex-col sm:flex-row items-center">
+                          <span className="w-[70px] sm:w-full text-LightBlue font-medium flex text-center">
+                            {item.STKCINSI}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-5 py-3 hidden lg:table-cell">
+                        <span className="flex items-center justify-center w-[70px]">
+                          ₺{item.STKOZKOD5}
+                        </span>
+                      </td>
+                      <td className="px-5 py-3 hidden lg:table-cell">
+                        <span className="flex items-center justify-center">
+                          %0
+                        </span>
+                      </td>
+                      <td className="px-5 py-3 hidden lg:table-cell">
+                        <p className="w-full flex items-center justify-center">
+                          ₺{item.STKOZKOD5}
+                        </p>
+                      </td>
+                      <td className="px-5 py-3">
+                        <p className="w-full flex items-center justify-center">
+                          ₺{parseFloat(item.STKOZKOD5) * item.quantity}
+                        </p>
+                      </td>
+                      <td className="px-2 sm:px-5 py-3">
+                        <span className="flex items-center justify-center">
+                          {editingIndex === index ? (
+                            <input
+                              type="number"
+                              defaultValue={item.quantity}
+                              onBlur={(e) =>
+                                handleQuantityEditComplete(index, e)
                               }
-                              alt={item.STKCINSI}
-                              width={96}
-                              height={96}
-                              className="object-cover rounded"
-                            />
-                          </div>
-                        </td>
-                        <td className="px-2 sm:px-5 py-3">
-                          <div className="flex flex-col sm:flex-row items-center">
-                            <span className="w-[70px] sm:w-full text-LightBlue font-medium flex text-center">
-                              {item.STKCINSI}
-                            </span>
-                          </div>
-                        </td>
-                        <td className="px-5 py-3 hidden lg:table-cell">
-                          <span className="flex items-center justify-center w-[70px]">
-                            ₺{item.STKOZKOD5}
-                          </span>
-                        </td>
-                        <td className="px-5 py-3 hidden lg:table-cell">
-                          <span className="flex items-center justify-center">
-                            %0
-                          </span>
-                        </td>
-                        <td className="px-5 py-3 hidden lg:table-cell">
-                          <p className="w-full flex items-center justify-center">
-                            ₺{item.STKOZKOD5}
-                          </p>
-                        </td>
-                        <td className="px-5 py-3">
-                          <p className="w-full flex items-center justify-center">
-                            ₺{parseFloat(item.STKOZKOD5) * item.quantity}
-                          </p>
-                        </td>
-                        <td className="px-2 sm:px-5 py-3">
-                          <span className="flex items-center justify-center">
-                            {editingIndex === index ? (
-                              <input
-                                type="number"
-                                defaultValue={item.quantity}
-                                onBlur={(e) =>
-                                  handleQuantityEditComplete(index, e)
+                              onKeyPress={(e) => {
+                                if (e.key === "Enter") {
+                                  handleQuantityEditComplete(index, e);
                                 }
-                                onKeyPress={(e) => {
-                                  if (e.key === "Enter") {
-                                    handleQuantityEditComplete(index, e);
-                                  }
+                              }}
+                              className="w-16 p-1 text-center border rounded"
+                              min="1"
+                              autoFocus
+                            />
+                          ) : (
+                            <div
+                              className="border border-CustomGray/25 rounded-full py-2 px-2 flex flex-row items-center justify-center cursor-pointer"
+                              onClick={() => handleQuantityEdit(index)}
+                            >
+                              <button
+                                type="button"
+                                className="text-sm sm:text-xl text-LightBlue hover:scale-110 transition duration-500 ease-in-out transform"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleQuantityChange(
+                                    index,
+                                    item.quantity - 1
+                                  );
                                 }}
-                                className="w-16 p-1 text-center border rounded"
-                                min="1"
-                                autoFocus
-                              />
-                            ) : (
-                              <div
-                                className="border border-CustomGray/25 rounded-full py-2 px-2 flex flex-row items-center justify-center cursor-pointer"
-                                onClick={() => handleQuantityEdit(index)}
                               >
-                                <button
-                                  type="button"
-                                  className="text-sm sm:text-xl text-LightBlue hover:scale-110 transition duration-500 ease-in-out transform"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleQuantityChange(
-                                      index,
-                                      item.quantity - 1
-                                    );
-                                  }}
-                                >
-                                  <AiOutlineMinus />
-                                </button>
-                                <span className="w-6 sm:w-12 p-1 text-center outline-none">
-                                  {item.quantity}
-                                </span>
-                                <button
-                                  type="button"
-                                  className="text-sm sm:text-xl text-LightBlue hover:scale-110 transition duration-500 ease-in-out transform"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleQuantityChange(
-                                      index,
-                                      item.quantity + 1
-                                    );
-                                  }}
-                                >
-                                  <AiOutlinePlus />
-                                </button>
-                              </div>
-                            )}
-                          </span>
-                        </td>
-                        <td className="px-2 sm:px-5 py-3 text-center">
-                          <button
-                            className="flex items-center justify-center"
-                            onClick={() => handleDeleteItem(index)}
-                          >
-                            <MdDeleteForever className="w-7 h-7 fill-BasketRed hover:fill-red-500 hover:scale-110 transition-all duration-500 transform ease-in-out" />
-                          </button>
-                        </td>
-                      </tr>
-                    ))
-                  )}
+                                <AiOutlineMinus />
+                              </button>
+                              <span className="w-6 sm:w-12 p-1 text-center outline-none">
+                                {item.quantity}
+                              </span>
+                              <button
+                                type="button"
+                                className="text-sm sm:text-xl text-LightBlue hover:scale-110 transition duration-500 ease-in-out transform"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleQuantityChange(
+                                    index,
+                                    item.quantity + 1
+                                  );
+                                }}
+                              >
+                                <AiOutlinePlus />
+                              </button>
+                            </div>
+                          )}
+                        </span>
+                      </td>
+                      <td className="px-2 sm:px-5 py-3 text-center">
+                        <button
+                          className="flex items-center justify-center"
+                          onClick={() => handleDeleteItem(index)}
+                        >
+                          <MdDeleteForever className="w-7 h-7 fill-BasketRed hover:fill-red-500 hover:scale-110 transition-all duration-500 transform ease-in-out" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
