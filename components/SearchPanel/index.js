@@ -79,7 +79,6 @@ function SearchPanel({ toggleSearchPanel }) {
       const normalizedSearchTerm = normalizeTurkishChars(
         searchTerm.toLowerCase()
       ); // Arama terimini küçük harfe çevirip normalize etme
-      // console.log("Search Term:", normalizedSearchTerm); // Konsola arama terimini yazdırma
 
       // Ürünler dizisi varsa
       if (Array.isArray(products)) {

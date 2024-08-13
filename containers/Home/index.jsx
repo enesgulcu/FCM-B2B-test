@@ -17,7 +17,6 @@ const HomeContainer = () => {
   useEffect(() => {
     if (status === "authenticated") {
       setIsLoggedIn(true);
-      // console.log("session: ", session);
     } else {
       setIsLoggedIn(false);
     }

@@ -97,8 +97,6 @@ const LoginComponent = ({ pageRole }) => {
           response = { success: false, message: result.error };
         }
 
-        console.log("Parsed response:", response);
-
         if (response.success) {
           setModalMessage(
             "Oluşturulan şifreniz mailinize gönderilmiştir. Lütfen kontrol ediniz."
@@ -181,8 +179,6 @@ const LoginComponent = ({ pageRole }) => {
               />
             </div>
             <div className="mb-4 flex flex-row items-center justify-end">
-
-
               <button
                 type="submit"
                 className="bg-CustomRed text-white font-bold rounded-md px-6 py-2 w-[200px] hover:scale-105 transition-all ease-in-out duration-700 transform"

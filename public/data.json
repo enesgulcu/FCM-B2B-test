@@ -165,10 +165,6 @@
     "stkkod": "OA4"
   },
   {
-    "path": "/uploads/MAS-Ç.ARI ALTIN SET.webp",
-    "stkkod": "MAS"
-  },
-  {
     "path": "/uploads/KAA-KÜÇÜK ARILAR AKADEMİSİ.webp",
     "stkkod": "KAA"
   },
@@ -217,24 +213,12 @@
     "stkkod": "EÖ4"
   },
   {
-    "path": "/uploads/2TK-2.SINIF TATİL BİLGİ KOVANI.webp",
-    "stkkod": "2TK"
-  },
-  {
     "path": "/uploads/3S-3.SINIF SET.webp",
     "stkkod": "3S"
   },
   {
-    "path": "/uploads/3TK-3.SINIF TATİL BİLGİ KOVANI.webp",
-    "stkkod": "3TK"
-  },
-  {
     "path": "/uploads/4S-4.SNIF SET.webp",
     "stkkod": "4S"
-  },
-  {
-    "path": "/uploads/4TK-4.SINIF TATİL BİLGİ KOVANI.webp",
-    "stkkod": "4TK"
   },
   {
     "path": "/uploads/AD1-1.SNF TÜMDERSLER AKIL DEFTERİM.webp",
@@ -255,10 +239,6 @@
   {
     "path": "/uploads/2S-2.SINIF SET.webp",
     "stkkod": "2S"
-  },
-  {
-    "path": "/uploads/1TK-1.SINIF TATİL BİLGİ KOVANI.webp",
-    "stkkod": "1TK"
   },
   {
     "path": "/uploads/ANM-AFACAN NECMİNİN MACERALARI.webp",
@@ -287,14 +267,6 @@
   {
     "path": "/uploads/KÜÇÜK ARILAR MATEMATİK.webp",
     "stkkod": "KAM"
-  },
-  {
-    "path": "/uploads/ERKEN OKURYAZARLIK KITABI.webp",
-    "stkkod": "OSE"
-  },
-  {
-    "path": "/uploads/1.SN SET 2.DÖNEM SETİ 4 LÜ.webp",
-    "stkkod": "1S4"
   },
   {
     "path": "/uploads/1.SNF SERBEST ETKİNLİK KİTABIM.webp",
@@ -360,10 +332,7 @@
     "path": "/uploads/1H2-YAĞMUR İLE YAPRAK HİKAYE SETİ.webp",
     "stkkod": "1H2"
   },
-  {
-    "path": "/uploads/1H3-ARKADAŞIM İLE BULUT HİKAYE SETİ.webp",
-    "stkkod": "1H3"
-  },
+
   {
     "path": "/uploads/1ÖD-1.SINIF ÖYKÜ DÜNYAM 50 KİTAP.webp",
     "stkkod": "1ÖD"
@@ -464,14 +433,7 @@
     "path": "/uploads/TÖ4Y-4.SINIF TÜRKÇEMİZİ ÖĞRENİYORUZ.webp",
     "stkkod": "TÖ4Y"
   },
-  {
-    "path": "/uploads/YAPB-YAĞMUR İLE YAPRAK HİKAYE SETİ.webp",
-    "stkkod": "YAPB"
-  },
-  {
-    "path": "/uploads/YAĞB-YAĞMUR İLE YAPRAK HİKAYE SETİ.webp",
-    "stkkod": "YAĞB"
-  },
+
   {
     "path": "/uploads/PDH4-PRATİK DİL HAZİNEM 4.SINIF.webp",
     "stkkod": "PDH4"
@@ -484,10 +446,7 @@
     "path": "/uploads/PDH2-PRATİK DİL HAZİNEM 2.SINIF.webp",
     "stkkod": "PDH2"
   },
-  {
-    "path": "/uploads/1AS-ARKADAŞIM İLE BULUT HİKAYE SETİ.webp",
-    "stkkod": "1AS"
-  },
+
   {
     "path": "/uploads/MAY4-4 SNF MAY'DAN HİKAYELER.webp",
     "stkkod": "MAY4"

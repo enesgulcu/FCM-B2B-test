@@ -3,7 +3,6 @@ import { FaTimes } from "react-icons/fa";
 
 function OrderEditModal({ isOpen, setIsOpen, order }) {
   if (!isOpen) return null;
-  // console.log(order, "ORDER");
   return (
     <div className="fixed flex justify-center items-center top-0 left-0 w-full h-full bg-black bg-opacity-60">
       <div className="bg-white md:w-[40%] w-[90%] rounded-md p-7">

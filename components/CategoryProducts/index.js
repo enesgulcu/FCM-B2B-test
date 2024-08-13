@@ -405,7 +405,9 @@ function CategoryProducts({ showSearchAndCart = false }) {
                     className={`text-left md:pt-[15px] min-h-12 md:min-h-20 `}
                   >
                     <Link
-                      onClick={() => changeProductDetail(urun.STKKOD)}
+                      onClick={() =>
+                        changeProductDetail(urun.STKKOD, urun.STKOZKOD1)
+                      }
                       href={`/products/productDetail`}
                       className="font-bold text-[14px] md:text-[16px] text-CustomGray leading-tight"
                     >

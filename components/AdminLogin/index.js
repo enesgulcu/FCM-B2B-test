@@ -38,18 +38,15 @@ const AdminLogin = ({ pageRole }) => {
 
       if (!res) {
         // toast.error('Bir hata oluştu. Lütfen tekrar deneyiniz.');
-
         // setIsloading(false);
       } else if (!res.ok) {
         // toast.error(res.error);
-        console.log(res.error);
         // setIsloading(false);
       } else {
         // BİR PROBLEM YOKSA GİRİŞ BAŞARILI BİLGİSİ VERİRİZ.
         // setIsAccessing(true);
         // setIsloading(false);
         // toast.success('Giriş Başarılı (Yönlendiriliyorsunuz...)');
-
 
         const timeOut = setInterval(() => {
           router.push("/");

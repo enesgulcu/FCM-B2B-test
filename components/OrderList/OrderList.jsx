@@ -29,11 +29,8 @@ const OrderList = () => {
     const fetch = async () => {
       try {
         const data = await getAPI("/allorders");
-        console.log(data);
         setProducts(data);
-      } catch (err) {
-        console.log(err);
-      }
+      } catch (err) {}
     };
     fetch();
   }, []);
@@ -147,7 +144,7 @@ const OrderList = () => {
         return 0;
       }
     });
-    setProducts(sortedProducts)
+    setProducts(sortedProducts);
   };
 
   const handleClearFilters = () => {

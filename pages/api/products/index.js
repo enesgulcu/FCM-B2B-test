@@ -11,8 +11,6 @@ const handler = async (req, res) => {
 
       const combinedData = [...dataA, ...data2];
 
-      // console.log("Combined data: ", combinedData);
-
       return res
         .status(200)
         .json({ message: "Method GET", data: combinedData });

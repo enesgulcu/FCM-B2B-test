@@ -71,16 +71,33 @@ function ProdcutDetail({ product, img }) {
   const isInCart = (product) => {
     return cart.some((item) => item.STKKOD === product.STKKOD);
   };
+
+  const isProductInPress = product.STKOZKOD1 === "2";
+  const isProductOnSale = product.STKOZKOD1 === "A";
   // fiyat etiketi
   function PriceTag() {
+    const originalPrice = parseFloat(product.STKOZKOD5);
+    const discountedPrice = originalPrice;
+    const inflatedPrice = (originalPrice * 2.5).toFixed(2);
+
     return (
       <div>
-        <div className="flex relative justify-between  bg-LightBlue/75 text-white min-w-40 w-1/3 my-4  h-10 p-1 px-2">
-          <span className="font-medium text-lg">
-            Fiyat: ₺{product.STKOZKOD5}
-          </span>
+        <div className="flex relative justify-between bg-LightBlue/75 text-white min-w-40 w-[200px] my-4 h-10 p-1 pr-8">
+          {isProductOnSale ? (
+            <>
+              <span className="font-medium mr-2 text-lg line-through">
+                ₺{inflatedPrice}
+              </span>
+              <span className="font-medium text-lg">₺{discountedPrice}</span>
+            </>
+          ) : (
+            <span className="font-medium text-lg">₺{originalPrice}</span>
+          )}
           <span className="h-7 w-7 absolute top-1 right-[-14px] rotate-45 bg-gray-50"></span>
         </div>
+        {isProductOnSale && (
+          <div className="text-CustomRed font-bold">%60 İndirim</div>
+        )}
       </div>
     );
   }
@@ -128,6 +145,18 @@ function ProdcutDetail({ product, img }) {
               <div className="flex flex-col justify-center col-span-2 md:ml-5  pt-5">
                 <div className="font-bold text-3xl md:mt-0 mt-6 pb-3 px-3">
                   {product.STKCINSI}
+                </div>
+                <div className="px-3 mb-2">
+                  {isProductInPress && (
+                    <span className="bg-yellow-500 text-white px-2 py-1 rounded-full text-xs font-semibold">
+                      BASKIDA
+                    </span>
+                  )}
+                  {isProductOnSale && (
+                    <span className="bg-green-500 text-white px-2 py-1 rounded-full text-xs font-semibold">
+                      SATIŞA HAZIR
+                    </span>
+                  )}
                 </div>
                 <div className="flex flex-col   mt-5 px-3">
                   <div className="flex space-x-2">
@@ -216,9 +245,15 @@ function ProdcutDetail({ product, img }) {
                             )}
                             <button
                               type="submit"
-                              className="flex flex-row items-center justify-center gap-2 ml-2 sm:ml-4 lg:ml-2 text-white font-bold hover:scale-105 transition-all transform easy-in-out duration-500 cursor-pointer bg-LightBlue/75 pl-2 pr-9 py-2 rounded-full relative w-[130px] sm:w-[160px] h-[40px] text-[13px] sm:text-[15px]"
+                              className={`flex flex-row items-center justify-center gap-2 ml-2 sm:ml-4 lg:ml-2 text-white font-bold hover:scale-105 transition-all transform easy-in-out duration-500 cursor-pointer ${
+                                isProductInPress
+                                  ? "bg-gray-400"
+                                  : "bg-LightBlue/75"
+                              } pl-2 pr-9 py-2 rounded-full relative w-[130px] sm:w-[160px] h-[40px] text-[13px] sm:text-[15px]`}
                               onClick={handleSubmit}
-                              disabled={product.addingToCart}
+                              disabled={
+                                isProductInPress || product.addingToCart
+                              }
                             >
                               {product.addingToCart ? (
                                 <div className="flex flex-row items-center justify-center gap-1">
@@ -226,11 +261,17 @@ function ProdcutDetail({ product, img }) {
                                   <div className="h-2 w-2 rounded-full animate-pulse bg-blue-900"></div>
                                   <div className="h-2 w-2 rounded-full animate-pulse bg-blue-900"></div>
                                 </div>
+                              ) : isProductInPress ? (
+                                <>Baskıda</>
                               ) : (
                                 <>Sepete Ekle</>
                               )}
                               <span
-                                className={`absolute -top-1 -right-2 text-white bg-gradient-to-r from-sky-600 to-cyan-700 p-3 border-4 border-white rounded-full transition-all duration-500 ease-out transform`}
+                                className={`absolute -top-1 -right-2 text-white bg-gradient-to-r ${
+                                  isProductInPress
+                                    ? "from-gray-500 to-gray-600"
+                                    : "from-sky-600 to-cyan-700"
+                                } p-3 border-4 border-white rounded-full transition-all duration-500 ease-out transform`}
                               >
                                 {isInCart(product) ? (
                                   <FaCheck

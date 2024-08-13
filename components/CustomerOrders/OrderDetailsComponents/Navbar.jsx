@@ -2,7 +2,7 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 export default function Navbar({ orderNo }) {
   const { data: session } = useSession();
-  console.log("GIRIS BILGILERI", session);
+
   return (
     <>
       <div className="flex justify-between items-center bg-gray-50 p-3 md:mx-8 xl:mx-32">

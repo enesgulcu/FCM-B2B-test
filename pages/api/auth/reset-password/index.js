@@ -34,7 +34,6 @@ export default async function handler(req, res) {
     try {
       // Yeni şifre oluştur
       newPassword = await PasswordGenerator(email);
-      console.log("Yeni sifre:", newPassword);
 
       // Yeni şifreyi şifrele
       encryptedPassword = await EncryptPassword(newPassword);

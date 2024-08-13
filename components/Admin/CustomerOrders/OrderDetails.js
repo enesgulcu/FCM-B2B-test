@@ -20,9 +20,7 @@ function OrderDetails() {
           (order) => order.ORDERNO === orderno
         );
         setOrderDetails(filteredOrders);
-      } catch (err) {
-        console.log(err);
-      }
+      } catch (err) {}
     };
     fetchOrderDetails();
   }, [orderno]);

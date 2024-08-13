@@ -91,90 +91,85 @@ const CustomerOrdersListTable = ({ orders, products }) => {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200 ">
-            {orders.map(
-              (order, index) => (
-                console.log(order),
-                (
-                  <tr
-                    key={order.ID}
-                    className={`${
-                      index % 2 === 1 ? "bg-white" : "bg-gray-50"
-                    } text-center`}
+            {orders.map((order, index) => (
+              <tr
+                key={order.ID}
+                className={`${
+                  index % 2 === 1 ? "bg-white" : "bg-gray-50"
+                } text-center`}
+              >
+                <td className="px-6 py-4 whitespace-nowrap hover:scale-105 transition-all ">
+                  <Link
+                    href={{
+                      pathname: `/customer-orders/${order.ID}`,
+                      query: {
+                        orderno: order.ORDERNO,
+                      },
+                    }}
                   >
-                    <td className="px-6 py-4 whitespace-nowrap hover:scale-105 transition-all ">
-                      <Link
-                        href={{
-                          pathname: `/customer-orders/${order.ID}`,
-                          query: {
-                            orderno: order.ORDERNO,
-                          },
-                        }}
-                      >
-                        <div className="bg-gray-100 p-2 rounded">
-                          <div>{order.ORDERNO}</div>
-                          <div className="text-LightBlue font-bold">
-                            {order.STKNAME}
-                          </div>
-                        </div>
-                      </Link>
-                    </td>
-
-                    <td className="px-6 py-4 whitespace-nowrap ">
-                      <div className="flex flex-col justify-center items-center">
-                        <div>
-                          {order.ORDERGUN}.{order.ORDERAY}.{order.ORDERYIL}
-                        </div>
-                        <div className="bg-gray-200 rounded px-2">
-                          {order.ORDERSAAT && order.ORDERSAAT.substring(0, 5)}
-                        </div>
+                    <div className="bg-gray-100 p-2 rounded">
+                      <div>{order.ORDERNO}</div>
+                      <div className="text-LightBlue font-bold">
+                        {order.STKNAME}
                       </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div
-                        className={`inline-block rounded-sm px-2 py-1  ${
-                          statusColors[order.ORDERSTATUS]
-                        }`}
-                      >
-                        {order.ORDERSTATUS}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {new Intl.NumberFormat("tr-TR", {
-                        style: "decimal",
-                      }).format(order.STKADET)}{" "}
-                      Adet
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {new Intl.NumberFormat("tr-TR", {
-                        style: "decimal",
-                      }).format(order.STKBIRIMFIYATTOPLAM)}
-                      ₺
-                    </td>
-                    <td className="px-6 py-4 flex justify-center whitespace-nowrap flex-col  gap-2 ">
-                      <button
-                        className="bg-NavyBlue/75 p-2 rounded-md hover:bg-NavyBlue text-white flex items-center w-36 justify-center"
-                        onClick={() => handleOpenRequestModal(order)}
-                      >
-                        <HiOutlineDocumentAdd /> <span>Talep oluştur</span>
-                      </button>
+                    </div>
+                  </Link>
+                </td>
 
-                      <Link
-                        href={{
-                          pathname: `/customer-orders/${order.ID}`,
-                          query: {
-                            orderno: order.ORDERNO,
-                          },
-                        }}
-                      >
-                        <button className="bg-gray-300 p-2 rounded-md hover:bg-gray-400 flex items-center w-36">
-                          <FaEye /> <span>Sipariş İncele</span>
-                        </button>
-                      </Link>
-                    </td>
-                  </tr>
-                )
-              )
-            )}
+                <td className="px-6 py-4 whitespace-nowrap ">
+                  <div className="flex flex-col justify-center items-center">
+                    <div>
+                      {order.ORDERGUN}.{order.ORDERAY}.{order.ORDERYIL}
+                    </div>
+                    <div className="bg-gray-200 rounded px-2">
+                      {order.ORDERSAAT && order.ORDERSAAT.substring(0, 5)}
+                    </div>
+                  </div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div
+                    className={`inline-block rounded-sm px-2 py-1  ${
+                      statusColors[order.ORDERSTATUS]
+                    }`}
+                  >
+                    {order.ORDERSTATUS}
+                  </div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  {new Intl.NumberFormat("tr-TR", {
+                    style: "decimal",
+                  }).format(order.STKADET)}{" "}
+                  Adet
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  {new Intl.NumberFormat("tr-TR", {
+                    style: "decimal",
+                  }).format(order.STKBIRIMFIYATTOPLAM)}
+                  ₺
+                </td>
+                <td className="px-6 py-4 flex justify-center whitespace-nowrap flex-col  gap-2 ">
+                  <button
+                    className="bg-NavyBlue/75 p-2 rounded-md hover:bg-NavyBlue text-white flex items-center w-36 justify-center"
+                    onClick={() => handleOpenRequestModal(order)}
+                  >
+                    <HiOutlineDocumentAdd /> <span>Talep oluştur</span>
+                  </button>
+
+                  <Link
+                    href={{
+                      pathname: `/customer-orders/${order.ID}`,
+                      query: {
+                        orderno: order.ORDERNO,
+                      },
+                    }}
+                  >
+                    <button className="bg-gray-300 p-2 rounded-md hover:bg-gray-400 flex items-center w-36">
+                      <FaEye /> <span>Sipariş İncele</span>
+                    </button>
+                  </Link>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>

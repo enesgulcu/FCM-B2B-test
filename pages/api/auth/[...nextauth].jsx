@@ -1,5 +1,7 @@
 import NextAuth from "next-auth";
-import CredentialsProvider, {  CredentialsConfig,} from "next-auth/providers/credentials";
+import CredentialsProvider, {
+  CredentialsConfig,
+} from "next-auth/providers/credentials";
 import { postAPI } from "@/services/fetchAPI";
 
 let loginPageRoute = "partner";
@@ -30,14 +32,11 @@ export const authOptions = {
           loginPageRoute = data.findUser.CARYETKILI;
         }
 
-        // console.log("########## DATA: ", data);
-
         if (!data || data.error || data == null) {
           throw new Error(
             data.error || "Bir hata oluştu. Lütfen tekrar deneyiniz."
           );
         }
-        console.log("##### LOGIN DATA: ", data);
         // Kullanıcı bilgilerini döndürüyoruz.
 
         if (data?.isNewPassword) {

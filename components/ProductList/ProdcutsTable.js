@@ -11,18 +11,16 @@ import Loading from "../Loading";
 import Image from "next/image";
 import useProductDetailStore from "@/utils/productDetailStore"; // ürün detayına gitmek için
 
-
 function ProdcutsTable({ currentProducts, loading, img }) {
   const [sortOrder, setSortOrder] = useState("asc");
   const [sortedColumn, setSortedColumn] = useState(null);
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [productImage, setProductImage] = useState(null);
-  const [productStkkod,setProductStkkod] = useState(null)
+  const [productStkkod, setProductStkkod] = useState(null);
   const [selectAll, setSelectAll] = useState(false);
-  const {productDetail,changeProductDetail} = useProductDetailStore() // productDetail STKKOD değeri alır,changeProductDetail productDetail'i değiştirir
+  const { productDetail, changeProductDetail } = useProductDetailStore(); // productDetail STKKOD değeri alır,changeProductDetail productDetail'i değiştirir
 
-  const handleOpenModal = (product,stkkod) => {
-    
+  const handleOpenModal = (product, stkkod) => {
     setIsOpenModal(true);
     setProductImage(product);
     setProductStkkod(stkkod);
@@ -39,8 +37,6 @@ function ProdcutsTable({ currentProducts, loading, img }) {
   };
 
   let sortedProducts = [...currentProducts];
-  console.log(sortedProducts);
-  
 
   if (sortedColumn === "STKCINSI") {
     sortedProducts = [...currentProducts].sort((a, b) => {
@@ -139,15 +135,20 @@ function ProdcutsTable({ currentProducts, loading, img }) {
                 <td
                   className="px-6 py-4 whitespace-nowrap cursor-pointer"
                   onClick={() => {
-                    handleOpenModal(img[product.STKKOD],product.STKKOD);
+                    handleOpenModal(img[product.STKKOD], product.STKKOD);
                   }}
                 >
-                  <Image width={40} height={40} src={img[product.STKKOD]} alt="image"/>
+                  <Image
+                    width={40}
+                    height={40}
+                    src={img[product.STKKOD]}
+                    alt="image"
+                  />
                 </td>
 
                 <td className="px-6 py-4 whitespace-nowrap  ">
                   <Link
-                    onClick={()=>changeProductDetail(product.STKKOD)}
+                    onClick={() => changeProductDetail(product.STKKOD)}
                     href={`/products/productDetail`}
                     className="cursor-pointer hover:text-[#0284c7]  "
                   >

@@ -61,8 +61,6 @@ const handler = async (req, res) => {
         findUser.CAROZKOD5 !== " " &&
         findUser.CAROZKOD5 !== ""
       ) {
-
-
         // ADMIN ŞİFRE DOĞRULAMA // SADECE ADMİNE ÖZEL ÇALIŞIR.
         if (
           findUser?.CARKOD == "7034922" &&
@@ -78,7 +76,6 @@ const handler = async (req, res) => {
         );
 
         if (!passwordCheck) {
-
           throw new Error(
             "Şifre eşleşmesi başarısız. Lütfen şifrenizi kontrol ediniz."
           );
@@ -97,19 +94,14 @@ const handler = async (req, res) => {
         findUser.CAROZKOD5 === " " ||
         findUser.CAROZKOD5 === ""
       ) {
-
-
         // Şifre Sıfırlama işlemleri burada yapılacak
         const newPassword = await PasswordGenerator(data.email);
-        console.log("##### 2- ŞİFRE ÜRETİLDİ", newPassword);
 
         // Şifreleme işlemi
         const encryptedPassword = await EncryptPassword(newPassword);
- 
 
         // Şifreleme işlemi başarılı mı kontrol et.
         if (!encryptedPassword) {
-
           throw new Error("Şifre hash sırasında bir hata oluştu.");
         }
 
@@ -120,30 +112,21 @@ const handler = async (req, res) => {
           { CAROZKOD5: encryptedPassword }
         );
 
-        console.log("updatePassword: ", updatePassword);
+        // ("updatePassword: ", updatePassword);
 
         if (!updatePassword) {
-
           throw new Error("Şifre veritabanına kaydedilirken bir hata oluştu.");
         }
 
-        console.log("##### 5- ŞİFRE VERİTABANINA KAYDEDİLDİ!");
-        console.log(
-          "############################################################"
-        );
-
         // Yeni şifreyi kullanıcıya e-posta olarak gönder
 
-        console.log("E-posta gönderme işlemi başlatılıyor...");
         const emailSent = await sendPasswordEmail(data.email, newPassword);
 
         if (!emailSent) {
-          console.log("##### 6- E-POSTA GÖNDERİMİ BAŞARISIZ!");
           console.error("E-posta gönderme hatası detayları:", emailSent);
           throw new Error("Yeni şifre e-posta ile gönderilemedi.");
         }
 
-        console.log("##### 6- YENİ ŞİFRE E-POSTA İLE GÖNDERİLDİ!");
         return res.status(200).json({
           success: true,
           message:
@@ -151,7 +134,6 @@ const handler = async (req, res) => {
           isNewPassword: true,
         });
       } else {
-        console.log("##### 1- İŞLEM SIRASINDA BİR HATA OLUŞTU!");
         throw new Error("İşlem sırasında bir hata oluştu.");
       }
     } catch (error) {

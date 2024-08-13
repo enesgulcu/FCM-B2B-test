@@ -18,11 +18,7 @@ async function sendPasswordEmail(email, password) {
   };
 
   try {
-    console.log("E-posta gönderme işlemi başlatılıyor...");
-    console.log("Gönderen:", process.env.EMAIL_USER);
-    console.log("Alıcı:", email);
     let info = await transporter.sendMail(mailOptions);
-    console.log("E-posta gönderildi: %s", info.messageId);
     return true;
   } catch (error) {
     console.error("E-posta gönderme hatası:");

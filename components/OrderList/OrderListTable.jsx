@@ -23,7 +23,6 @@ const OrderListTable = ({ orders, setSelectedOrders, selectedOrders }) => {
 
   const handleDelete = (order) => {
     // Implement delete functionality here
-    // console.log("Order deleted:", order);
   };
 
   // Status colors
