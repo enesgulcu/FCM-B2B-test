@@ -450,23 +450,25 @@ const createSTKHAR = async (orderItem, lastSTKFISREFNO, siraNo) => {
   }
 };
 
-const getLastIRSHAR = async () => {
-  const lastIRSHAR = await getDataByUnique(
-    'IRSHAR',
-    {},
-    { IRSHARREFNO: 'desc' }
-  );
+// const getLastIRSHAR = async () => {
+//   const lastIRSHAR = await getDataByUnique(
+//     'IRSHAR',
+//     {},
+//     { IRSHARREFNO: 'desc' }
+//   );
 
-  // Varsayılan değer ile gelen değeri birleştiriyoruz
-  const reducedIRSHAR = {
-    IRSHARREFNO: 0,
-    ...lastIRSHAR, // Eğer lastIRSHAR boş değilse, onun değerleri bu objeyi overwrite eder
-  };
-  console.log(`### 12 ### `);
-  return reducedIRSHAR;
-};
+//   // Varsayılan değer ile gelen değeri birleştiriyoruz
+//   const reducedIRSHAR = {
+//     IRSHARREFNO: 0,
+//     ...lastIRSHAR, // Eğer lastIRSHAR boş değilse, onun değerleri bu objeyi overwrite eder
+//   };
+//   console.log(`### 12 ### `);
+//   return reducedIRSHAR;
+// };
 
 const createIRSHAR = async (orderItem, createdIRSFISREFNO, siraNo) => {
+  console.log("siraNo : ", siraNo);
+  console.log("type: ", typeof siraNo);
   const newIRSHARREFNO = createdIRSFISREFNO;
 
   const irsharEntry = {
@@ -579,6 +581,7 @@ const createIRSHAR = async (orderItem, createdIRSFISREFNO, siraNo) => {
 
   try {
     const newIrsharData = await createNewData('IRSHAR', irsharEntry);
+    console.log("newIrsharData : ", newIrsharData);
     console.log(`### 13 ### `);
     return newIRSHARREFNO;
   } catch (error) {
@@ -726,7 +729,10 @@ export default async function handler(req, res) {
       const { cartItems, totalPrice, userId, userName } = req.body;
 
       const { harRefDeger, cikisFisEvrNo, satisIrsaliyesiEvrNo } =  await getAndUpdateReferences();
-
+      console.log("harRefDeger : ", harRefDeger);
+      console.log("cikisFisEvrNo : ", cikisFisEvrNo);
+      console.log("satisIrsaliyesiEvrNo : ", satisIrsaliyesiEvrNo);
+      
       console.log('start 2');
       const orderItems = prepareOrderData(
         cartItems,
@@ -739,14 +745,14 @@ export default async function handler(req, res) {
       );
       console.log('start 3');
 
-      const [lastSTKFIS, lastIRSFIS, lastIRSHAR, lastSTKFISREFNO] =
+      const [lastSTKFIS, lastIRSFIS, /*lastIRSHAR,*/ lastSTKFISREFNO] =
         await Promise.all([
           getLastSTKFIS(),
           getLastIRSFIS(),
-          getLastIRSHAR(),
+          //getLastIRSHAR(),
           getStkFisRefNo(),
         ]);
-
+        
       console.log('start 4');
 
       // console.log("Sipariş oluşturma işlemi başlıyor");
@@ -774,9 +780,11 @@ export default async function handler(req, res) {
           EKXTRA9: null,
         };
 
-        const result = await createNewData('ALLORDERS', entry);
+        const responseCreateNewData = await createNewData('ALLORDERS', entry);
+        console.log("responseCreateNewData : ", responseCreateNewData);
         
-        await updateSTKKART(item.STKKOD, item.STKADET);
+        const responseUpdateSTKKART = await updateSTKKART(item.STKKOD, item.STKADET);
+        console.log("responseUpdateSTKKART : ", responseUpdateSTKKART);
       }
 
       console.log('start 6');
@@ -793,6 +801,7 @@ export default async function handler(req, res) {
         lastSTKFIS,
         lastSTKFISREFNO
       );
+      console.log("createdSTKFISREFNO : ", createdSTKFISREFNO);
       console.log('start 7-1');
       // IRSFIS oluştur
       const createdIRSFISREFNO = await createIRSFIS(
@@ -801,6 +810,7 @@ export default async function handler(req, res) {
         createdSTKFISREFNO,
         lastSTKFIS
       );
+      console.log("createdIRSFISREFNO : ", createdIRSFISREFNO);
 
       console.log('start 7-2');
 
@@ -814,21 +824,22 @@ export default async function handler(req, res) {
 
         const createdSTKHAR = await createSTKHAR(
           item,
-          createdSTKFISREFNO,
           lastSTKFISREFNO,
-          siraNo
+          siraNo,
+          //createdSTKFISREFNO,
         );
         createdSTKHARs.push(createdSTKHAR);
-        // console.log("STKHAR tablosuna yazma sonucu:", createdSTKHAR);
-
+        console.log("createdSTKHAR : ", createdSTKHAR);
+ 
+        
         const createdIRSHAR = await createIRSHAR(
           item,
           createdIRSFISREFNO,
-          lastIRSHAR,
-          siraNo
+          siraNo,
+          //lastIRSHAR          
         );
         createdIRSHARs.push(createdIRSHAR);
-        // console.log("IRSHAR tablosuna yazma sonucu:", createdIRSHAR);
+        console.log("createdIRSHAR : ", createdIRSHAR);
       }
 
       console.log('start 8');
@@ -836,6 +847,7 @@ export default async function handler(req, res) {
       // CARKART tablosundaki CARCIKIRSTOP değerini güncelle
       const userCARKART = await getDataByUnique('CARKART', { CARKOD: userId });
       // console.log("Mevcut CARKART verisi:", userCARKART);
+      console.log("userCARKART : ", userCARKART);
 
       if (
         userCARKART &&
@@ -849,11 +861,13 @@ export default async function handler(req, res) {
         // console.log("Yeni sipariş tutarı:", totalPrice);
         // console.log("Güncellenecek CARCIKIRSTOP:", newCARCIKIRSTOP);
 
-        await updateDataByAny(
+        const responseUpdateDataByAny = await updateDataByAny(
           'CARKART',
           { CARKOD: userId },
           { CARCIKIRSTOP: newCARCIKIRSTOP }
         );
+
+        console.log("responseUpdateDataByAny : ", responseUpdateDataByAny);
 
         // console.log("CARKART güncelleme sonucu:", {
         //   CARKOD: userId,
