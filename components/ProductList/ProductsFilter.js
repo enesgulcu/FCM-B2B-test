@@ -46,7 +46,7 @@ useEffect(() => {
       (value) =>
         Boolean(value) &&
         value.trim() !== "" &&
-        value.toLowerCase() !== "anasinifi" &&
+        value.toLowerCase() !== "okul öncesi" &&
         value.toLowerCase() !== "sözlük"
     );
   const uniqueSTKOZKOD3s = [...new Set(STKOZKOD3s)];

@@ -126,7 +126,7 @@ function CategoryProducts({ showSearchAndCart = false }) {
     "2.SINIF",
     "3.SINIF",
     "4.SINIF",
-    "ANASINIFI",
+    "OKUL ÖNCESİ",
     "İNGİLİZCE",
     "HİKAYE",
   ];
@@ -241,9 +241,9 @@ function CategoryProducts({ showSearchAndCart = false }) {
       (urun) => urun.STKOZKOD1 === "A" || urun.STKOZKOD1 === "2"
     );
 
-    // ANASINIFI ve İNGİLİZCE dışında bir sınıf seçildiyse
+    // OKUL ÖNCESİ ve İNGİLİZCE dışında bir sınıf seçildiyse
     if (
-      selectedClass !== "ANASINIFI" &&
+      selectedClass !== "OKUL ÖNCESİ" &&
       selectedClass !== "İNGİLİZCE" &&
       selectedClass !== "HİKAYE"
     ) {
@@ -289,7 +289,7 @@ function CategoryProducts({ showSearchAndCart = false }) {
                 }`}
               >
                 {classType}
-                {classType !== "ANASINIFI" &&
+                {classType !== "OKUL ÖNCESİ" &&
                   classType !== "İNGİLİZCE" &&
                   classType !== "HİKAYE" && (
                     <span
@@ -303,7 +303,7 @@ function CategoryProducts({ showSearchAndCart = false }) {
                   )}
               </button>
               {dropdownOpen[classType] &&
-                classType !== "ANASINIFI" &&
+                classType !== "OKUL ÖNCESİ" &&
                 classType !== "İNGİLİZCE" && (
                   <div className="absolute top-10 mt-2 w-36 rounded-2xl bg-white shadow-lg border border-gray-300 z-[1000]">
                     <div
