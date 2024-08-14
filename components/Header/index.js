@@ -15,6 +15,7 @@ const Header = () => {
 
   const { data: session } = useSession();
   const user = session?.user;
+  console.log(user);
 
   const [currentPath, setCurrentPath] = useState("");
 
@@ -41,6 +42,31 @@ const Header = () => {
                 {header.menus.map((menu, index) => {
                   // Menü, isLoginRule true ise ve kullanıcı giriş yapmışsa veya isLoginRule false ise gösterilir.
                   if ((menu.isLoginRule && user) || !menu.isLoginRule) {
+                    // Siparişler menüsü için özel kontrol
+                    if (menu.text === "Siparişlerim") {
+                      const isAdmin = user?.role === "Admin";
+                      const menuText = isAdmin ? "Siparişler" : "Siparişlerim";
+                      const menuHref = isAdmin
+                        ? "/customer-orders-admin"
+                        : menu.href;
+
+                      return (
+                        <li
+                          key={menu.id}
+                          className="relative mr-[25px] leading-[45px]"
+                          onMouseEnter={() => setHoveredMenu(index)}
+                          onMouseLeave={() => setHoveredMenu(null)}
+                        >
+                          <Link
+                            className="hover:text-HoverGray transition duration-300 ease-in-out transform"
+                            href={menuHref}
+                          >
+                            {menuText}
+                          </Link>
+                        </li>
+                      );
+                    }
+
                     return (
                       <li
                         key={menu.id}
@@ -89,7 +115,7 @@ const Header = () => {
 
               <div className="text-sm text-white flex flex-col">
                 <span className="whitespace-nowrap">
-                  {user.name.slice(0, 20)}...
+                  {user.name.slice(0, 25)}...
                 </span>
                 <span className="text-xs">({user.role})</span>
               </div>

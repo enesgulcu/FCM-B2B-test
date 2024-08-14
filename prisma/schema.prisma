@@ -332,8 +332,8 @@ model ALLORDERS {
   STKFISEVRAKNO1           String?
   STKFISEVRAKNO2           String?
   ORDERSTATUS              String?
-  EKXTRA2                  String?
-  EKXTRA3                  String?
+  TALEP                  String?
+  CEVAP                  String?
   EKXTRA4                  Int? 
   EKXTRA5                  Int?
   EKXTRA6                  Int?

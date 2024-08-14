@@ -161,6 +161,10 @@
     "stkkod": "NP4"
   },
   {
+    "path": "/uploads/3.SNF-NO-PROBLEM.webp",
+    "stkkod": "NP3"
+  },
+  {
     "path": "/uploads/OA4-4.SNF OKUYORUM ANLIYORUM.webp",
     "stkkod": "OA4"
   },
@@ -269,11 +273,19 @@
     "stkkod": "KAM"
   },
   {
+    "path": "/uploads/BİLGİ-PETEĞİ-okul-öncesi.webp",
+    "stkkod": "BP"
+  },
+  {
+    "path": "/uploads/ERKEN-OKURYAZARLIK-KITABI-okul-öncesi.webp",
+    "stkkod": "OSE"
+  },
+  {
     "path": "/uploads/1.SNF SERBEST ETKİNLİK KİTABIM.webp",
     "stkkod": "SEK1"
   },
   {
-    "path": "/uploads/2. dönem dörtl set.webp",
+    "path": "/uploads/1.SN SET 2.DÖNEM SETİ 4 LÜ.webp",
     "stkkod": "1S4"
   },
   {
@@ -303,6 +315,22 @@
   {
     "path": "/uploads/Bilgi Kovanı 4.webp",
     "stkkod": "4TK"
+  },
+  {
+    "path": "/uploads/1.SINIF ARKADAŞ SERİSİ HİKAYE.webp",
+    "stkkod": "1AS"
+  },
+  {
+    "path": "/uploads/YAPRAK-ÖYKÜ-DİZİSİ.webp",
+    "stkkod": "YAPB"
+  },
+  {
+    "path": "/uploads/2.SNF-YENİ-NESİL-SORU-BANKASI.webp",
+    "stkkod": "YNK2"
+  },
+  {
+    "path": "/uploads/2.SNF-NO-PROBLEM.webp",
+    "stkkod": "NP2"
   },
   {
     "path": "/uploads/KÜÇÜK ARILAR DİKKAT.webp",
