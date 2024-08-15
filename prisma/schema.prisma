@@ -334,7 +334,7 @@ model ALLORDERS {
   ORDERSTATUS              String?
   TALEP                    String?
   CEVAP                    String?
-  EKXTRA4                  Int? 
+  REFNO                    Int? 
   EKXTRA5                  Int?
   EKXTRA6                  Int?
   EKXTRA7                  Float?

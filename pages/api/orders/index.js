@@ -775,7 +775,7 @@ export default async function handler(req, res) {
           ORDERSTATUS: "Sipariş Oluşturuldu",
           TALEP: "",
           CEVAP: "",
-          EKXTRA4: null,
+          REFNO: null,
           EKXTRA5: null,
           EKXTRA6: null,
           EKXTRA7: null,

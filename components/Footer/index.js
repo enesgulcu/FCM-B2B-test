@@ -11,7 +11,7 @@ function Footer() {
   const { footerLogo } = useFooterStore();
   const currentUrl = usePathname()
   return (
-    <footer id="footer" className={`bg-CustomGray max-w-screen w-full p-4`}>
+    <footer id="footer" className={`bg-CustomGray max-w-screen w-full`}>
       <div className="container mx-auto px-4 md:py-10 py-5 text-gray-300 ">
         <div className={`flex flex-col md:flex-row  gap-10 md:justify-evenly justify-center items-center`}>
           {/* Logo */}
@@ -91,9 +91,7 @@ function Footer() {
           Bu panel yalnızca Çalışkan Arı ve anlaşmalı olduğu bayiler tarafından
           kullanılmaktadır.
         </div>
-        <p className="absolute right-2 p-2 inline-block opacity-10 text-sm">Created By <span className="font-bold">Enes Gülcü</span></p> 
       </div>
-      
     </footer>
   );
 }
