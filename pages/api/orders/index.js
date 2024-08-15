@@ -54,7 +54,7 @@ const prepareOrderData = (
     STKKOD: item.STKKOD,
     STKNAME: item.STKCINSI || null,
     STKCINSI: item.STKCINSI || null,
-    STKADET: item.quantity,
+    STKADET: parseInt(item.quantity),
     STKBIRIMFIYAT: parseFloat(item.STKOZKOD5) || 0,
     STKBIRIMFIYATTOPLAM: (parseFloat(item.STKOZKOD5) || 0) * item.quantity,
     CIKISFISEVRNO: cikisFisEvrNo,
@@ -79,6 +79,11 @@ const getAndUpdateReferences = async () => {
       getDataByUnique("EVRAKNO", { EVRACIKLAMA: "Satış İrsaliyeleri" }),
     ]);
 
+    //console.log('harrefModule6:', harrefModule6);
+    //console.log('harrefModule1:', harrefModule1);
+    //console.log('cikisFisEvrako:', cikisFisEvrako);
+    //console.log('satisIrsaliyesiEvrako:', satisIrsaliyesiEvrako);
+
     // Değerleri hesaplıyoruz
     const newHarRefDeger = harrefModule6 ? harrefModule6.HARREFDEGER + 1 : 1;
     const newHarRefDeger1 = harrefModule1 ? harrefModule1.HARREFDEGER + 1 : 1;
@@ -88,7 +93,7 @@ const getAndUpdateReferences = async () => {
       : 1;
 
     // Güncellemeleri paralel olarak yapıyoruz
-    await Promise.all([
+    const resultUpdateAll = await Promise.all([
       updateDataByAny(
         "HARREFNO",
         { HARREFMODUL: 6 },
@@ -110,6 +115,7 @@ const getAndUpdateReferences = async () => {
         { EVRNO: newSatisIrsaliyesiEvrNo }
       ),
     ]);
+    //console.log("resultUpdateAll", resultUpdateAll);
 
     return {
       harRefDeger: newHarRefDeger,
@@ -125,11 +131,14 @@ const getAndUpdateReferences = async () => {
 const updateSTKKART = async (STKKOD, quantity) => {
   try {
     const stkKart = await getDataByUnique("STKKART", { STKKOD: STKKOD });
+    //console.log("stkKart", stkKart);
+
+
     if (stkKart && typeof stkKart === "object" && !stkKart.error) {
       const currentSTKBAKIYE = parseFloat(stkKart.STKBAKIYE) || 0;
       const newSTKBAKIYE = Math.max(currentSTKBAKIYE - quantity, 0);
 
-      await updateDataByAny(
+      const updateSTKKART = await updateDataByAny(
         "STKKART",
         { STKKOD: STKKOD },
         {
@@ -137,6 +146,9 @@ const updateSTKKART = async (STKKOD, quantity) => {
           STKEKDATE1: now, // Sipariş oluşturulma tarihini ekliyoruz
         }
       );
+
+      //console.log("updateSTKKART", updateSTKKART);
+
     }
   } catch (error) {
     console.error(`STKKART güncellenirken hata oluştu (${STKKOD}):`, error);
@@ -152,6 +164,7 @@ const updateSTKMIZDEGERYEDEK = async (orderItems, currentDate) => {
     STKYIL: currentYear,
     STKAY: currentMonth,
   });
+  //console.log("latestSTKMIZDEGERYEDEK", latestSTKMIZDEGERYEDEK);
 
   for (const item of orderItems) {
     const { STKKOD, STKADET, STKBIRIMFIYATTOPLAM } = item;
@@ -183,23 +196,18 @@ const updateSTKMIZDEGERYEDEK = async (orderItems, currentDate) => {
             break;
         }
 
-        await updateDataByAny(
+        const updateSTKMIZDEGERYEDEK = await updateDataByAny(
           "STKMIZDEGERYEDEK",
           { STKKOD, STKRAKTIP, STKYIL: currentYear, STKAY: currentMonth },
-          { STKALACAK: newSTKALACAK }
+          { STKALACAK: parseInt(newSTKALACAK) }
         );
+
+        //console.log("updateSTKMIZDEGERYEDEK", updateSTKMIZDEGERYEDEK);
       } else {
         // Veri yoksa yeni kayıt oluştur
 
-        const newSTKALACAK =
-          STKRAKTIP === 1
-            ? STKADET
-            : STKRAKTIP === 6
-            ? STKBIRIMFIYATTOPLAM
-            : STKRAKTIP === 8
-            ? 1
-            : 0;
-
+        const newSTKALACAK =  STKRAKTIP === 1  ? STKADET : STKRAKTIP === 6  ? STKBIRIMFIYATTOPLAM  : STKRAKTIP === 8  ? 1  : 0;
+        parseInt(newSTKALACAK);
         const newRecord = {
           STKKOD,
           STKYIL: currentYear,
@@ -211,7 +219,8 @@ const updateSTKMIZDEGERYEDEK = async (orderItems, currentDate) => {
           STKDEPO: "",
         };
 
-        await createNewData("STKMIZDEGERYEDEK", newRecord);
+        const createNewData2 = await createNewData("STKMIZDEGERYEDEK", newRecord);
+        //console.log("createNewData2", createNewData2);
       }
     }
   }
@@ -223,6 +232,7 @@ const getLastSTKFIS = async () => {
     {},
     { STKFISREFNO: "desc" }
   );
+  //console.log("lastSTKFIS", lastSTKFIS);
 
   // Varsayılan değerler ile gelen değeri birleştiriyoruz
   const reducedSTKFIS = {
@@ -295,6 +305,7 @@ const createSTKFIS = async (orderData, lastSTKFIS, lastSTKFISREFNO) => {
   };
 
   const newSkfisData = await createNewData("STKFIS", stkfisEntry);
+  //console.log("newSkfisData", newSkfisData);
 
   // SIRKETLOG oluştur
   await createSIRKETLOG(newSTKFISREFNO, new Date());
@@ -338,6 +349,7 @@ const createSIRKETLOG = async (stkfisRefNo, orderDate) => {
   };
 
   const newSirketlogData = await createNewData("SIRKETLOG", sirketlogEntry);
+  //console.log("newSirketlogData", newSirketlogData);
 };
 
 const createSTKHAR = async (orderItem, lastSTKFISREFNO, siraNo) => {
@@ -445,6 +457,7 @@ const createSTKHAR = async (orderItem, lastSTKFISREFNO, siraNo) => {
 
   try {
     const newStkharData = await createNewData("STKHAR", stkharEntry);
+    //console.log("newStkharData", newStkharData);
 
     return newStkharData;
   } catch (error) {
@@ -581,6 +594,7 @@ const createIRSHAR = async (orderItem, createdIRSFISREFNO, siraNo) => {
 
   try {
     const newIrsharData = await createNewData("IRSHAR", irsharEntry);
+    //console.log("newIrsharData", newIrsharData);
 
     return newIRSHARREFNO;
   } catch (error) {
@@ -591,6 +605,8 @@ const createIRSHAR = async (orderItem, createdIRSFISREFNO, siraNo) => {
 
 const getLastIRSFIS = async () => {
   const allIRSFIS = await getAllData("IRSFIS");
+  //console.log("allIRSFIS", allIRSFIS);
+
   const reducedIRSFIS = allIRSFIS.reduce(
     (max, current) => (current.IRSFISREFNO > max.IRSFISREFNO ? current : max),
     { IRSFISREFNO: 0 }
@@ -714,6 +730,7 @@ const createIRSFIS = async (
   };
 
   const newIrsfisData = await createNewData("IRSFIS", irsfisEntry);
+  //console.log("newIrsfisData", newIrsfisData);
 
   return newIRSFISREFNO;
 };
@@ -756,8 +773,8 @@ export default async function handler(req, res) {
           STKFISEVRAKNO2: `WEB-${newWEBNumber.toString().padStart(6, "0")}`,
           ACIKLAMA: null,
           ORDERSTATUS: "Sipariş Oluşturuldu",
-          TALEP: null,
-          CEVAP: null,
+          TALEP: "",
+          CEVAP: "",
           EKXTRA4: null,
           EKXTRA5: null,
           EKXTRA6: null,
@@ -767,7 +784,7 @@ export default async function handler(req, res) {
         };
 
         const responseCreateNewData = await createNewData("ALLORDERS", entry);
-
+        //console.log("responseCreateNewData", responseCreateNewData);
         const responseUpdateSTKKART = await updateSTKKART(
           item.STKKOD,
           item.STKADET
@@ -818,6 +835,7 @@ export default async function handler(req, res) {
 
       // CARKART tablosundaki CARCIKIRSTOP değerini güncelle
       const userCARKART = await getDataByUnique("CARKART", { CARKOD: userId });
+      //console.log("userCARKART", userCARKART);
 
       if (
         userCARKART &&
@@ -832,6 +850,7 @@ export default async function handler(req, res) {
           { CARKOD: userId },
           { CARCIKIRSTOP: newCARCIKIRSTOP }
         );
+        //console.log("responseUpdateDataByAny", responseUpdateDataByAny);
       } else {
       }
 
@@ -852,6 +871,7 @@ export default async function handler(req, res) {
   } else if (req.method === "GET") {
     try {
       const allOrders = await getAllData("ALLORDERS");
+      //console.log("allOrders", allOrders);
       res.status(200).json({
         success: true,
         orders: allOrders,
