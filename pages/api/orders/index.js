@@ -744,13 +744,15 @@ const createIRSFIS = async (
 };
 
 export default async function handler(req, res) {
-  
   if (req.method === "POST") {
     try {
       const { cartItems, totalPrice, userId, userName } = req.body;
-      console.log("##### 1 ######");
-      const { harRefDeger, cikisFisEvrNo, satisIrsaliyesiEvrNo } = await getAndUpdateReferences();
-      console.log("##### 2 ######");
+
+      const {
+        harRefDeger,
+        cikisFisEvrNo,
+        satisIrsaliyesiEvrNo,
+      } = await getAndUpdateReferences();
 
       const orderItems = prepareOrderData(
         cartItems,
@@ -762,142 +764,73 @@ export default async function handler(req, res) {
         satisIrsaliyesiEvrNo
       );
 
-      console.log("##### 3 ######");
-
-      const [lastSTKFIS, lastIRSFIS, /*lastIRSHAR,*/ lastSTKFISREFNO] =
-        await Promise.all([
-          getLastSTKFIS(),
-          getLastIRSFIS(),
-          //getLastIRSHAR(),
-          getStkFisRefNo(),
-        ]);
-
-        console.log("##### 4 ######");
+      const [lastSTKFIS, lastIRSFIS, lastSTKFISREFNO] = await Promise.all([
+        getLastSTKFIS(),
+        getLastIRSFIS(),
+        getStkFisRefNo(),
+      ]);
 
       const newSFNumber = parseInt(lastSTKFIS.STKFISEVRAKNO1.split("-")[1]) + 1;
       const newWEBNumber = parseInt(lastSTKFIS.STKFISEVRAKNO2.split("-")[1]) + 1;
 
-      console.log("##### 5 ######");
-
-      const promises2 = orderItems.map(async (item) => {
+      const createOrderPromises = orderItems.map(async (item) => {
         const newIRSFISREFNO = lastIRSFIS.IRSFISREFNO + 1;
         const entry = {
           ...item,
           STKFISREFNO: lastSTKFISREFNO,
           STKFISEVRAKNO1: `SF-${newSFNumber.toString().padStart(6, "0")}`,
           STKFISEVRAKNO2: `WEB-${newWEBNumber.toString().padStart(6, "0")}`,
-          ACIKLAMA: null,
           ORDERSTATUS: "Sipariş Oluşturuldu",
-          TALEP: "",
-          CEVAP: "",
           REFNO: newIRSFISREFNO,
-          EKXTRA5: null,
-          EKXTRA6: null,
-          EKXTRA7: null,
-          EKXTRA8: null,
-          EKXTRA9: null,
         };
-      
-        console.log("##### 5.1 ######");
-      
-        const responseCreateNewData = await createNewData("ALLORDERS", entry);
-        // //console.log("responseCreateNewData", responseCreateNewData);
-        // const responseUpdateSTKKART = await updateSTKKART(
-        //   item.STKKOD,
-        //   item.STKADET
-        // );
-      
-        return responseCreateNewData;
+        return createNewData("ALLORDERS", entry);
       });
-      
-      await Promise.all(promises2);
-      
-      // Eğer responseUpdateSTKKART işlemlerini de paralel olarak yapmak isterseniz
-      // ikinci bir Promise.all yapısı kullanabilirsiniz.
-      
-      console.log("##### 6 ######");
 
-      // STKMIZDEGERYEDEK tablosunu güncelle
-      // await updateSTKMIZDEGERYEDEK(orderItems, now);
+      await Promise.all(createOrderPromises);
 
-      console.log("##### 7 ######");
+      const [createdSTKFISREFNO, createdIRSFISREFNO] = await Promise.all([
+        createSTKFIS(orderItems[0], lastSTKFIS, lastSTKFISREFNO),
+        createIRSFIS(orderItems[0], lastIRSFIS, lastSTKFISREFNO, lastSTKFIS),
+      ]);
 
-      // STKFIS ve SIRKETLOG oluştur
-      const createdSTKFISREFNO = await createSTKFIS(
-        orderItems[0],
-        lastSTKFIS,
-        lastSTKFISREFNO
-      );
-
-      console.log("##### 8 ######");
-
-      // IRSFIS oluştur
-      const createdIRSFISREFNO = await createIRSFIS(
-        orderItems[0],
-        lastIRSFIS,
-        createdSTKFISREFNO,
-        lastSTKFIS
-      );
-
-      console.log("##### 9 ######");
-
-      // STKHAR ve IRSHAR oluştur
-      const createdSTKHARs = [];
-      const createdIRSHARs = [];
-      let siraNo = 0;
-
-      console.log("##### 10 ######");
-
-      const promises = orderItems.map((item, index) => {
+      const createHarPromises = orderItems.map((item, index) => {
         const siraNo = index + 1;
-      
-        const createdSTKHARPromise = createSTKHAR(item, lastSTKFISREFNO, siraNo);
-        const createdIRSHARPromise = createIRSHAR(item, createdIRSFISREFNO, siraNo);
-      
-        return Promise.all([createdSTKHARPromise, createdIRSHARPromise]);
+        return Promise.all([
+          createSTKHAR(item, lastSTKFISREFNO, siraNo),
+          createIRSHAR(item, createdIRSFISREFNO, siraNo),
+        ]);
       });
-      
-      const results = await Promise.all(promises);
-      
-      results.forEach(([createdSTKHAR, createdIRSHAR]) => {
-        createdSTKHARs.push(createdSTKHAR);
-        createdIRSHARs.push(createdIRSHAR);
-      });
-      
 
-      console.log("##### 11 ######");
+      const results = await Promise.all(createHarPromises);
 
-      // CARKART tablosundaki CARCIKIRSTOP değerini güncelle
+      const [createdSTKHARs, createdIRSHARs] = results.reduce(
+        (acc, [createdSTKHAR, createdIRSHAR]) => {
+          acc[0].push(createdSTKHAR);
+          acc[1].push(createdIRSHAR);
+          return acc;
+        },
+        [[], []]
+      );
+
       const userCARKART = await getDataByUnique("CARKART", { CARKOD: userId });
-      // //console.log("userCARKART", userCARKART);
 
-      console.log("##### 12 ######");
-
-      if (
-        userCARKART &&
-        typeof userCARKART === "object" &&
-        !userCARKART.error
-      ) {
+      if (userCARKART && typeof userCARKART === "object" && !userCARKART.error) {
         const currentCARCIKIRSTOP = parseFloat(userCARKART.CARCIKIRSTOP) || 0;
         const newCARCIKIRSTOP = currentCARCIKIRSTOP + totalPrice;
 
-        const responseUpdateDataByAny = await updateDataByAny(
+        await updateDataByAny(
           "CARKART",
           { CARKOD: userId },
           { CARCIKIRSTOP: newCARCIKIRSTOP }
         );
-        //console.log("responseUpdateDataByAny", responseUpdateDataByAny);
-      } 
-
-      console.log("##### 13 ######");
+      }
 
       return res.status(200).json({
         success: true,
         message: "Order items created successfully",
-        createdSTKFISREFNO: createdSTKFISREFNO,
-        createdIRSFISREFNO: createdIRSFISREFNO,
+        createdSTKFISREFNO,
+        createdIRSFISREFNO,
       });
-
     } catch (error) {
       console.error("Order creation error:", error);
       res.status(500).json({
@@ -909,7 +842,6 @@ export default async function handler(req, res) {
   } else if (req.method === "GET") {
     try {
       const allOrders = await getAllData("ALLORDERS");
-      //console.log("allOrders", allOrders);
       res.status(200).json({
         success: true,
         orders: allOrders,
@@ -927,3 +859,4 @@ export default async function handler(req, res) {
     res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 }
+
