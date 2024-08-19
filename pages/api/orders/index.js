@@ -79,10 +79,10 @@ const getAndUpdateReferences = async () => {
       getDataByUnique("EVRAKNO", { EVRACIKLAMA: "Satış İrsaliyeleri" }),
     ]);
 
-    console.log('harrefModule6:', harrefModule6);
-    console.log('harrefModule1:', harrefModule1);
-    console.log('cikisFisEvrako:', cikisFisEvrako);
-    console.log('satisIrsaliyesiEvrako:', satisIrsaliyesiEvrako);
+    // //console.log('harrefModule6:', harrefModule6);
+    // //console.log('harrefModule1:', harrefModule1);
+    // //console.log('cikisFisEvrako:', cikisFisEvrako);
+    // //console.log('satisIrsaliyesiEvrako:', satisIrsaliyesiEvrako);
 
     // Değerleri hesaplıyoruz
     const newHarRefDeger = harrefModule6 ? harrefModule6.HARREFDEGER + 1 : 1;
@@ -115,7 +115,7 @@ const getAndUpdateReferences = async () => {
         { EVRNO: newSatisIrsaliyesiEvrNo }
       ),
     ]);
-    console.log("resultUpdateAll", resultUpdateAll);
+    // //console.log("resultUpdateAll", resultUpdateAll);
 
     return {
       harRefDeger: newHarRefDeger,
@@ -131,7 +131,7 @@ const getAndUpdateReferences = async () => {
 const updateSTKKART = async (STKKOD, quantity) => {
   try {
     const stkKart = await getDataByUnique("STKKART", { STKKOD: STKKOD });
-    console.log("stkKart", stkKart);
+    // //console.log("stkKart", stkKart);
 
     if (stkKart && typeof stkKart === "object" && !stkKart.error) {
       const currentSTKBAKIYE = parseFloat(stkKart.STKBAKIYE) || 0;
@@ -146,7 +146,7 @@ const updateSTKKART = async (STKKOD, quantity) => {
         }
       );
 
-      console.log("updateSTKKART", updateSTKKART);
+      // //console.log("updateSTKKART", updateSTKKART);
     }
   } catch (error) {
     console.error(`STKKART güncellenirken hata oluştu (${STKKOD}):`, error);
@@ -162,7 +162,7 @@ const updateSTKMIZDEGERYEDEK = async (orderItems, currentDate) => {
     STKYIL: currentYear,
     STKAY: currentMonth,
   });
-  console.log("latestSTKMIZDEGERYEDEK", latestSTKMIZDEGERYEDEK);
+  // //console.log("latestSTKMIZDEGERYEDEK", latestSTKMIZDEGERYEDEK);
 
   for (const item of orderItems) {
     const { STKKOD, STKADET, STKBIRIMFIYATTOPLAM } = item;
@@ -200,7 +200,7 @@ const updateSTKMIZDEGERYEDEK = async (orderItems, currentDate) => {
           { STKALACAK: parseInt(newSTKALACAK) }
         );
 
-        console.log("updateSTKMIZDEGERYEDEK", updateSTKMIZDEGERYEDEK);
+        // //console.log("updateSTKMIZDEGERYEDEK", updateSTKMIZDEGERYEDEK);
       } else {
         // Veri yoksa yeni kayıt oluştur
 
@@ -228,7 +228,7 @@ const updateSTKMIZDEGERYEDEK = async (orderItems, currentDate) => {
           "STKMIZDEGERYEDEK",
           newRecord
         );
-        console.log("createNewData2", createNewData2);
+        // //console.log("createNewData2", createNewData2);
       }
     }
   }
@@ -240,7 +240,7 @@ const getLastSTKFIS = async () => {
     {},
     { STKFISREFNO: "desc" }
   );
-  console.log("lastSTKFIS", lastSTKFIS);
+  //console.log("lastSTKFIS", lastSTKFIS);
 
   // Varsayılan değerler ile gelen değeri birleştiriyoruz
   const reducedSTKFIS = {
@@ -313,7 +313,7 @@ const createSTKFIS = async (orderData, lastSTKFIS, lastSTKFISREFNO) => {
   };
 
   const newSkfisData = await createNewData("STKFIS", stkfisEntry);
-  console.log("newSkfisData", newSkfisData);
+  // //console.log("newSkfisData", newSkfisData);
 
   // SIRKETLOG oluştur
   await createSIRKETLOG(newSTKFISREFNO, new Date());
@@ -357,7 +357,7 @@ const createSIRKETLOG = async (stkfisRefNo, orderDate) => {
   };
 
   const newSirketlogData = await createNewData("SIRKETLOG", sirketlogEntry);
-  console.log("newSirketlogData", newSirketlogData);
+  // //console.log("newSirketlogData", newSirketlogData);
 };
 
 const createSTKHAR = async (orderItem, lastSTKFISREFNO, siraNo) => {
@@ -465,7 +465,7 @@ const createSTKHAR = async (orderItem, lastSTKFISREFNO, siraNo) => {
 
   try {
     const newStkharData = await createNewData("STKHAR", stkharEntry);
-    console.log("newStkharData", newStkharData);
+     console.log("newStkharData", newStkharData);
 
     return newStkharData;
   } catch (error) {
@@ -613,7 +613,7 @@ const createIRSHAR = async (orderItem, createdIRSFISREFNO, siraNo) => {
 
 const getLastIRSFIS = async () => {
   const allIRSFIS = await getAllData("IRSFIS");
-  console.log("allIRSFIS", allIRSFIS);
+  //console.log("allIRSFIS", allIRSFIS);
 
   const reducedIRSFIS = allIRSFIS.reduce(
     (max, current) => (current.IRSFISREFNO > max.IRSFISREFNO ? current : max),
@@ -738,7 +738,7 @@ const createIRSFIS = async (
   };
 
   const newIrsfisData = await createNewData("IRSFIS", irsfisEntry);
-  console.log("newIrsfisData", newIrsfisData);
+  //console.log("newIrsfisData", newIrsfisData);
 
   return newIRSFISREFNO;
 };
@@ -793,7 +793,7 @@ export default async function handler(req, res) {
         };
 
         const responseCreateNewData = await createNewData("ALLORDERS", entry);
-        console.log("responseCreateNewData", responseCreateNewData);
+        // //console.log("responseCreateNewData", responseCreateNewData);
         const responseUpdateSTKKART = await updateSTKKART(
           item.STKKOD,
           item.STKADET
@@ -844,7 +844,7 @@ export default async function handler(req, res) {
 
       // CARKART tablosundaki CARCIKIRSTOP değerini güncelle
       const userCARKART = await getDataByUnique("CARKART", { CARKOD: userId });
-      console.log("userCARKART", userCARKART);
+      // //console.log("userCARKART", userCARKART);
 
       if (
         userCARKART &&
@@ -859,7 +859,7 @@ export default async function handler(req, res) {
           { CARKOD: userId },
           { CARCIKIRSTOP: newCARCIKIRSTOP }
         );
-        console.log("responseUpdateDataByAny", responseUpdateDataByAny);
+        //console.log("responseUpdateDataByAny", responseUpdateDataByAny);
       } else {
       }
 
@@ -880,7 +880,7 @@ export default async function handler(req, res) {
   } else if (req.method === "GET") {
     try {
       const allOrders = await getAllData("ALLORDERS");
-      console.log("allOrders", allOrders);
+      //console.log("allOrders", allOrders);
       res.status(200).json({
         success: true,
         orders: allOrders,
