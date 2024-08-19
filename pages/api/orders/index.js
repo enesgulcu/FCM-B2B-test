@@ -777,8 +777,9 @@ export default async function handler(req, res) {
 
       const newSFNumber = parseInt(lastSTKFIS.STKFISEVRAKNO1.split("-")[1]) + 1;
       const newWEBNumber = parseInt(lastSTKFIS.STKFISEVRAKNO2.split("-")[1]) + 1;
-
-      const promises2 = orderItems.map(async (item) => {
+      console.log("###### 5 ######");
+      
+      for (const item of orderItems) {
         const newIRSFISREFNO = lastIRSFIS.IRSFISREFNO + 1;
         const entry = {
           ...item,
@@ -796,22 +797,15 @@ export default async function handler(req, res) {
           EKXTRA8: null,
           EKXTRA9: null,
         };
-      
-        console.log("##### 5 ######");
-      
+
         const responseCreateNewData = await createNewData("ALLORDERS", entry);
         // //console.log("responseCreateNewData", responseCreateNewData);
         // const responseUpdateSTKKART = await updateSTKKART(
         //   item.STKKOD,
         //   item.STKADET
         // );
-      
-        return responseCreateNewData;
-      });
-
-      console.log("###### 6 ######");
-      
-      await Promise.all(promises2);
+        console.log("###### 6 ######");
+      }
 
       // STKMIZDEGERYEDEK tablosunu güncelle
       // await updateSTKMIZDEGERYEDEK(orderItems, now);
