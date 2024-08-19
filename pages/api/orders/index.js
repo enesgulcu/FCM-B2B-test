@@ -797,7 +797,7 @@ export default async function handler(req, res) {
           EKXTRA9: null,
         };
       
-        console.log("##### 5.1 ######");
+        console.log("##### 5 ######");
       
         const responseCreateNewData = await createNewData("ALLORDERS", entry);
         // //console.log("responseCreateNewData", responseCreateNewData);
@@ -808,6 +808,8 @@ export default async function handler(req, res) {
       
         return responseCreateNewData;
       });
+
+      console.log("###### 6 ######");
       
       await Promise.all(promises2);
 
@@ -836,28 +838,20 @@ export default async function handler(req, res) {
       console.log("###### 9 ######");
 
       // STKHAR ve IRSHAR oluştur
-      const createdSTKHARs = [];
-      const createdIRSHARs = [];
       let siraNo = 0;
       
       for (const item of orderItems) {
         siraNo++;
 
-        const createdSTKHAR = await createSTKHAR(
-          item,
-          lastSTKFISREFNO,
-          siraNo
-          //createdSTKFISREFNO,
-        );
-        createdSTKHARs.push(createdSTKHAR);
+        // const createdSTKHAR = await createSTKHAR(
+        //   item,
+        //   lastSTKFISREFNO,
+        //   siraNo
+        //   //createdSTKFISREFNO,
+        // );
 
-        const createdIRSHAR = await createIRSHAR(
-          item,
-          createdIRSFISREFNO,
-          siraNo
-          //lastIRSHAR
-        );
-        createdIRSHARs.push(createdIRSHAR);
+        await createIRSHAR( item, createdIRSFISREFNO, siraNo );
+
       }
 
       console.log("###### 10 ######");
