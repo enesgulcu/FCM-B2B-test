@@ -307,7 +307,7 @@ const ShoppingCart = () => {
                       </td>
                       <td className="px-5 py-3 hidden lg:table-cell">
                         <span className="flex items-center justify-center w-[70px]">
-                          {item.STKOZKOD5}₺
+                          ₺{item.STKOZKOD5}
                         </span>
                       </td>
                       <td className="px-5 py-3 hidden lg:table-cell">
@@ -317,18 +317,12 @@ const ShoppingCart = () => {
                       </td>
                       <td className="px-5 py-3 hidden lg:table-cell">
                         <p className="w-full flex items-center justify-center">
-                          {item.STKOZKOD5}₺
+                          ₺{item.STKOZKOD5}
                         </p>
                       </td>
                       <td className="px-5 py-3">
                         <p className="w-full flex items-center justify-center">
-                          {(
-                            parseFloat(item.STKOZKOD5) * item.quantity
-                          ).toLocaleString("tr-TR", {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          })}
-                          ₺
+                          ₺{parseFloat(item.STKOZKOD5) * item.quantity}
                         </p>
                       </td>
                       <td className="px-2 sm:px-5 py-3">
@@ -367,7 +361,7 @@ const ShoppingCart = () => {
                               >
                                 <AiOutlineMinus />
                               </button>
-                              <span className="w-6 sm:w-20 p-1 text-center outline-none">
+                              <span className="w-6 sm:w-12 p-1 text-center outline-none">
                                 {item.quantity}
                               </span>
                               <button

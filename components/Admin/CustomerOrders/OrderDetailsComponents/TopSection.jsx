@@ -6,7 +6,6 @@ export default function TopSection({
   totalQuantity,
   totalPrice,
   orderStatus,
-  orderRequest,
 }) {
   const statusColors = {
     Beklemede: "bg-[#e5e5e5] text-[#80808b]",
@@ -59,12 +58,6 @@ export default function TopSection({
               className={`rounded-lg px-8 py-3 md:px-16 md:py-4 ${statusColors[orderStatus]}`}
             >
               {orderStatus}
-            </span>
-          </div>
-          <div className="flex flex-col gap-2 justify-center items-center ml-2 mr-8 md:mr-36">
-            <span>Sipariş Mesajı</span>
-            <span className="rounded-lg px-8 py-3 md:px-16 md:py-4">
-              {orderRequest}
             </span>
           </div>
         </div>

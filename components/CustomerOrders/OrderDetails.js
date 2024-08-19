@@ -6,13 +6,11 @@ import TopSection from "./OrderDetailsComponents/TopSection";
 import ProductSummary from "./OrderDetailsComponents/ProductSummary";
 import { getAPI } from "@/services/fetchAPI";
 import Loading from "../Loading";
-import RequestInfo from "./RequestInfo";
 
 function OrderDetails() {
   const searchParams = useSearchParams();
   const orderno = searchParams.get("orderno");
   const [orderDetails, setOrderDetails] = useState([]);
-  const [requestInfo, setRequestInfo] = useState("");
 
   useEffect(() => {
     const fetchOrderDetails = async () => {
@@ -22,13 +20,7 @@ function OrderDetails() {
           (order) => order.ORDERNO === orderno
         );
         setOrderDetails(filteredOrders);
-        // Talep bilgisini al (ilk siparişin TALEP alanını kullanıyoruz)
-        if (filteredOrders.length > 0) {
-          setRequestInfo(filteredOrders[0].TALEP || "");
-        }
-      } catch (err) {
-        console.error("Sipariş detayları alınırken hata oluştu:", err);
-      }
+      } catch (err) {}
     };
     fetchOrderDetails();
   }, [orderno]);
@@ -56,10 +48,7 @@ function OrderDetails() {
           <div className="flex items-center mt-[3.15rem] justify-center text-[35px] md:text-[48px] text-CustomGray leading-[41px] font-bold italic mb-[60px]">
             Sipariş Detay Sayfası
           </div>
-          <Navbar
-            orderNo={orderDetails[0].ORDERNO}
-            orderStatus={orderDetails[0].ORDERSTATUS}
-          />
+          <Navbar orderNo={orderDetails[0].ORDERNO} />
           <div className="flex flex-col md:gap-4 md:mt-4 md:mx-8 xl:mx-32">
             <TopSection
               day={orderDetails[0].ORDERGUN}
@@ -68,10 +57,6 @@ function OrderDetails() {
               time={orderDetails[0].ORDERSAAT}
               totalPrice={totalPrice + "₺"}
               totalQuantity={totalQuantity}
-              orderStatus={orderDetails[0].ORDERSTATUS}
-            />
-            <RequestInfo
-              requestInfo={requestInfo}
               orderStatus={orderDetails[0].ORDERSTATUS}
             />
             <ProductSummary orders={orderDetails} />

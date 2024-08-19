@@ -58,7 +58,6 @@ function OrderDetails() {
               totalPrice={totalPrice + "₺"}
               totalQuantity={totalQuantity}
               orderStatus={orderDetails[0].ORDERSTATUS}
-              orderRequest={orderDetails[0].TALEP}
             />
             <ProductSummary orders={orderDetails} />
           </div>

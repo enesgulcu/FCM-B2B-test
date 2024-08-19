@@ -221,7 +221,7 @@ function ProdcutDetail({ product, img }) {
                               <Field
                                 min="1"
                                 name="quantity"
-                                className="w-16 text-center outline-none text-CustomGray"
+                                className="w-6 text-center outline-none text-CustomGray"
                               />
                               <button
                                 type="button"

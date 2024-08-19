@@ -1,49 +1,7 @@
-import React, { useState } from "react";
+import React from "react";
 import { IoClose } from "react-icons/io5";
 
 function RequestModal({ isOpen, setIsOpen, order }) {
-  const [formData, setFormData] = useState({
-    name: "",
-    surname: "",
-    message: "",
-  });
-
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.id]: e.target.value });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      await sendRequest(order.ORDERNO, formData);
-      alert("Talebiniz başarıyla gönderildi.");
-      setIsOpen(false);
-    } catch (error) {
-      console.error("Talep gönderilirken bir hata oluştu:", error);
-      alert("Talep gönderilirken bir hata oluştu. Lütfen tekrar deneyin.");
-    }
-  };
-
-  const sendRequest = async (orderNo, data) => {
-    const response = await fetch("/api/sendRequest", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        orderNo,
-        talep: `${data.name} ${data.surname}: ${data.message}`,
-      }),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || "Talep gönderilemedi");
-    }
-
-    return await response.json();
-  };
-
   if (!isOpen) return null;
 
   return (
@@ -62,7 +20,20 @@ function RequestModal({ isOpen, setIsOpen, order }) {
           Sipariş Talep Formu{" "}
         </h1>
 
-        <form onSubmit={handleSubmit}>
+        <div className="text-center mb-4">
+          <p>
+            <strong>Sipariş Numarası:</strong> {order.ORDERNO}
+          </p>
+          <p>
+            <strong>Tarih:</strong> {order.ORDERGUN}.{order.ORDERAY}.
+            {order.ORDERYIL}
+          </p>
+          <p>
+            <strong>Total Değer:</strong> {order.STKBIRIMFIYATTOPLAM} TL
+          </p>
+        </div>
+
+        <form>
           <div className="mb-4">
             <label
               className="block text-gray-700 text-sm font-bold mb-2"
@@ -75,9 +46,6 @@ function RequestModal({ isOpen, setIsOpen, order }) {
               id="name"
               type="text"
               placeholder="İsminiz"
-              value={formData.name}
-              onChange={handleChange}
-              required
             />
           </div>
 
@@ -93,9 +61,6 @@ function RequestModal({ isOpen, setIsOpen, order }) {
               id="surname"
               type="text"
               placeholder="Soyisminiz"
-              value={formData.surname}
-              onChange={handleChange}
-              required
             />
           </div>
 
@@ -111,16 +76,13 @@ function RequestModal({ isOpen, setIsOpen, order }) {
               id="message"
               rows="4"
               placeholder="Talebinizi buraya yazınız"
-              value={formData.message}
-              onChange={handleChange}
-              required
             ></textarea>
           </div>
 
           <div className="flex items-center justify-center">
             <button
               className="bg-LightBlue/80 hover:bg-LightBlue text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-              type="submit"
+              type="button"
             >
               Gönder
             </button>

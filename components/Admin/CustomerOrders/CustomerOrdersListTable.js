@@ -132,6 +132,7 @@ const CustomerOrdersListTable = ({ orders, allOrders, updateOrderStatus }) => {
                 <td className="px-6 py-4 whitespace-nowrap">
                   {order.CARUNVAN}
                 </td>
+
                 <td className="px-6 py-4 whitespace-nowrap ">
                   <div className="flex flex-col justify-center items-center">
                     <div>
@@ -176,21 +177,12 @@ const CustomerOrdersListTable = ({ orders, allOrders, updateOrderStatus }) => {
                       <FaEye /> <span>Sipariş İncele</span>
                     </button>
                   </Link>
-                  {order.ORDERSTATUS === "İptal" ? (
-                    <button
-                      disabled
-                      className="bg-red-100 p-2 rounded-md flex items-center w-36 justify-center"
-                    >
-                      Sipariş İptal Edildi
-                    </button>
-                  ) : (
-                    <button
-                      className="bg-NavyBlue p-2 rounded-md hover:bg-LightBlue text-white flex items-center w-36 justify-center"
-                      onClick={() => handleOpenUpdateStatusModal(order)}
-                    >
-                      Durumu Güncelle
-                    </button>
-                  )}
+                  <button
+                    className="bg-NavyBlue p-2 rounded-md hover:bg-LightBlue text-white flex items-center w-36 justify-center"
+                    onClick={() => handleOpenUpdateStatusModal(order)}
+                  >
+                    Durumu Güncelle
+                  </button>
                 </td>
               </tr>
             ))}
