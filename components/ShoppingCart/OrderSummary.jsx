@@ -1,6 +1,6 @@
 import React from "react";
 import { RiShoppingCartLine } from "react-icons/ri";
-import { AiOutlineWarning } from 'react-icons/ai';
+import { AiOutlineWarning } from "react-icons/ai";
 
 const OrderSummary = ({
   storedCart,
@@ -30,7 +30,11 @@ const OrderSummary = ({
                 {item.STKCINSI} (x{item.quantity})
               </span>
               <span className="font-bold text-CustomGray">
-                {parseFloat(item.STKOZKOD5) * item.quantity} <span className="mx-1">₺</span>
+                {(parseFloat(item.STKOZKOD5) * item.quantity).toLocaleString(
+                  "tr-TR",
+                  { minimumFractionDigits: 2, maximumFractionDigits: 2 }
+                )}
+                <span className="mx-1">₺</span>
               </span>
             </div>
           ))}
@@ -55,7 +59,13 @@ const OrderSummary = ({
       <div className="w-[400px] md:w-[600px] lg:w-[960px] flex justify-center md:justify-end items-center mb-12 px-8">
         <div className="flex items-center gap-4 text-[24px] bg-CustomGray p-2 rounded-xl shadow-xl">
           <p className="font-extrabold text-white ">Toplam</p>
-          <p className="font-extrabold text-white">{totalPrice}<span className="mx-1">₺</span></p>
+          <p className="font-extrabold text-white">
+            {totalPrice.toLocaleString("tr-TR", {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}
+            <span className="mx-1">₺</span>
+          </p>
         </div>
       </div>
       <div className="flex flex-row items-center gap-5 mt-12 mb-8">
@@ -74,13 +84,16 @@ const OrderSummary = ({
               <RiShoppingCartLine className="w-6 h-6" />
             </span>
           </button>
-          
         </div>
-        
       </div>
-      {isLoading && <div className="flex justify-center items-center relative p-4 bg-LightBlue text-white font-bold text-lg rounded-lg shadow-lg animate-bounce">
-            <AiOutlineWarning size={30}/>  <span className="mx-4 shadow-2xl">Lütfen sipariş alınırken bekleyin, bu işlem biraz zaman alabilir.</span>
-          </div>}
+      {isLoading && (
+        <div className="flex justify-center items-center relative p-4 bg-LightBlue text-white font-bold text-lg rounded-lg shadow-lg animate-bounce">
+          <AiOutlineWarning size={30} />{" "}
+          <span className="mx-4 shadow-2xl">
+            Lütfen sipariş alınırken bekleyin, bu işlem biraz zaman alabilir.
+          </span>
+        </div>
+      )}
     </div>
   );
 };

@@ -12,7 +12,7 @@ export default function ProductSummary({ orders }) {
             Ürün Özeti
           </h1>
         </div>
-        <div className="w-full">
+        <div className="w-full mb-12">
           <ProductsTable orders={orders} />
         </div>
       </div>

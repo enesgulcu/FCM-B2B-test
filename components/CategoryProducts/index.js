@@ -431,7 +431,7 @@ function CategoryProducts({ showSearchAndCart = false }) {
                       className="font-bold text-[14px] md:text-[16px] text-CustomGray leading-tight"
                     >
                       <p>{urun.STKCINSI}</p>
-                      <p>{urun.STKKOD}</p>
+                      {/* <p>{urun.STKKOD}</p> */}
                     </Link>
                   </div>
                   <div className="mt-2">
@@ -450,11 +450,11 @@ function CategoryProducts({ showSearchAndCart = false }) {
                       {urun.STKOZKOD5 !== " " ? (
                         <>
                           <p className="line-through text-gray-500 text-[16px] md:text-[18px]">
-                            ₺{inflatedPrice}
+                            {inflatedPrice}₺
                           </p>
                           <p className="italic text-LightBlue text-[20px] md:text-[23px] font-semibold">
-                            <span>₺</span>
                             {discountedPrice}
+                            <span>₺</span>
                           </p>
                         </>
                       ) : (
@@ -507,7 +507,7 @@ function CategoryProducts({ showSearchAndCart = false }) {
                                 <Field
                                   min="1"
                                   name="quantity"
-                                  className="w-6 text-center outline-none text-CustomGray"
+                                  className="w-8 text-center outline-none text-CustomGray"
                                 />
                                 <button
                                   type="button"

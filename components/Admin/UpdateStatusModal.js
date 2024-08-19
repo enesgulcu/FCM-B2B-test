@@ -12,9 +12,15 @@ const UpdateStatusModal = ({ isOpen, setIsOpen, order, updateOrderStatus }) => {
     setIsLoading(true);
     setError(null);
     try {
+      // REFNO'nun order nesnesinde mevcut olduğundan emin olun
+      if (!order.REFNO) {
+        throw new Error("REFNO is missing from the order object");
+      }
+
       const response = await putAPI("/update-order-status", {
         ORDERNO: order.ORDERNO,
         newStatus: newStatus,
+        REFNO: order.REFNO, // REFNO'yu gönderdiğimizden emin olalım
       });
 
       if (response.success) {
