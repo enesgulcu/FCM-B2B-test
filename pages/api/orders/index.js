@@ -800,16 +800,16 @@ export default async function handler(req, res) {
 
         const responseCreateNewData = await createNewData("ALLORDERS", entry);
         // //console.log("responseCreateNewData", responseCreateNewData);
-        const responseUpdateSTKKART = await updateSTKKART(
-          item.STKKOD,
-          item.STKADET
-        );
+        // const responseUpdateSTKKART = await updateSTKKART(
+        //   item.STKKOD,
+        //   item.STKADET
+        // );
       }
 
       console.log("##### 6 ######");
 
       // STKMIZDEGERYEDEK tablosunu güncelle
-      await updateSTKMIZDEGERYEDEK(orderItems, now);
+      // await updateSTKMIZDEGERYEDEK(orderItems, now);
 
       console.log("##### 7 ######");
 
@@ -891,7 +891,7 @@ export default async function handler(req, res) {
         createdSTKFISREFNO: createdSTKFISREFNO,
         createdIRSFISREFNO: createdIRSFISREFNO,
       });
-      
+
     } catch (error) {
       console.error("Order creation error:", error);
       res.status(500).json({
