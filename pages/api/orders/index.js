@@ -779,7 +779,7 @@ export default async function handler(req, res) {
 
       console.log("##### 5 ######");
 
-      for (const item of orderItems) {
+      const promises2 = orderItems.map(async (item) => {
         const newIRSFISREFNO = lastIRSFIS.IRSFISREFNO + 1;
         const entry = {
           ...item,
@@ -797,15 +797,24 @@ export default async function handler(req, res) {
           EKXTRA8: null,
           EKXTRA9: null,
         };
-
+      
+        console.log("##### 5.1 ######");
+      
         const responseCreateNewData = await createNewData("ALLORDERS", entry);
         // //console.log("responseCreateNewData", responseCreateNewData);
         // const responseUpdateSTKKART = await updateSTKKART(
         //   item.STKKOD,
         //   item.STKADET
         // );
-      }
-
+      
+        return responseCreateNewData;
+      });
+      
+      await Promise.all(promises2);
+      
+      // Eğer responseUpdateSTKKART işlemlerini de paralel olarak yapmak isterseniz
+      // ikinci bir Promise.all yapısı kullanabilirsiniz.
+      
       console.log("##### 6 ######");
 
       // STKMIZDEGERYEDEK tablosunu güncelle
@@ -839,25 +848,22 @@ export default async function handler(req, res) {
 
       console.log("##### 10 ######");
 
-      for (const item of orderItems) {
-        siraNo++;
-
-        const createdSTKHAR = await createSTKHAR(
-          item,
-          lastSTKFISREFNO,
-          siraNo
-          //createdSTKFISREFNO,
-        );
+      const promises = orderItems.map((item, index) => {
+        const siraNo = index + 1;
+      
+        const createdSTKHARPromise = createSTKHAR(item, lastSTKFISREFNO, siraNo);
+        const createdIRSHARPromise = createIRSHAR(item, createdIRSFISREFNO, siraNo);
+      
+        return Promise.all([createdSTKHARPromise, createdIRSHARPromise]);
+      });
+      
+      const results = await Promise.all(promises);
+      
+      results.forEach(([createdSTKHAR, createdIRSHAR]) => {
         createdSTKHARs.push(createdSTKHAR);
-
-        const createdIRSHAR = await createIRSHAR(
-          item,
-          createdIRSFISREFNO,
-          siraNo
-          //lastIRSHAR
-        );
         createdIRSHARs.push(createdIRSHAR);
-      }
+      });
+      
 
       console.log("##### 11 ######");
 
