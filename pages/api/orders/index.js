@@ -133,7 +133,6 @@ const updateSTKKART = async (STKKOD, quantity) => {
     const stkKart = await getDataByUnique("STKKART", { STKKOD: STKKOD });
     //console.log("stkKart", stkKart);
 
-
     if (stkKart && typeof stkKart === "object" && !stkKart.error) {
       const currentSTKBAKIYE = parseFloat(stkKart.STKBAKIYE) || 0;
       const newSTKBAKIYE = Math.max(currentSTKBAKIYE - quantity, 0);
@@ -148,7 +147,6 @@ const updateSTKKART = async (STKKOD, quantity) => {
       );
 
       //console.log("updateSTKKART", updateSTKKART);
-
     }
   } catch (error) {
     console.error(`STKKART güncellenirken hata oluştu (${STKKOD}):`, error);
@@ -206,7 +204,14 @@ const updateSTKMIZDEGERYEDEK = async (orderItems, currentDate) => {
       } else {
         // Veri yoksa yeni kayıt oluştur
 
-        const newSTKALACAK =  STKRAKTIP === 1  ? STKADET : STKRAKTIP === 6  ? STKBIRIMFIYATTOPLAM  : STKRAKTIP === 8  ? 1  : 0;
+        const newSTKALACAK =
+          STKRAKTIP === 1
+            ? STKADET
+            : STKRAKTIP === 6
+            ? STKBIRIMFIYATTOPLAM
+            : STKRAKTIP === 8
+            ? 1
+            : 0;
         parseInt(newSTKALACAK);
         const newRecord = {
           STKKOD,
@@ -219,7 +224,10 @@ const updateSTKMIZDEGERYEDEK = async (orderItems, currentDate) => {
           STKDEPO: "",
         };
 
-        const createNewData2 = await createNewData("STKMIZDEGERYEDEK", newRecord);
+        const createNewData2 = await createNewData(
+          "STKMIZDEGERYEDEK",
+          newRecord
+        );
         //console.log("createNewData2", createNewData2);
       }
     }
@@ -766,6 +774,7 @@ export default async function handler(req, res) {
         parseInt(lastSTKFIS.STKFISEVRAKNO2.split("-")[1]) + 1;
 
       for (const item of orderItems) {
+        const newIRSFISREFNO = lastIRSFIS.IRSFISREFNO + 1;
         const entry = {
           ...item,
           STKFISREFNO: lastSTKFISREFNO,
@@ -775,7 +784,7 @@ export default async function handler(req, res) {
           ORDERSTATUS: "Sipariş Oluşturuldu",
           TALEP: "",
           CEVAP: "",
-          REFNO: null,
+          REFNO: newIRSFISREFNO,
           EKXTRA5: null,
           EKXTRA6: null,
           EKXTRA7: null,

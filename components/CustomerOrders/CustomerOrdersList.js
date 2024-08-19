@@ -55,6 +55,22 @@ const CustomerOrdersList = () => {
             ORDERSAAT: orders[0].ORDERSAAT,
             ID: orders[0].ID,
           }));
+
+        uniqueOrders.sort((a, b) => {
+          const dateA = new Date(
+            a.ORDERYIL,
+            a.ORDERAY - 1,
+            a.ORDERGUN,
+            ...a.ORDERSAAT.split(":")
+          );
+          const dateB = new Date(
+            b.ORDERYIL,
+            b.ORDERAY - 1,
+            b.ORDERGUN,
+            ...b.ORDERSAAT.split(":")
+          );
+          return dateB - dateA; // En yeniden en eskiye sıralama
+        });
         setOrders(uniqueOrders);
         setFilteredOrders(uniqueOrders);
         const counts = uniqueOrders.reduce((acc, order) => {
