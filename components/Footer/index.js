@@ -91,7 +91,13 @@ function Footer() {
           Bu panel yalnızca Çalışkan Arı ve anlaşmalı olduğu bayiler tarafından
           kullanılmaktadır.
         </div>
+        
       </div>
+      <Link href="https://wa.me/+905536705997">
+      <div className="relative">
+        <div className="w-full text-right opacity-10 font text-white absolute bottom-5 right-5 hover:opacity-30 transition-all hover:absolute hover:cursor-pointer hover:font-bold">Developed By Enes Gülcü</div>
+      </div>
+      </Link>
     </footer>
   );
 }
