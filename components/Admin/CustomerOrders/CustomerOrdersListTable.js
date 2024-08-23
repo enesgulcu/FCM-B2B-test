@@ -86,9 +86,6 @@ const CustomerOrdersListTable = ({ orders, allOrders, updateOrderStatus }) => {
                 Sipariş No
               </th>
               <th className="px-6 py-3 text-center text-base font-medium  ">
-                Cari Kodu
-              </th>
-              <th className="px-6 py-3 text-center text-base font-medium  ">
                 Cari Unvanı
               </th>
 
@@ -98,7 +95,7 @@ const CustomerOrdersListTable = ({ orders, allOrders, updateOrderStatus }) => {
               <th className="px-6 py-3  text-base font-medium">Durum</th>
               <th className="px-6 py-3  text-base font-medium">Ürün Adedi</th>
               <th className="px-6 py-3  text-base font-medium">Toplam</th>
-              <th className="px-6 py-3 text-left text-base font-medium">
+              <th className="px-6 py-3  text-base font-medium">
                 Eylemler
               </th>
             </tr>
@@ -111,7 +108,7 @@ const CustomerOrdersListTable = ({ orders, allOrders, updateOrderStatus }) => {
                   index % 2 === 1 ? "bg-white" : "bg-gray-50"
                 } text-center`}
               >
-                <td className="px-6 py-4 whitespace-nowrap hover:scale-105 transition-all ">
+                <td className="text-center px-6 py-4 whitespace-nowrap hover:scale-105 transition-all ">
                   <Link
                     href={{
                       pathname: `/customer-orders/${order.ID}`,
@@ -128,11 +125,19 @@ const CustomerOrdersListTable = ({ orders, allOrders, updateOrderStatus }) => {
                     </div>
                   </Link>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">{order.CARKOD}</td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  {order.CARUNVAN}
+                <td className="text-center px-6 py-4 whitespace-nowrap flex flex-col justify-center items-center">
+                  <div className="bg-NavyBlue text-white px-2 rounded">{order.CARKOD}</div>
+                  <div className="relative group">
+                    
+                    <div className="truncate max-w-[20ch]">
+                    {order.CARUNVAN}
+                    </div>
+                    <div className="absolute left-0 top-full mt-2 w-max max-w-xs bg-gray-700 text-white text-xs rounded-md p-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    {order.CARUNVAN}
+                    </div>
+                  </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap ">
+                <td className="text-center px-6 py-4 whitespace-nowrap ">
                   <div className="flex flex-col justify-center items-center">
                     <div>
                       {order.ORDERGUN}.{order.ORDERAY}.{order.ORDERYIL}
@@ -142,7 +147,7 @@ const CustomerOrdersListTable = ({ orders, allOrders, updateOrderStatus }) => {
                     </div>
                   </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
+                <td className="text-center px-6 py-4 whitespace-nowrap">
                   <div
                     className={`inline-block rounded-sm px-2 py-1  ${
                       statusColors[order.ORDERSTATUS]
@@ -151,19 +156,19 @@ const CustomerOrdersListTable = ({ orders, allOrders, updateOrderStatus }) => {
                     {order.ORDERSTATUS}
                   </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
+                <td className="text-center px-6 py-4 whitespace-nowrap">
                   {new Intl.NumberFormat("tr-TR", {
                     style: "decimal",
                   }).format(order.STKADET)}{" "}
                   Adet
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
+                <td className="text-center px-6 py-4 whitespace-nowrap">
                   {new Intl.NumberFormat("tr-TR", {
                     style: "decimal",
                   }).format(order.STKBIRIMFIYATTOPLAM)}
                   ₺
                 </td>
-                <td className="px-6 py-4 flex justify-center whitespace-nowrap flex-col  gap-2 ">
+                <td className="text-center px-6 py-4 flex justify-center whitespace-nowrap flex-col  gap-2 ">
                   <Link
                     href={{
                       pathname: `/customer-orders/${order.ID}`,
