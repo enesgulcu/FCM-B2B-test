@@ -335,8 +335,8 @@ model ALLORDERS {
   TALEP                    String?
   CEVAP                    String?
   REFNO                    Int? 
-  EKXTRA5                  Int?
-  EKXTRA6                  Int?
+  KARGO                    String?
+  KARGOTAKIPNO             String?
   EKXTRA7                  Float?
   EKXTRA8                  Float?
   EKXTRA9                  Float?

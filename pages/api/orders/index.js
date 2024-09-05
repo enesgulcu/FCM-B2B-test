@@ -749,7 +749,8 @@ export default async function handler(req, res) {
     try {
       const { cartItems, totalPrice, userId, userName } = req.body;
 
-      const { harRefDeger, cikisFisEvrNo, satisIrsaliyesiEvrNo } = await getAndUpdateReferences();
+      const { harRefDeger, cikisFisEvrNo, satisIrsaliyesiEvrNo } =
+        await getAndUpdateReferences();
 
       console.log("###### 2 ######");
 
@@ -773,12 +774,13 @@ export default async function handler(req, res) {
           getStkFisRefNo(),
         ]);
 
-        console.log("###### 4 ######");
+      console.log("###### 4 ######");
 
       const newSFNumber = parseInt(lastSTKFIS.STKFISEVRAKNO1.split("-")[1]) + 1;
-      const newWEBNumber = parseInt(lastSTKFIS.STKFISEVRAKNO2.split("-")[1]) + 1;
+      const newWEBNumber =
+        parseInt(lastSTKFIS.STKFISEVRAKNO2.split("-")[1]) + 1;
       console.log("###### 5 ######");
-      
+
       for (const item of orderItems) {
         const newIRSFISREFNO = lastIRSFIS.IRSFISREFNO + 1;
         const entry = {
@@ -791,8 +793,8 @@ export default async function handler(req, res) {
           TALEP: "",
           CEVAP: "",
           REFNO: newIRSFISREFNO,
-          EKXTRA5: null,
-          EKXTRA6: null,
+          KARGO: "",
+          KARGOTAKIPNO: "",
           EKXTRA7: null,
           EKXTRA8: null,
           EKXTRA9: null,
@@ -833,7 +835,7 @@ export default async function handler(req, res) {
 
       // STKHAR ve IRSHAR oluştur
       let siraNo = 0;
-      
+
       for (const item of orderItems) {
         siraNo++;
 
@@ -844,8 +846,7 @@ export default async function handler(req, res) {
         //   //createdSTKFISREFNO,
         // );
 
-        await createIRSHAR( item, createdIRSFISREFNO, siraNo );
-
+        await createIRSHAR(item, createdIRSFISREFNO, siraNo);
       }
 
       console.log("###### 10 ######");
@@ -870,7 +871,7 @@ export default async function handler(req, res) {
           { CARCIKIRSTOP: newCARCIKIRSTOP }
         );
         //console.log("responseUpdateDataByAny", responseUpdateDataByAny);
-      } 
+      }
       console.log("###### 12 ######");
 
       return res.status(200).json({
