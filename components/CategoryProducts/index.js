@@ -155,13 +155,26 @@ function CategoryProducts({ showSearchAndCart = false }) {
     return categories;
   };
 
-  const calculatePrices = (originalPrice) => {
+  const calculatePrices = (originalPrice, category) => {
     const price = parseFloat(originalPrice);
-    const inflatedPrice = (price * 2.5).toFixed(2); // %150 artırılmış fiyat (2.5 kat)
+    let inflationRate, discountRate;
+
+    if (category === "OKUL ÖNCESİ") {
+      inflationRate = 2.857142857; // %65 indirim için gereken oran (100 / (100 - 65))
+      discountRate = 0.65;
+    } else {
+      inflationRate = 2.5; // %60 indirim için gereken oran (100 / (100 - 60))
+      discountRate = 0.6;
+    }
+
+    const inflatedPrice = (price * inflationRate).toFixed(2);
+    const discountedPrice = price.toFixed(2); // Orijinal fiyat, indirimli fiyat olarak gösterilecek
+
     return {
       originalPrice: price.toFixed(2),
       inflatedPrice: inflatedPrice,
-      discountedPrice: price.toFixed(2), // Orijinal fiyat, indirimli fiyat olarak gösterilecek
+      discountedPrice: discountedPrice,
+      discountRate: discountRate,
     };
   };
 
@@ -248,9 +261,17 @@ function CategoryProducts({ showSearchAndCart = false }) {
         // BU KISIM KATEGORIDEKI FIYATI OLMAYAN URUNLERIN GOSTERILMESINI ENGELLER.
         urun.STKOZKOD3 === selectedClass && parseFloat(urun.STKOZKOD5)
     );
+
     filteredUrunler = filteredUrunler.filter(
       (urun) => urun.STKOZKOD1 === "A" || urun.STKOZKOD1 === "2"
     );
+    // filteredUrunler.forEach((urun) => {
+    //   console.log(`
+    //     Ürün: ${urun.STKCINSI}
+    //     Orijinal Fiyat (Veritabanı): ${urun.STKOZKOD5}
+    //     ------------------------
+    //   `);
+    // });
 
     filteredUrunler.sort((a, b) => {
       const priceA = parseFloat(a.STKOZKOD5);
@@ -377,8 +398,12 @@ function CategoryProducts({ showSearchAndCart = false }) {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 justify-center sm:mx-[35px] mb-[30px] px-[15px] w-auto">
           {filteredUrunler.map((urun) => {
-            const { originalPrice, inflatedPrice, discountedPrice } =
-              calculatePrices(urun.STKOZKOD5);
+            const {
+              originalPrice,
+              inflatedPrice,
+              discountedPrice,
+              discountRate,
+            } = calculatePrices(urun.STKOZKOD5, urun.STKOZKOD3);
 
             return (
               <div
@@ -388,7 +413,7 @@ function CategoryProducts({ showSearchAndCart = false }) {
                 <p className="absolute flex flex-col items-center justify-center top-16 -right-12 transform origin-top-right rotate-45 text-[12px] sm:text-[16px] font-bold text-white bg-gradient-to-r from-yellow-400 to-orange-600 px-2 w-40 shadow-md shadow-orange-200">
                   {urun.STKOZKOD1 === "A" ? (
                     <>
-                      %60
+                      %{(discountRate * 100).toFixed(0)}
                       <span>İNDİRİM</span>
                     </>
                   ) : null}
@@ -431,7 +456,7 @@ function CategoryProducts({ showSearchAndCart = false }) {
                       className="font-bold text-[14px] md:text-[16px] text-CustomGray leading-tight"
                     >
                       <p>{urun.STKCINSI}</p>
-                      {/* <p>{urun.STKKOD}</p> */}
+                      <p>{urun.STKKOD}</p>
                     </Link>
                   </div>
                   <div className="mt-2">

@@ -96,6 +96,7 @@ const handler = async (req, res) => {
       ) {
         // Şifre Sıfırlama işlemleri burada yapılacak
         const newPassword = await PasswordGenerator(data.email);
+        console.log("##### 2- ŞİFRE ÜRETİLDİ", newPassword);
 
         // Şifreleme işlemi
         const encryptedPassword = await EncryptPassword(newPassword);
