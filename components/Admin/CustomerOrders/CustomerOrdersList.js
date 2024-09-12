@@ -56,6 +56,9 @@ const CustomerOrdersList = () => {
             ORDERAY: orders[0].ORDERAY,
             ORDERYIL: orders[0].ORDERYIL,
             ORDERSAAT: orders[0].ORDERSAAT,
+            TALEP: orders[0].TALEP,
+            KARGO: orders[0].KARGO,
+            KARGOTAKIPNO: orders[0].KARGOTAKIPNO,
             ID: orders[0].ID,
           }));
         uniqueOrders.sort((a, b) => {

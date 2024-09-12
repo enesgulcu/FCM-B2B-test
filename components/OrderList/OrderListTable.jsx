@@ -33,7 +33,7 @@ const OrderListTable = ({ orders, setSelectedOrders, selectedOrders }) => {
     Tamamlandı: "bg-[#c7d8e2] text-[#324356]",
     "İptal edildi": "bg-[#e3e5e3] text-[#7a7a7c]",
     Başarısız: "bg-[#eaa4a4] text-[#762024]",
-    "Kargoya Verildi": "bg-LightBlue bg-opacity-40 text-LightBlue",
+    "Kargoya Verildi": "bg-[#295F98] text-[#fff]",
   };
 
   const [selectAll, setSelectAll] = useState(false);

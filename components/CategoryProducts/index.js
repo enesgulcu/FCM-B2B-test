@@ -456,7 +456,7 @@ function CategoryProducts({ showSearchAndCart = false }) {
                       className="font-bold text-[14px] md:text-[16px] text-CustomGray leading-tight"
                     >
                       <p>{urun.STKCINSI}</p>
-                      {/* <p>{urun.STKKOD}</p> */}
+                      <p>{urun.STKKOD}</p>
                     </Link>
                   </div>
                   <div className="mt-2">

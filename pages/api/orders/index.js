@@ -747,7 +747,7 @@ export default async function handler(req, res) {
   if (req.method === "POST") {
     console.log("###### 1 ######");
     try {
-      const { cartItems, totalPrice, userId, userName } = req.body;
+      const { cartItems, totalPrice, userId, userName, talep } = req.body;
 
       const { harRefDeger, cikisFisEvrNo, satisIrsaliyesiEvrNo } =
         await getAndUpdateReferences();
@@ -790,7 +790,7 @@ export default async function handler(req, res) {
           STKFISEVRAKNO2: `WEB-${newWEBNumber.toString().padStart(6, "0")}`,
           ACIKLAMA: null,
           ORDERSTATUS: "Sipariş Oluşturuldu",
-          TALEP: "",
+          TALEP: talep,
           CEVAP: "",
           REFNO: newIRSFISREFNO,
           KARGO: "",

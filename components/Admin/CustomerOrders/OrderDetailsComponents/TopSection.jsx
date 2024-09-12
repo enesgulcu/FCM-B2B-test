@@ -16,6 +16,7 @@ export default function TopSection({
     Tamamlandı: "bg-[#c7e1c7] text-[#5d7b45]",
     İptal: "bg-[#e3e5e3] text-[#7a7a7c]",
     Başarısız: "bg-[#eaa4a4] text-[#762024]",
+    "Kargoya Verildi": "bg-[#295F98] text-[#fff]",
   };
   return (
     <>

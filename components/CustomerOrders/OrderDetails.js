@@ -7,6 +7,7 @@ import ProductSummary from "./OrderDetailsComponents/ProductSummary";
 import { getAPI } from "@/services/fetchAPI";
 import Loading from "../Loading";
 import RequestInfo from "./RequestInfo";
+import KargoInfo from "./KargoInfo";
 
 function OrderDetails() {
   const searchParams = useSearchParams();
@@ -69,10 +70,16 @@ function OrderDetails() {
               totalPrice={totalPrice + "₺"}
               totalQuantity={totalQuantity}
               orderStatus={orderDetails[0].ORDERSTATUS}
+              orderKargoCompany={orderDetails[0].KARGO}
+              orderKargoTrackingNo={orderDetails[0].KARGOTAKIPNO}
             />
             <RequestInfo
               requestInfo={requestInfo}
               orderStatus={orderDetails[0].ORDERSTATUS}
+            />
+            <KargoInfo
+              orderKargoCompany={orderDetails[0].KARGO}
+              orderKargoTrackingNo={orderDetails[0].KARGOTAKIPNO}
             />
             <ProductSummary orders={orderDetails} />
           </div>

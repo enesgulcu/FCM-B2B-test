@@ -45,15 +45,24 @@ const ShoppingCart = () => {
     fetchOrders();
   }, []);
 
-  const handleConfirmOrder = async () => {
+  const handleConfirmOrder = async (requestMessage) => {
     if (session?.user?.id) {
       try {
         setIsOrderLoading(true);
+
+        const simplifiedCart = storedCart.map((item) => ({
+          STKKOD: item.STKKOD,
+          STKCINSI: item.STKCINSI,
+          quantity: item.quantity,
+          STKOZKOD5: item.STKOZKOD5,
+        }));
+
         const orderData = {
-          cartItems: storedCart,
+          cartItems: simplifiedCart,
           totalPrice: totalPrice,
           userId: session.user.id,
           userName: session.user.name,
+          talep: requestMessage,
         };
 
         const response = await fetch("/api/orders", {
@@ -73,7 +82,6 @@ const ShoppingCart = () => {
           localStorage.setItem("cart", JSON.stringify([]));
           updateTotalPrice([]);
 
-          // Tüm siparişleri getir ve kontrol et
           const allOrdersResponse = await fetch("/api/orders");
           const allOrdersData = await allOrdersResponse.json();
         } else {
@@ -409,6 +417,7 @@ const ShoppingCart = () => {
               Sepeti Temizle
             </button>
           </div>
+
           <div className="w-screen lg:w-[1188px] mt-16">
             <OrderSummary
               storedCart={storedCart}

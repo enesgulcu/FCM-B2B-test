@@ -6,9 +6,11 @@ import RequestModal from "./RequestModal";
 import OrderCancellation from "./OrderCancallation";
 import Link from "next/link";
 import UpdateStatusModal from "../UpdateStatusModal";
+import KargoUpdateModal from "../KargoUpdateModal";
 
 const CustomerOrdersListTable = ({ orders, allOrders, updateOrderStatus }) => {
   const [isOpenUpdateStatusModal, setIsOpenUpdateStatusModal] = useState(false);
+  const [isOpenKargoUpdateModal, setIsOpenKargoUpdateModal] = useState(false);
   const [isChecked, setIsChecked] = useState(orders.map(() => false));
   const [isAllChecked, setIsAllChecked] = useState(false);
   const [isOpenReqModal, setIsOpenReqModal] = useState(false);
@@ -24,6 +26,7 @@ const CustomerOrdersListTable = ({ orders, allOrders, updateOrderStatus }) => {
     Tamamlandı: "bg-[#c7e1c7] text-[#5d7b45]",
     İptal: "bg-[#e3e5e3] text-[#7a7a7c]",
     Başarısız: "bg-[#eaa4a4] text-[#762024]",
+    "Kargoya Verildi": "bg-[#295F98] text-[#fff]",
   };
 
   // single check process for inputs
@@ -36,6 +39,10 @@ const CustomerOrdersListTable = ({ orders, allOrders, updateOrderStatus }) => {
     setIsAllChecked(allChecked);
   };
 
+  const handleOpenKargoUpdateModal = (order) => {
+    setSelectedOrder(order);
+    setIsOpenKargoUpdateModal(true);
+  };
   const handleOpenUpdateStatusModal = (order) => {
     setSelectedOrder(order);
     setIsOpenUpdateStatusModal(true);
@@ -95,8 +102,9 @@ const CustomerOrdersListTable = ({ orders, allOrders, updateOrderStatus }) => {
               <th className="px-6 py-3  text-base font-medium">Durum</th>
               <th className="px-6 py-3  text-base font-medium">Ürün Adedi</th>
               <th className="px-6 py-3  text-base font-medium">Toplam</th>
-              <th className="px-6 py-3  text-base font-medium">
-                Eylemler
+              <th className="px-6 py-3  text-base font-medium">Eylemler</th>
+              <th className="px-6 py-3  text-base font-medium text-left">
+                Kargo İşlemleri
               </th>
             </tr>
           </thead>
@@ -126,14 +134,15 @@ const CustomerOrdersListTable = ({ orders, allOrders, updateOrderStatus }) => {
                   </Link>
                 </td>
                 <td className="text-center px-6 py-4 whitespace-nowrap flex flex-col justify-center items-center">
-                  <div className="bg-NavyBlue text-white px-2 rounded">{order.CARKOD}</div>
+                  <div className="bg-NavyBlue text-white px-2 rounded">
+                    {order.CARKOD}
+                  </div>
                   <div className="relative group">
-                    
                     <div className="truncate max-w-[20ch]">
-                    {order.CARUNVAN}
+                      {order.CARUNVAN}
                     </div>
                     <div className="absolute left-0 top-full mt-2 w-max max-w-xs bg-gray-700 text-white text-xs rounded-md p-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    {order.CARUNVAN}
+                      {order.CARUNVAN}
                     </div>
                   </div>
                 </td>
@@ -148,12 +157,20 @@ const CustomerOrdersListTable = ({ orders, allOrders, updateOrderStatus }) => {
                   </div>
                 </td>
                 <td className="text-center px-6 py-4 whitespace-nowrap">
-                  <div
-                    className={`inline-block rounded-sm px-2 py-1  ${
-                      statusColors[order.ORDERSTATUS]
-                    }`}
-                  >
-                    {order.ORDERSTATUS}
+                  <div className="flex flex-col  w-40">
+                    <div
+                      className={`inline-block rounded-sm px-2 py-1  ${
+                        statusColors[order.ORDERSTATUS]
+                      }`}
+                    >
+                      {order.ORDERSTATUS}
+                    </div>
+                    {order.KARGO && order.KARGOTAKIPNO && (
+                      <div className="flex-col text-sm font-bold tracking-wider bg-NavyBlue p-2 rounded-md mt-2 text-white flex items-center justify-center">
+                        <h2>{order.KARGO}</h2>
+                        <h2>{order.KARGOTAKIPNO}</h2>
+                      </div>
+                    )}
                   </div>
                 </td>
                 <td className="text-center px-6 py-4 whitespace-nowrap">
@@ -197,6 +214,23 @@ const CustomerOrdersListTable = ({ orders, allOrders, updateOrderStatus }) => {
                     </button>
                   )}
                 </td>
+                <td className="text-center px-6 py-4 whitespace-nowrap">
+                  <button
+                    className="bg-NavyBlue p-2 rounded-md hover:bg-LightBlue text-white flex items-center w-36 justify-center"
+                    onClick={() => handleOpenKargoUpdateModal(order)}
+                  >
+                    Kargoyu Güncelle
+                  </button>
+                  <span
+                    className={`p-2 rounded-md flex items-center mt-2 w-36 justify-center ${
+                      order.TALEP
+                        ? "bg-orange-500 text-white"
+                        : "bg-gray-300 text-gray-700"
+                    }`}
+                  >
+                    {order.TALEP ? "Talep var!" : "Talep yok"}
+                  </span>
+                </td>
               </tr>
             ))}
           </tbody>
@@ -220,6 +254,14 @@ const CustomerOrdersListTable = ({ orders, allOrders, updateOrderStatus }) => {
         <UpdateStatusModal
           isOpen={isOpenUpdateStatusModal}
           setIsOpen={setIsOpenUpdateStatusModal}
+          order={selectedOrder}
+          updateOrderStatus={updateOrderStatus}
+        />
+      )}
+      {isOpenKargoUpdateModal && (
+        <KargoUpdateModal
+          isOpen={isOpenKargoUpdateModal}
+          setIsOpen={setIsOpenKargoUpdateModal}
           order={selectedOrder}
           updateOrderStatus={updateOrderStatus}
         />
