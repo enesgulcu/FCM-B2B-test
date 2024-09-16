@@ -1,5 +1,6 @@
 import CustomerOrdersContainer from "@/containers/AdminCustomerOrders";
-import React from "react";
+import React, { Suspense } from "react";
+import Loading from "@/components/Loading";
 
 function page() {
   return (
