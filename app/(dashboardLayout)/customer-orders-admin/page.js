@@ -2,7 +2,11 @@ import CustomerOrdersContainer from "@/containers/AdminCustomerOrders";
 import React from "react";
 
 function page() {
-  return <CustomerOrdersContainer />;
+  return (
+    <Suspense fallback={<Loading />}>
+      <CustomerOrdersContainer />
+    </Suspense>
+  );
 }
 
 export default page;
