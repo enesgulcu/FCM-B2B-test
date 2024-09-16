@@ -9,10 +9,13 @@ import {
 } from "react-icons/md";
 import { getAPI } from "@/services/fetchAPI";
 import { statusList } from "./data";
-
 import Loading from "@/components/Loading";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 
 const CustomerOrdersList = () => {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [orders, setOrders] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [searchTermUnvan, setSearchTermUnvan] = useState("");
@@ -24,11 +27,14 @@ const CustomerOrdersList = () => {
   const [statusCounts, setStatusCounts] = useState({});
 
   useEffect(() => {
+    const storedPage = localStorage.getItem("currentOrderPage");
+    const currentPage = storedPage ? parseInt(storedPage, 10) : 0;
+    setPage(currentPage);
+
     const fetch = async () => {
       try {
         const data = await getAPI("/adminorders");
         // Group orders by ORDERNO
-
         const groupedOrders = data.reduce((acc, order) => {
           if (!acc[order.ORDERNO]) {
             acc[order.ORDERNO] = [];
@@ -87,13 +93,43 @@ const CustomerOrdersList = () => {
 
         setIsLoading(false);
       } catch (err) {
+        console.error("Error fetching data:", err);
         setIsLoading(false);
       }
     };
     fetch();
-  }, []);
+  }, [searchParams]);
 
-  //for filter status
+  const normalizeText = (text) => {
+    return text
+      .toLowerCase()
+      .replace(/ğ/g, "g")
+      .replace(/ü/g, "u")
+      .replace(/ş/g, "s")
+      .replace(/ı/g, "i")
+      .replace(/ö/g, "o")
+      .replace(/ç/g, "c")
+      .replace(/[^a-z0-9]/g, "");
+  };
+
+  useEffect(() => {
+    const filteredResults = orders.filter((order) => {
+      const normalizedCARKOD = normalizeText(order.CARKOD);
+      const normalizedCARUNVAN = normalizeText(order.CARUNVAN);
+      const normalizedSearchTerm = normalizeText(searchTerm);
+      const normalizedSearchTermUnvan = normalizeText(searchTermUnvan);
+
+      const carkodMatch = normalizedCARKOD.includes(normalizedSearchTerm);
+      const carunvanMatch = normalizedCARUNVAN.includes(
+        normalizedSearchTermUnvan
+      );
+
+      return carkodMatch && carunvanMatch;
+    });
+
+    setFilteredOrders(filteredResults);
+  }, [searchTerm, searchTermUnvan, orders]);
+
   const filteredProd = (status) => {
     if (status === "Tümü") {
       setFilteredOrders(orders);
@@ -102,6 +138,11 @@ const CustomerOrdersList = () => {
       setFilteredOrders(orders.filter((order) => order.ORDERSTATUS === status));
       setSelectedStatus(status);
     }
+    // Reset to first page when changing filters
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("page", "1");
+    params.delete("returnPage");
+    router.push(`${pathname}?${params.toString()}`);
   };
 
   const handleStatusChange = (e) => {
@@ -122,13 +163,21 @@ const CustomerOrdersList = () => {
     );
   };
 
-  // for pagination process
   const handleChangePage = (direction) => {
+    let newPage = page;
     if (direction === "prev" && page > 0) {
-      setPage(page - 1);
+      newPage = page - 1;
     } else if (direction === "next" && page < totalPages - 1) {
-      setPage(page + 1);
+      newPage = page + 1;
     }
+    setPage(newPage);
+    localStorage.setItem("currentOrderPage", newPage.toString());
+  };
+
+  const handleSearch = (e) => {
+    setSearchTerm(e.target.value);
+    setPage(0);
+    localStorage.setItem("currentOrderPage", "0");
   };
 
   const paginatedOrders = filteredOrders.slice(
@@ -137,25 +186,9 @@ const CustomerOrdersList = () => {
   );
   const totalPages = Math.ceil(filteredOrders.length / rowsPerPage);
 
-  useEffect(() => {
-    const filteredResults = orders.filter(
-      (order) =>
-        order.CARKOD.toLowerCase().includes(searchTerm.toLowerCase()) &&
-        order.CARUNVAN.toLowerCase().includes(searchTermUnvan.toLowerCase())
-    );
-    setFilteredOrders(filteredResults);
-  }, [searchTerm, searchTermUnvan, orders]);
-  const handleSearch = (e) => {
-    setSearchTerm(e.target.value);
-  };
-
-  //FİYAT SIRALAMA
-
   return (
     <>
       {isLoading && <Loading />}
-      {/* <div className=" text-center pt-5 pb-7 text-3xl text-NavyBlue font[600]">Siparişler</div>*/}
-
       <div className="flex flex-wrap justify-center md:justify-between items-center py-3">
         <div className="justify-between items-center flex flex-wrap">
           <div className="flex gap-2 text-LightBlue flex-wrap mb-4 md:mb-0">
@@ -174,8 +207,8 @@ const CustomerOrdersList = () => {
         </div>
         <div className="flex gap-2 justify-center items-center text-LightBlue flex-wrap mb-4 md:mb-0">
           <input
-            type="text"
-            placeholder="Cari Koda Göre Filtrele.."
+            type="number"
+            placeholder="Cari Koda Göre Filtrele.."
             value={searchTerm}
             onChange={handleSearch}
             className="p-2 border rounded-md border-NavyBlue text-BaseDark focus:outline-none focus:border-NavyBlue focus:ring-1 focus:ring-NavyBlue"
@@ -188,7 +221,6 @@ const CustomerOrdersList = () => {
             className="p-2 border rounded-md border-NavyBlue text-BaseDark focus:outline-none focus:border-NavyBlue focus:ring-1 focus:ring-NavyBlue"
           />
         </div>
-        {/* Sıralama ve Sayfalama */}
         <div className="flex items-center gap-2 ">
           <p className="text-CustomGray">{rowsPerPage} öge</p>
           <div
@@ -201,7 +233,6 @@ const CustomerOrdersList = () => {
           >
             <MdKeyboardDoubleArrowLeft />
           </div>
-
           <div
             className={`border-2 rounded-sm text-[18px] md:p-3 p-1 ${
               page === 0
@@ -212,12 +243,10 @@ const CustomerOrdersList = () => {
           >
             <MdKeyboardArrowLeft />
           </div>
-
           <span className="border  md:px-4 md:py-2 py-1 px-3 rounded-full bg-NavyBlue text-white">
             {page + 1}
           </span>
           <span>/ {totalPages}</span>
-
           <div
             className={`border-2 rounded-sm text-[18px] md:p-3 p-1 ${
               page === totalPages - 1
@@ -228,7 +257,6 @@ const CustomerOrdersList = () => {
           >
             <MdKeyboardArrowRight />
           </div>
-
           <div
             className={`border-2 rounded-sm text-[18px] md:p-3 p-1 ${
               page === totalPages - 1

@@ -7,8 +7,11 @@ import OrderCancellation from "./OrderCancallation";
 import Link from "next/link";
 import UpdateStatusModal from "../UpdateStatusModal";
 import KargoUpdateModal from "../KargoUpdateModal";
+import { useSearchParams } from "next/navigation";
 
 const CustomerOrdersListTable = ({ orders, allOrders, updateOrderStatus }) => {
+  const searchParams = useSearchParams();
+  const currentPage = searchParams.get("page") || "1";
   const [isOpenUpdateStatusModal, setIsOpenUpdateStatusModal] = useState(false);
   const [isOpenKargoUpdateModal, setIsOpenKargoUpdateModal] = useState(false);
   const [isChecked, setIsChecked] = useState(orders.map(() => false));
@@ -56,23 +59,6 @@ const CustomerOrdersListTable = ({ orders, allOrders, updateOrderStatus }) => {
     return setIsChecked(newCheckedElements);
   };
 
-  // const handleSelectAllCheckboxChange = (event) => {
-  //   const { checked } = event.target;
-  //   setSelectAllChecked(checked);
-
-  //   const updatedSelectedOrderCheckboxes = {};
-  //   orders.forEach((order) => {
-  //     updatedSelectedOrderCheckboxes[order.id] = checked;
-  //   });
-  //   setSelectedOrderCheckboxes(updatedSelectedOrderCheckboxes);
-  // };
-
-  // const handleSingleCheckboxChange = (orderId) => {
-  //   setSelectedOrderCheckboxes((prevSelectedOrderCheckboxes) => ({
-  //     ...prevSelectedOrderCheckboxes,
-  //     [orderId]: !prevSelectedOrderCheckboxes[orderId],
-  //   }));
-  // };
   const handleOpenRequestModal = (order) => {
     setSelectedOrder(order);
     setIsOpenReqModal(true);
@@ -95,7 +81,6 @@ const CustomerOrdersListTable = ({ orders, allOrders, updateOrderStatus }) => {
               <th className="px-6 py-3 text-center text-base font-medium  ">
                 Cari Unvanı
               </th>
-
               <th className="px-6 py-3  text-base font-medium  text-center">
                 Tarih
               </th>
@@ -122,6 +107,7 @@ const CustomerOrdersListTable = ({ orders, allOrders, updateOrderStatus }) => {
                       pathname: `/customer-orders/${order.ID}`,
                       query: {
                         orderno: order.ORDERNO,
+                        returnPage: currentPage,
                       },
                     }}
                   >
@@ -189,10 +175,14 @@ const CustomerOrdersListTable = ({ orders, allOrders, updateOrderStatus }) => {
                   <Link
                     href={{
                       pathname: `/customer-orders/${order.ID}`,
-                      query: {
-                        orderno: order.ORDERNO,
-                      },
+                      query: { orderno: order.ORDERNO },
                     }}
+                    onClick={() =>
+                      localStorage.setItem(
+                        "currentOrderPage",
+                        localStorage.getItem("currentOrderPage") || "0"
+                      )
+                    }
                   >
                     <button className="bg-gray-300 p-2 rounded-md hover:bg-gray-400 flex items-center w-36">
                       <FaEye /> <span>Sipariş İncele</span>
