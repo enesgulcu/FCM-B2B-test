@@ -8,8 +8,10 @@ import { useEffect } from "react";
 import FixedHeader from "@/components/FixedHeader";
 import MainButtonsComponent from "@/components/MainButtons";
 import Loading from "@/components/Loading";
+// import { useEmployeeRedirect } from "@/functions/other/useEmployeeRedirect/useEmployeeRedirect";
 
 const HomeContainer = () => {
+  // useEmployeeRedirect();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const { data: session, status } = useSession();

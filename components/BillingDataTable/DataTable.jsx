@@ -15,9 +15,11 @@ import Loading from "../Loading";
 import { getAPI } from "../../services/fetchAPI/index";
 import ScrollButtons from "../ScrollButtons/ScrollButtons";
 import ExpandedTable from "./ExpandedTable";
+// import { useEmployeeRedirect } from "@/functions/other/useEmployeeRedirect/useEmployeeRedirect";
 
 // DataTable bileşeni: Kullanıcının cari hesap bilgilerini ve işlem geçmişini gösteren ana bileşen
 export default function DataTable() {
+  // useEmployeeRedirect();
   // NextAuth oturumu kullanarak kullanıcı bilgilerini alma
   const { data: session } = useSession();
 

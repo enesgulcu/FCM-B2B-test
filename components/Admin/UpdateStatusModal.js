@@ -1,18 +1,19 @@
 import React, { useState } from "react";
 import { statusList } from "./CustomerOrders/data";
 import { putAPI } from "@/services/fetchAPI";
+import { useSession } from "next-auth/react";
 
 const UpdateStatusModal = ({ isOpen, setIsOpen, order, updateOrderStatus }) => {
   const [newStatus, setNewStatus] = useState(order.ORDERSTATUS);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const { data: session } = useSession();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
     try {
-      // REFNO'nun order nesnesinde mevcut olduğundan emin olun
       if (!order.REFNO) {
         throw new Error("REFNO is missing from the order object");
       }
@@ -20,7 +21,7 @@ const UpdateStatusModal = ({ isOpen, setIsOpen, order, updateOrderStatus }) => {
       const response = await putAPI("/update-order-status", {
         ORDERNO: order.ORDERNO,
         newStatus: newStatus,
-        REFNO: order.REFNO, // REFNO'yu gönderdiğimizden emin olalım
+        REFNO: order.REFNO,
       });
 
       if (response.success) {
@@ -40,6 +41,14 @@ const UpdateStatusModal = ({ isOpen, setIsOpen, order, updateOrderStatus }) => {
 
   if (!isOpen) return null;
 
+  // Kullanıcı rolüne göre durum listesini filtrele
+  const filteredStatusList = statusList.filter((status) => {
+    if (session?.user?.role === "employee") {
+      return status.name !== "İptal";
+    }
+    return true;
+  });
+
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
       <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
@@ -53,7 +62,7 @@ const UpdateStatusModal = ({ isOpen, setIsOpen, order, updateOrderStatus }) => {
             onChange={(e) => setNewStatus(e.target.value)}
             className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
           >
-            {statusList.map((status) => (
+            {filteredStatusList.map((status) => (
               <option key={status.name} value={status.name}>
                 {status.name}
               </option>
@@ -66,7 +75,7 @@ const UpdateStatusModal = ({ isOpen, setIsOpen, order, updateOrderStatus }) => {
               onClick={() => setIsOpen(false)}
               disabled={isLoading}
             >
-              İptal
+              Kapat
             </button>
             <button
               type="submit"

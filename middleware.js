@@ -1,46 +1,72 @@
 import { withAuth } from "next-auth/middleware";
 import { NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
+
 export default withAuth(async function middleware(req) {
-  // Kullanıcının bilgisi alınır.
   const session = await getToken({
     req,
     secret: process.env.NEXTAUTH_SECRET,
   });
 
-  // Sayfanın URL'ini alıyoruz, ve izin verdiğimiz path ile eşleşip eşleşmediğini kontrol ediyoruz.
   const currentPath = req.nextUrl.pathname;
 
-  // NextAuth API isteklerini hariç tutmak için kontrol ediyoruz.
+  // Geliştirme ortamı için HTTP, üretim için HTTPS kullan
+  const protocol = process.env.NODE_ENV === "development" ? "http" : "https";
+  const host = req.headers.get("host") || "localhost:3000";
+  const baseUrl = `${protocol}://${host}`;
+
+  // NextAuth API isteklerini hariç tutmak için kontrol
   if (
     currentPath.startsWith("/api/auth") ||
     currentPath.startsWith("/api/reset-password")
   ) {
-    return NextResponse.next(); // İşlemi geçmesine izin veriyoruz.
+    return NextResponse.next();
   }
+
+  if (!session) {
+    // Kullanıcı giriş yapmamışsa login sayfasına yönlendir
+    return NextResponse.redirect(`${baseUrl}/login`);
+  }
+
+  // Admin ve employee rolleri için "/customer-orders-admin" erişimi
   if (
-    session &&
-    session.email === "caliskanariyayinlari@gmail.com" &&
+    (session.role === "admin" || session.role === "employee") &&
     currentPath.startsWith("/customer-orders-admin")
   ) {
     return NextResponse.next();
   }
+
+  // Employee rolü için özel yönlendirmeler
+  if (session.role === "employee") {
+    if (!currentPath.startsWith("/customer-orders-admin")) {
+      // Employee'nin gitmemesi gereken routelar için kontrol
+      if (
+        currentPath === "/" ||
+        currentPath.startsWith("/cart") ||
+        currentPath.startsWith("/shop") ||
+        currentPath.startsWith("/billings")
+      ) {
+        return NextResponse.redirect(`${baseUrl}/customer-orders-admin`);
+      }
+    }
+    return NextResponse.next();
+  }
+
+  // Partner rolü için "/customer-orders-admin" erişim engeli
   if (
-    session.email !== "caliskanariyayinlari@gmail.com" &&
+    session.role === "partner" &&
     currentPath.startsWith("/customer-orders-admin")
   ) {
-    return NextResponse.redirect(`http://localhost:3000/`);
+    return NextResponse.redirect(`${baseUrl}/`);
   }
 
-  if (!session) {
-    // Kullanıcının giriş yapıp yapmadığını kontrol ediyoruz.
-    return NextResponse.redirect(`${process.env.NEXTAUTH_URL}/login`);
-  }
+  // Diğer durumlar için normal akışa devam et
+  return NextResponse.next();
 });
 
-//https://nextjs.org/docs/app/building-your-application/routing/middleware#matcher
 export const config = {
   matcher: [
+    "/",
     "/cart/:path*",
     "/shop/:path*",
     "/urun-kategori/:path*",

@@ -32,6 +32,11 @@ export const authOptions = {
           loginPageRoute = data.findUser.CARYETKILI;
         }
 
+        //Personel girisi
+        if (data.findUser?.CARKOD === "7034923") {
+          loginPageRoute = data.findUser.CARYETKILI;
+        }
+
         if (!data || data.error || data == null) {
           throw new Error(
             data.error || "Bir hata oluştu. Lütfen tekrar deneyiniz."

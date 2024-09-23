@@ -15,10 +15,12 @@ import BoxAnimation from "../../public/boxanimation.json";
 import OrderSummary from "./OrderSummary";
 import { getAPI } from "@/services/fetchAPI";
 import { useSession } from "next-auth/react";
+// import { useEmployeeRedirect } from "@/functions/other/useEmployeeRedirect/useEmployeeRedirect";
 
 const ShoppingCart = () => {
   const [storedCart, setStoredCart] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
+  // useEmployeeRedirect();
   const { data: session } = useSession();
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [deleteIndex, setDeleteIndex] = useState(null);

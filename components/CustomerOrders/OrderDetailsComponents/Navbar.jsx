@@ -16,6 +16,13 @@ export default function Navbar({ orderNo, orderStatus }) {
   const handleCancelOrder = () => {
     setIsModalOpen(true);
   };
+  const getReturnLink = () => {
+    if (session?.user?.role === "Admin" || session?.user?.role === "employee") {
+      return "/customer-orders-admin";
+    } else {
+      return "/customer-orders";
+    }
+  };
 
   const confirmCancelOrder = async (cancelReason) => {
     setIsLoading(true);
@@ -84,13 +91,7 @@ export default function Navbar({ orderNo, orderStatus }) {
               : "IPTAL ET"}
           </button>
         )}
-        <Link
-          href={`${
-            session?.user?.role === "Admin"
-              ? "/customer-orders-admin"
-              : "/customer-orders"
-          }`}
-        >
+        <Link href={getReturnLink()}>
           <button className="bg-blue-600 text-white rounded-xl px-2 py-1 w-46 text-sm hover:scale-110 hover:transition-all hover:duration-500 hover:ease-in-out hover:transform md:px-3 md:py-2">
             SİPARİŞLERE GERİ DÖN
           </button>

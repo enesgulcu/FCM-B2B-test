@@ -165,10 +165,19 @@ const CustomerOrdersList = () => {
 
   const handleChangePage = (direction) => {
     let newPage = page;
-    if (direction === "prev" && page > 0) {
-      newPage = page - 1;
-    } else if (direction === "next" && page < totalPages - 1) {
-      newPage = page + 1;
+    switch (direction) {
+      case "first":
+        newPage = 0;
+        break;
+      case "prev":
+        newPage = Math.max(0, page - 1);
+        break;
+      case "next":
+        newPage = Math.min(totalPages - 1, page + 1);
+        break;
+      case "last":
+        newPage = totalPages - 1;
+        break;
     }
     setPage(newPage);
     localStorage.setItem("currentOrderPage", newPage.toString());
@@ -229,7 +238,7 @@ const CustomerOrdersList = () => {
                 ? "cursor-not-allowed text-gray-300"
                 : "cursor-pointer hover:bg-gray-200 duration-300 hover:border-NavyBlue hover:rounded-xl"
             }`}
-            onClick={() => handleChangePage("prev")}
+            onClick={() => handleChangePage("first")}
           >
             <MdKeyboardDoubleArrowLeft />
           </div>
@@ -263,7 +272,7 @@ const CustomerOrdersList = () => {
                 ? "cursor-not-allowed text-gray-300 "
                 : "cursor-pointer hover:bg-gray-200 duration-300 hover:border-NavyBlue hover:rounded-xl"
             }`}
-            onClick={() => handleChangePage("next")}
+            onClick={() => handleChangePage("last")}
           >
             <MdKeyboardDoubleArrowRight />
           </div>

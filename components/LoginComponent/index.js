@@ -1,9 +1,9 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Loading from "../Loading";
 import Lottie from "lottie-react";
@@ -52,6 +52,18 @@ const LoginComponent = ({ pageRole }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [modalType, setModalType] = useState("");
+  const [shouldRedirect, setShouldRedirect] = useState(false);
+
+  const router = useRouter();
+  const { data: session, status } = useSession();
+
+  useEffect(() => {
+    if (status === "authenticated" && shouldRedirect) {
+      const redirectPath =
+        session.user.role === "employee" ? "/customer-orders-admin" : "/";
+      router.push(redirectPath);
+    }
+  }, [status, session, router, shouldRedirect]);
 
   const initialValues = {
     email: "",
@@ -65,8 +77,6 @@ const LoginComponent = ({ pageRole }) => {
     password: Yup.string().required("Parola zorunludur"),
   });
 
-  const router = useRouter();
-
   const handleSubmit = async (values) => {
     setIsLoading(true);
 
@@ -75,7 +85,6 @@ const LoginComponent = ({ pageRole }) => {
         email: values.email,
         password: values.password,
         role: pageRole,
-        callbackUrl: "/",
         redirect: false,
       });
 
@@ -87,7 +96,9 @@ const LoginComponent = ({ pageRole }) => {
           "Oluşturulan şifreniz mailinize gönderilmiştir. Lütfen kontrol ediniz."
         );
         setModalType("success");
-        return setIsModalOpen(true);
+        setIsModalOpen(true);
+        setTimeout(() => setIsModalOpen(false), 3000);
+        return;
       }
       if (result.error) {
         let response;
@@ -115,19 +126,22 @@ const LoginComponent = ({ pageRole }) => {
           setModalType("error");
         }
         setIsModalOpen(true);
+        setTimeout(() => setIsModalOpen(false), 3000);
       } else if (result.ok) {
         setModalMessage("Başarıyla giriş yaptınız. Yönlendiriliyorsunuz.");
         setModalType("success");
         setIsModalOpen(true);
         setTimeout(() => {
-          router.push("/");
-        }, 2000);
+          setIsModalOpen(false);
+          setShouldRedirect(true);
+        }, 3000);
       }
     } catch (error) {
       console.error("Login error:", error);
       setModalMessage("Bir hata oluştu. Lütfen tekrar deneyiniz.");
       setModalType("error");
       setIsModalOpen(true);
+      setTimeout(() => setIsModalOpen(false), 3000);
     } finally {
       setIsLoading(false);
     }
