@@ -490,7 +490,7 @@ const createSTKHAR = async (orderItem, lastSTKFISREFNO, siraNo) => {
 // };
 
 const createIRSHAR = async (orderItem, createdIRSFISREFNO, siraNo) => {
-  const newIRSHARREFNO = createdIRSFISREFNO;
+  const newIRSHARREFNO = await getAndIncrementRefNo("IRSHAR");
 
   const irsharEntry = {
     IRSHARTAR: now,
@@ -602,8 +602,6 @@ const createIRSHAR = async (orderItem, createdIRSFISREFNO, siraNo) => {
 
   try {
     const newIrsharData = await createNewData("IRSHAR", irsharEntry);
-    //console.log("newIrsharData", newIrsharData);
-
     return newIRSHARREFNO;
   } catch (error) {
     console.error("Yeni IRSHAR verisi oluşturulamadı:", error);
@@ -623,13 +621,48 @@ const getLastIRSFIS = async () => {
   return reducedIRSFIS;
 };
 
+const getAndIncrementRefNo = async (tableName) => {
+  const refNoField = `${tableName}REFNO`;
+  let currentRefNo;
+
+  // Mevcut en yüksek refno'yu al
+  let lastRecord;
+  if (tableName === "IRSFIS") {
+    lastRecord = await getLastIRSFIS();
+  } else {
+    lastRecord = await getDataByUniqueSingle(
+      tableName,
+      {},
+      { [refNoField]: "desc" }
+    );
+  }
+  currentRefNo = lastRecord ? lastRecord[refNoField] : 0;
+
+  // Yeni refno'yu hesapla
+  const newRefNo = currentRefNo + 1;
+
+  // Yeni bir kayıt oluştur veya mevcut kaydı güncelle
+  const updateData = { [refNoField]: newRefNo };
+  if (currentRefNo === 0) {
+    await createNewData(tableName, updateData);
+  } else {
+    await updateDataByAny(
+      tableName,
+      { [refNoField]: currentRefNo },
+      updateData
+    );
+  }
+
+  return newRefNo;
+};
+
 const createIRSFIS = async (
   orderData,
   lastIRSFIS,
   createdSTKFISREFNO,
   lastSTKFIS
 ) => {
-  const newIRSFISREFNO = lastIRSFIS.IRSFISREFNO + 1;
+  const newIRSFISREFNO = await getAndIncrementRefNo("IRSFIS");
   const irsFisDate = new Date();
   const irsFisHour = irsFisDate.getHours().toString().padStart(2, "0");
   const irsFisMinute = irsFisDate.getMinutes().toString().padStart(2, "0");
@@ -738,8 +771,6 @@ const createIRSFIS = async (
   };
 
   const newIrsfisData = await createNewData("IRSFIS", irsfisEntry);
-  //console.log("newIrsfisData", newIrsfisData);
-
   return newIRSFISREFNO;
 };
 
