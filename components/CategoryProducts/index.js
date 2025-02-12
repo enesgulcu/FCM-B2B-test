@@ -67,6 +67,9 @@ function CategoryProducts({ showSearchAndCart = false }) {
   const { productDetail, changeProductDetail } = useProductDetailStore(); // productDetail STKKOD değeri alır,changeProductDetail productDetail'i değiştirir
   const [loading, setLoading] = useState(true);
 
+  //############# BAKIM MODU ################
+  const [isDisabled, setIsDisabled] = useState(false); // siparişi kapatıp açmak için kullanacağız.
+
   const cartItemCount = useCartItemCount();
   const toggleSearchPanel = () => {
     setIsSearchOpen(!isSearchOpen);
@@ -554,10 +557,11 @@ function CategoryProducts({ showSearchAndCart = false }) {
                                   {errors.quantity}
                                 </div>
                               )}
+
                               <button
                                 type="submit"
                                 className={`flex flex-row items-center justify-center gap-2 ml-2 sm:ml-4 lg:ml-2 text-white font-bold ${
-                                  urun.STKOZKOD1 === "2"
+                                  urun.STKOZKOD1 === "2" || isDisabled
                                     ? "bg-gray-400 cursor-not-allowed"
                                     : "bg-LightBlue/75 hover:scale-105 transition-all transform easy-in-out duration-500"
                                 } pl-2 pr-9 py-2 rounded-full relative w-[130px] sm:w-[160px] h-[40px] text-[13px] sm:text-[15px]`}
@@ -566,7 +570,7 @@ function CategoryProducts({ showSearchAndCart = false }) {
                                     handleSubmit(e);
                                   }
                                 }}
-                                disabled={urun.STKOZKOD1 === "2"}
+                                disabled={urun.STKOZKOD1 === "2" || isDisabled}
                               >
                                 {urun.addingToCart ? (
                                   <div className="flex flex-row items-center justify-center gap-1">
@@ -575,11 +579,15 @@ function CategoryProducts({ showSearchAndCart = false }) {
                                     <div className="h-2 w-2 rounded-full animate-pulse bg-blue-900"></div>
                                   </div>
                                 ) : (
-                                  <>Sepete Ekle</>
+                                  isDisabled ? (
+                                    <>Bakımda</>
+                                  ) : (
+                                    <>Sepete Ekle</>
+                                  )
                                 )}
                                 <span
                                   className={`absolute -top-1 -right-2 text-white bg-gradient-to-r ${
-                                    urun.STKOZKOD1 === "2"
+                                    urun.STKOZKOD1 === "2" || isDisabled
                                       ? "from-gray-500 to-gray-600"
                                       : "from-sky-600 to-cyan-700"
                                   } p-3 border-4 border-white rounded-full transition-all duration-500 ease-out transform`}
@@ -595,6 +603,7 @@ function CategoryProducts({ showSearchAndCart = false }) {
                                   )}
                                 </span>
                               </button>
+                              
                             </div>
                           </div>
                         </Form>
