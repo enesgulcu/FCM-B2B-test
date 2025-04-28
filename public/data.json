@@ -612,8 +612,20 @@
     "stkkod": "NAHEÖ"
   },
   {
-    "path": "/uploads/Okuyorum Anlıyorum - OA1.webp",
-    "stkkod": "OA1"
+    "path": "/uploads/ca_yaz_tatili_1.jpg",
+    "stkkod": "ÇAYT1"
+  },
+  {
+    "path": "/uploads/ca_yaz_tatili_2.jpg",
+    "stkkod": "ÇAYT2"
+  },
+  {
+    "path": "/uploads/ca_yaz_tatili_3.jpg",
+    "stkkod": "ÇAYT3"
+  },
+  {
+    "path": "/uploads/ca_yaz_tatili_4.jpg",
+    "stkkod": "ÇAYT4"
   }
 
 ]
