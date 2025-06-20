@@ -68,7 +68,7 @@ function CategoryProducts({ showSearchAndCart = false }) {
   const [loading, setLoading] = useState(true);
 
   //############# BAKIM MODU ################
-  const [isDisabled, setIsDisabled] = useState(false); // siparişi kapatıp açmak için kullanacağız.
+  const [isDisabled, setIsDisabled] = useState(true); // siparişi kapatıp açmak için kullanacağız.
 
   const cartItemCount = useCartItemCount();
   const toggleSearchPanel = () => {
