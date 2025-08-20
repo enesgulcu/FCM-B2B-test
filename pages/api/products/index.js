@@ -6,8 +6,9 @@ const handler = async (req, res) => {
   }
   if (req.method === "GET") {
     try {
-      const dataA = await getDataByMany("STKKART", { STKOZKOD1: "A" }, 2024);
-      const data2 = await getDataByMany("STKKART", { STKOZKOD1: "2" }, 2024);
+      // 2025 veritabanı (varsayılan prisma istemcisi)
+      const dataA = await getDataByMany("STKKART", { STKOZKOD1: "A" });
+      const data2 = await getDataByMany("STKKART", { STKOZKOD1: "2" });
 
       const combinedData = [...dataA, ...data2];
 
