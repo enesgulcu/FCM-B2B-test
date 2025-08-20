@@ -1,15 +1,12 @@
-import LoginContainer from '@/containers/LoginContainer'
-import React from 'react'
-import Bakimda from "@/components/Bakimda";
-
+import LoginContainer from "@/containers/LoginContainer";
 
 function LoginPage() {
   return (
     <div>
-          <Bakimda />  
-        {/*<LoginContainer/>*/}
+      {/* <Bakimda />  */}
+      <LoginContainer />
     </div>
-  )
+  );
 }
 
-export default LoginPage
+export default LoginPage;

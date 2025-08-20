@@ -33,7 +33,8 @@ const CustomerOrdersList = () => {
 
     const fetch = async () => {
       try {
-        const data = await getAPI("/adminorders");
+        const rawData = await getAPI("/adminorders");
+        const data = Array.isArray(rawData) ? rawData : [rawData];
         // Group orders by ORDERNO
         const groupedOrders = data.reduce((acc, order) => {
           if (!acc[order.ORDERNO]) {

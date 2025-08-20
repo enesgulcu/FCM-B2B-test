@@ -1,10 +1,11 @@
 import {
   createNewData,
   getAllData,
-  updateDataByAny,
   getDataByUnique,
   getDataByUniqueSingle,
+  updateDataByAny,
 } from "@/services/serviceOperations";
+import { generateDeterministic12CharKey } from "@/utils/generateCargoKey";
 
 const now = new Date(new Date().getTime() + 3 * 60 * 60 * 1000);
 
@@ -33,6 +34,8 @@ const prepareOrderData = (
   satisIrsaliyesiEvrNo
 ) => {
   const orderNo = generateOrderNo(userId);
+  // Tüm sipariş kalemleri için aynı kısa cargo key üret
+  const shortCargoKey = generateDeterministic12CharKey(orderNo);
   const orderHour = now.getUTCHours().toString().padStart(2, "0");
   const orderMinutes = now.getUTCMinutes().toString().padStart(2, "0");
   const orderSeconds = now.getUTCSeconds().toString().padStart(2, "0");
@@ -51,6 +54,7 @@ const prepareOrderData = (
 
   const orderItems = cartItems.map((item) => ({
     ...baseOrderData,
+    KARGOTAKIPNO: shortCargoKey,
     STKKOD: item.STKKOD,
     STKNAME: item.STKCINSI || null,
     STKCINSI: item.STKCINSI || null,
@@ -60,6 +64,10 @@ const prepareOrderData = (
     CIKISFISEVRNO: cikisFisEvrNo,
     SATISIRSEVRNO: satisIrsaliyesiEvrNo,
     HARREFDEGER1: harRefDeger,
+    // EKXTRA7 artık kullanılmıyor; anahtar KARGOTAKIPNO'da tutulur
+    EKXTRA7: null,
+    EKXTRA8: null,
+    EKXTRA9: null,
   }));
   return orderItems;
 };
@@ -186,7 +194,6 @@ const createSIRKETLOG = async (stkfisRefNo, orderDate) => {
 };
 
 const createIRSHAR = async (orderItem, newIRSFISREFNO, siraNo) => {
-
   const irsharEntry = {
     IRSHARTAR: now,
     IRSHARREFNO: newIRSFISREFNO,
@@ -298,11 +305,9 @@ const createIRSHAR = async (orderItem, newIRSFISREFNO, siraNo) => {
   try {
     const newIrsharData = await createNewData("IRSHAR", irsharEntry);
 
-    if(newIrsharData.error || !newIrsharData) {
+    if (newIrsharData.error || !newIrsharData) {
       throw newIrsharData.error;
     }
-
-
   } catch (error) {
     console.error("Yeni IRSHAR verisi oluşturulamadı:", error);
     throw error;
@@ -328,10 +333,15 @@ const getLastSTKFISAndIRSFIS = async (orderData) => {
       getDataByUniqueSingle("IRSFIS", {}, { IRSFISREFNO: "desc" }),
     ]);
 
-    const newSFNumber = parseInt(lastSTKFIS.STKFISEVRAKNO1.split("-")[1]) + 1;
-    const newWEBNumber = parseInt(lastSTKFIS.STKFISEVRAKNO2.split("-")[1]) + 1;
+    let newSFNumber, newWEBNumber;
 
-    
+    if (lastSTKFIS && lastSTKFIS.STKFISEVRAKNO1 && lastSTKFIS.STKFISEVRAKNO2) {
+      newSFNumber = parseInt(lastSTKFIS.STKFISEVRAKNO1.split("-")[1]) + 1;
+      newWEBNumber = parseInt(lastSTKFIS.STKFISEVRAKNO2.split("-")[1]) + 1;
+    } else {
+      newSFNumber = 1; // veya istediğin başlangıç değeri
+      newWEBNumber = 1;
+    }
 
     const irsFisDate = new Date();
     const irsFisHour = irsFisDate.getHours().toString().padStart(2, "0");
@@ -490,11 +500,9 @@ const getLastSTKFISAndIRSFIS = async (orderData) => {
       STKFISMUHREFNO: 0,
     };
 
-    
     await Promise.all([
       createNewData("IRSFIS", newIRSFISData),
       createNewData("STKFIS", newSTKFISData),
-      
     ]);
 
     let siraNo = 0;
@@ -503,7 +511,6 @@ const getLastSTKFISAndIRSFIS = async (orderData) => {
       siraNo++;
       const createdIRSHAR = await createIRSHAR(item, newIRSFISREFNO, siraNo);
     }
-    
 
     return { lastSTKFISREFNO, newIRSFISREFNO, newSFNumber, newWEBNumber };
   } catch (error) {
@@ -512,15 +519,14 @@ const getLastSTKFISAndIRSFIS = async (orderData) => {
   }
 };
 
-
 export default async function handler(req, res) {
   if (req.method === "POST") {
     try {
       const { cartItems, totalPrice, userId, userName, talep } = req.body;
 
-
       // [HARREFNO, EVRAKNO] verileri çek -> +1 ekle ve GÜNCELLE -> güncel veriyi döndür.
-      const { harRefDeger, cikisFisEvrNo, satisIrsaliyesiEvrNo } = await getAndUpdateReferences();
+      const { harRefDeger, cikisFisEvrNo, satisIrsaliyesiEvrNo } =
+        await getAndUpdateReferences();
 
       // Sipariş içerisindeki tüm ürünlerin bilgisi ve kaydı burada tutulur. (orderItems)
       // Tüm siparişler burada tutuluyor (roderItems)
@@ -536,9 +542,9 @@ export default async function handler(req, res) {
 
       // STKFIS ve IRSFIS verilerini al -> GÜNCELLE -> VERİ TABANINA EKLE -> güncel veriyi döndür.
 
-      const { lastSTKFISREFNO, newIRSFISREFNO, newSFNumber,  newWEBNumber} = await getLastSTKFISAndIRSFIS(orderItems);
+      const { lastSTKFISREFNO, newIRSFISREFNO, newSFNumber, newWEBNumber } =
+        await getLastSTKFISAndIRSFIS(orderItems);
 
-      
       // Tüm siparişlerin kaydı burada yapılıyor
       for (const item of orderItems) {
         const entry = {
@@ -560,35 +566,36 @@ export default async function handler(req, res) {
         const responseCreateNewData = await createNewData("ALLORDERS", entry);
       }
 
-
       // CARKART tablosundaki CARCIKIRSTOP değerini güncelle
       const userCARKART = await getDataByUnique("CARKART", { CARKOD: userId });
 
-      if (userCARKART && typeof userCARKART === "object" && !userCARKART.error) {
-
+      if (
+        userCARKART &&
+        typeof userCARKART === "object" &&
+        !userCARKART.error
+      ) {
         const currentCARCIKIRSTOP = parseFloat(userCARKART.CARCIKIRSTOP) || 0;
         const newCARCIKIRSTOP = currentCARCIKIRSTOP + totalPrice;
 
-        const responseUpdateDataByAny = await updateDataByAny("CARKART", { CARKOD: userId }, { CARCIKIRSTOP: newCARCIKIRSTOP });
+        const responseUpdateDataByAny = await updateDataByAny(
+          "CARKART",
+          { CARKOD: userId },
+          { CARCIKIRSTOP: newCARCIKIRSTOP }
+        );
       }
 
-
-      
       return res.status(200).json({
         success: true,
         message: "Order items created successfully",
-
       });
-
     } catch (error) {
-        console.error("Order creation error:", error);
-        res.status(500).json({
-          success: false,
-          message: "Error creating order items",
-          error: error.message,
-        });
-      }
-
+      console.error("Order creation error:", error);
+      res.status(500).json({
+        success: false,
+        message: "Error creating order items",
+        error: error.message,
+      });
+    }
   } else if (req.method === "GET") {
     try {
       const allOrders = await getAllData("ALLORDERS");

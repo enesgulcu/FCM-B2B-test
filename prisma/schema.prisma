@@ -9,592 +9,402 @@ generator client {
 
 datasource db {
   provider = "sqlserver"
-  url      = env("DATABASE_URL")
+  url      = env("DATABASE_URL_2025")
 }
 
 model CARKART {
-  CARKOD           String     @id
-  CARBAKIYE        Float
-  CARBORCTOP       Float
-  CARCIKIRSTOP     Float?    @unique
-  CARALACAKTOP     Float
-  CARYETKILI       String?
-  CARUNVAN         String?
-  CARUNVAN3        String?
-  CAROZKOD1        String?
-  CAROZKOD2        String?
-  CAROZKOD3        String?
-  CAROZKOD4        String?
-  CAROZKOD5        String?
+  CARKOD       String  @id
+  CARBAKIYE    Float
+  CARBORCTOP   Float
+  CARCIKIRSTOP Float?  @unique
+  CARALACAKTOP Float
+  CARYETKILI   String?
+  CARUNVAN     String?
+  CARUNVAN3    String?
+  CAROZKOD1    String?
+  CAROZKOD2    String?
+  CAROZKOD3    String?
+  CAROZKOD4    String?
+  CAROZKOD5    String?
+  CARVERHESNO  String? // yeni eklendi
 }
 
 model STKKART {
-  STKKOD           String     @id  
-  STKCINSI         String?    
-  STKBAKIYE        Float
-  STKEKDATE1       DateTime?
-  STKOZKOD1        String?
-  STKOZKOD3        String? 
-  STKOZKOD2        String? 
-  STKOZKOD5        String? 
+  STKKOD     String    @id
+  STKCINSI   String?
+  STKBAKIYE  Float
+  STKEKDATE1 DateTime?
+  STKOZKOD1  String?
+  STKOZKOD3  String?
+  STKOZKOD2  String?
+  STKOZKOD5  String?
 }
 
 model CARHAR {
-  CARHARCARKOD   String     @id
-  CARHARREFNO    Int?
-  CARHARTAR      DateTime?
-  CARHARCARUNVAN String?
-  CARHARISTIPKOD String?
-  CARHARACIKLAMA String?
-  CARHARTUTAR    Int?
-  CARHARGCFLAG   Int?
-  CARHARVADETAR  DateTime?
+  CARHARCARKOD    String    @id
+  CARHARREFNO     Int?
+  CARHARTAR       DateTime?
+  CARHARCARUNVAN  String?
+  CARHARISTIPKOD  String?
+  CARHARACIKLAMA  String?
+  CARHARTUTAR     Int?
+  CARHARGCFLAG    Int?
+  CARHARVADETAR   DateTime?
   CARHARACIKLAMA1 String?
 }
 
 model FATFIS {
-  FATFISREFNO  Int         @id
+  FATFISREFNO    Int  @id
   FATFISCARREFNO Int?
-
 }
-
-
 
 model FATHAR {
-  FATHARCARKOD     String @id
-  FATHARREFNO      Int?
-  FATHARTAR        DateTime?
-  FATHARSTKKOD     String?
-  FATHARSTKCINS    String?
-  FATHARMIKTAR     Int?
-  FATHARTOPLAMTUT  Float
-  FATHARFIYAT      Int?
-  FATHARTUTAR      Int?
+  FATHARCARKOD    String    @id
+  FATHARREFNO     Int?
+  FATHARTAR       DateTime?
+  FATHARSTKKOD    String?
+  FATHARSTKCINS   String?
+  FATHARMIKTAR    Int?
+  FATHARTOPLAMTUT Float
+  FATHARFIYAT     Int?
+  FATHARTUTAR     Int?
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 //SIPARIS MODELLERI
-model STKFIS{
-  STKFISTAR          DateTime
-  STKFISREFNO        Int
-  STKFISTIPI         Int
-  STKFISGCFLAG       Int
-  STKFISKAYONC       Int
-  STKFISDEPO         Int
-  STKFISOZELFIS      Int
-  STKFISIADE         Int
-  STKFISKAYNAK       Int
-  STKFISCARKOD       String
-  STKFISREFNO2       Int
-  STKFISANADEPO      String?
-  STKFISKARDEPO      String?
-  STKFISOZKOD1       String?
-  STKFISOZKOD2       String?
-  STKFISOZKOD3       String?
-  STKFISACIKLAMA1    String
-  STKFISACIKLAMA2    String?
-  STKFISACIKLAMA3    String?
-  STKFISEVRAKNO1     String
-  STKFISEVRAKNO2     String
-  STKFISEVRAKNO3     String?
-  STKFISDOVTAR       DateTime
-  STKFISPARTIKOD     String?
-  STKFISMASMER       String?
-  STKFISTOPBTUT      Float
-  STKFISTOPISK       Int
-  STKFISTOPNTUT      Float
-  STKFISTOPKDV       Int
-  STKFISTOPKTUT      Float
-  STKFISSEVNO        Int
-  STKFISISYKOD       String
-  STKFISOTVFLAG      Int
-  STKFISTOPOTV       Int
-  STKFISTOPOTUT      Float
-  STKFISDOVKOD       String?
-  STKFISDOVTUR       String?
-  STKFISDOVKUR       Int
-  STKFISDOVTOP       Int
-  STKFISTRNTAR       DateTime
-  STKFISTRNREFNO     Int
-  STKFISTRNTIPI      Int
-  STKFISDISTIP       Int
-  STKFISDISKOD       String
-  STKFISMUHREFNO     Int
+model STKFIS {
+  STKFISTAR       DateTime
+  STKFISREFNO     Int
+  STKFISTIPI      Int
+  STKFISGCFLAG    Int
+  STKFISKAYONC    Int
+  STKFISDEPO      Int
+  STKFISOZELFIS   Int
+  STKFISIADE      Int
+  STKFISKAYNAK    Int
+  STKFISCARKOD    String
+  STKFISREFNO2    Int
+  STKFISANADEPO   String?
+  STKFISKARDEPO   String?
+  STKFISOZKOD1    String?
+  STKFISOZKOD2    String?
+  STKFISOZKOD3    String?
+  STKFISACIKLAMA1 String
+  STKFISACIKLAMA2 String?
+  STKFISACIKLAMA3 String?
+  STKFISEVRAKNO1  String
+  STKFISEVRAKNO2  String
+  STKFISEVRAKNO3  String?
+  STKFISDOVTAR    DateTime
+  STKFISPARTIKOD  String?
+  STKFISMASMER    String?
+  STKFISTOPBTUT   Float
+  STKFISTOPISK    Int
+  STKFISTOPNTUT   Float
+  STKFISTOPKDV    Int
+  STKFISTOPKTUT   Float
+  STKFISSEVNO     Int
+  STKFISISYKOD    String
+  STKFISOTVFLAG   Int
+  STKFISTOPOTV    Int
+  STKFISTOPOTUT   Float
+  STKFISDOVKOD    String?
+  STKFISDOVTUR    String?
+  STKFISDOVKUR    Int
+  STKFISDOVTOP    Int
+  STKFISTRNTAR    DateTime
+  STKFISTRNREFNO  Int
+  STKFISTRNTIPI   Int
+  STKFISDISTIP    Int
+  STKFISDISKOD    String
+  STKFISMUHREFNO  Int
 
   @@id([STKFISCARKOD, STKFISEVRAKNO1])
 }
 
 model ALLORDERS {
-  DATE                     DateTime?
-  ORDERNO                  String @id
-  CARKOD                   String
-  CARUNVAN                 String
-  ID                       Int?
-  STKKOD                   String
-  STKNAME                  String?
-  STKCINSI                 String?
-  STKADET                  Int
-  STKBIRIMFIYAT            Float
-  STKBIRIMFIYATTOPLAM      Float
-  ORDERFIYATTOPLAM         Float
-  ACIKLAMA                 String?
-  CIKISFISEVRNO            Int
-  SATISIRSEVRNO            Int
-  HARREFDEGER1             Int
-  STKFISREFNO              Int
-  ORDERYIL                 Int
-  ORDERAY                  Int
-  ORDERGUN                 Int
-  ORDERSAAT                String
-  STKFISEVRAKNO1           String?
-  STKFISEVRAKNO2           String?
-  ORDERSTATUS              String?
-  TALEP                    String?
-  CEVAP                    String?
-  REFNO                    Int? 
-  KARGO                    String?
-  KARGOTAKIPNO             String?
-  EKXTRA7                  Float?
-  EKXTRA8                  Float?
-  EKXTRA9                  Float?
+  DATE                DateTime?
+  ORDERNO             String    @id
+  CARKOD              String
+  CARUNVAN            String
+  ID                  Int?
+  STKKOD              String
+  STKNAME             String?
+  STKCINSI            String?
+  STKADET             Int
+  STKBIRIMFIYAT       Float
+  STKBIRIMFIYATTOPLAM Float
+  ORDERFIYATTOPLAM    Float
+  ACIKLAMA            String?
+  CIKISFISEVRNO       Int
+  SATISIRSEVRNO       Int
+  HARREFDEGER1        Int
+  STKFISREFNO         Int
+  ORDERYIL            Int
+  ORDERAY             Int
+  ORDERGUN            Int
+  ORDERSAAT           String
+  STKFISEVRAKNO1      String?
+  STKFISEVRAKNO2      String?
+  ORDERSTATUS         String?
+  TALEP               String?
+  CEVAP               String?
+  REFNO               Int?
+  KARGO               String?
+  KARGOTAKIPNO        String?  @unique
+  EKXTRA7             Float?
+  EKXTRA8             Float?
+  EKXTRA9             Float?
 }
 
-
 model STKMIZDEGER {
-  STKKOD      String @unique
-  STKYIL      Int?   @unique
-  STKAY       Int?
-  STKRAKTIP   Int    @unique
-  STKDOVKOD   String?
-  STKBORC     Float
-  STKALACAK   Float
-  STKDEPO     String?
+  STKKOD    String  @unique
+  STKYIL    Int?    @unique
+  STKAY     Int?
+  STKRAKTIP Int     @unique
+  STKDOVKOD String?
+  STKBORC   Float
+  STKALACAK Float
+  STKDEPO   String?
 
   @@id([STKKOD, STKRAKTIP])
 }
 
-
 model STKMIZDEGERYEDEK {
-  ID         Int      @id @default(autoincrement())
-  DATE       DateTime @default(now())
-  STKKOD     String @unique
-  STKYIL     Int? @unique
-  STKAY      Int?
-  STKRAKTIP  Int @unique
-  STKDOVKOD  String?
-  STKBORC    Float
-  STKALACAK  Float
-  STKDEPO    String?
+  ID        Int      @id @default(autoincrement())
+  DATE      DateTime @default(now())
+  STKKOD    String   @unique
+  STKYIL    Int?     @unique
+  STKAY     Int?
+  STKRAKTIP Int      @unique
+  STKDOVKOD String?
+  STKBORC   Float
+  STKALACAK Float
+  STKDEPO   String?
 
   @@unique([STKKOD, STKRAKTIP, STKYIL])
 }
 
-
 model EVRAKNO {
-  EVRNOMODUL     Int
-  EVRSIRANO      Int
-  EVRACIKLAMA    String @unique
-  EVRONTAKI      String
-  EVRNO          Int
-  EVRHANEBOY     Int
+  EVRNOMODUL  Int
+  EVRSIRANO   Int
+  EVRACIKLAMA String @unique
+  EVRONTAKI   String
+  EVRNO       Int
+  EVRHANEBOY  Int
 
-@@id([EVRNOMODUL, EVRACIKLAMA, EVRONTAKI])
+  @@id([EVRNOMODUL, EVRACIKLAMA, EVRONTAKI])
 }
 
 model HARREFNO {
-  HARREFMODUL  Int @id
-  HARREFKONU   Int
-  HARREFDEGER  Int
+  HARREFMODUL Int @id
+  HARREFKONU  Int
+  HARREFDEGER Int
 }
 
-
 model IRSFIS {
-  IRSFISREFNO           Int      @id
-  IRSFISTAR             DateTime?
-  IRSFISTIPI            Int?      
-  IRSFISGCFLAG          Int?     
-  IRSFISKAYONC          Int?      
-  IRSFISIPTALFLAG       Int?      
-  IRSFISKAYNAK          Int?      
-  IRSFISSTKREFNO        Int?
-  IRSFISFATREFNO        Int?     
-  IRSFISFATTAR          DateTime? 
-  IRSFISFATKONT         Int?      
-  IRSFISFATFLAG         Int?      
-  IRSFISKAPFLAG         Int?      
-  IRSFISBASFLAG         Int?      
-  IRSFISOZELFIS         Int?      
-  IRSFISDEPOFLAG        Int?      
-  IRSFISIADEFLAG        Int?      
-  IRSFISKDVDAHILFLAG    Int?      
-  IRSFISTEVKIFATFLAG    Int?      
-  IRSFISANADEPO         String?
-  IRSFISPARTIKOD        String?
-  IRSFISODEMEKOD        String?
-  IRSFISSATKOD          String?
-  IRSFISMASMER          String?
-  IRSFISCARKOD          String?
-  IRSFISCARUNVAN        String?
-  IRSFISADRESNO         Int?      
-  IRSFISADRES1          String?
-  IRSFISADRES2          String?
-  IRSFISADRES3          String?
-  IRSFISPOSTAKOD        String?
-  IRSFISULKE            String?
-  IRSFISIL              String?
-  IRSFISILCE            String?
-  IRSFISVERDAIRE        String?
-  IRSFISVERHESNO        String?
-  IRSFISSAAT            String?
-  IRSFISVADETAR         DateTime?
-  IRSFISKDVVADETAR      DateTime? 
-  IRSFISFATURATAR       DateTime? 
-  IRSFISFATURANO        String?
-  IRSFISEVRAKNO1        String?
-  IRSFISEVRAKNO2        String?
-  IRSFISEVRAKNO3        String?
-  IRSFISOZKOD1          String?
-  IRSFISOZKOD2          String?
-  IRSFISOZKOD3          String?
-  IRSFISACIKLAMA1       String?
-  IRSFISACIKLAMA2       String?
-  IRSFISACIKLAMA3       String?
-  IRSFISHAZKOD          String?
-  IRSFISHAZTAR          DateTime? 
-  IRSFISHAZNOT          String?
-  IRSFISKONTKOD         String?
-  IRSFISKONTTAR         DateTime? 
-  IRSFISKONTNOT         String?
-  IRSFISONAYKOD         String?
-  IRSFISONAYTAR         DateTime? 
-  IRSFISONAYNOT         String?
-  IRSFISKDVORANI        Float?
-  IRSFISMALTOP          Float?
-  IRSFISKALINDYTOP      Float?
-  IRSFISKALINDTTOP      Float?
-  IRSFISSATINDTOP       Float?
-  IRSFISGENINDTOP       Float?
-  IRSFISSATMASTOP       Float?
-  IRSFISGENMASTOP       Float?
-  IRSFISBRUTTOPLAM      Float?
-  IRSFISKDVMATRAHI      Float?
-  IRSFISKDVTUTARI       Float?
-  IRSFISARATOPLAM       Float?
-  IRSFISKDVALTIINDTOP   Float?
-  IRSFISKDVALTIEKTOP    Float?
-  IRSFISGENTOPLAM       Float?
-  IRSFISTEVTUTAR        Float?
-  IRSFISDOVTAR          DateTime?
-  IRSFISDOVKOD          String?
-  IRSFISDOVTUR          String?
-  IRSFISDOVKUR          Float?    
-  IRSFISGENDOVTOP       Float?    
-  IRSFISTEVNO           Int?      
-  IRSFISTEVORAN         Float?    
-  IRSFISSEVNO           Int?      
-  IRSFISISYKOD          String?  
-  IRSFISOTVFLAG         Int?      
-  IRSFISOTVKDVBLOKAJ    Int?      
-  IRSFISTOPOTV          Float?    
-  IRSFISTOPOTUT         Float?
-  IRSFISTCKIMLIKNO      String?
-  IRSFISTRNTAR          DateTime? 
-  IRSFISTRNREFNO        Int?      
-  IRSFISTRNTIPI         Int?      
-  IRSFISEFATFLAG        Int?      
-  IRSFISEKVERGIINDTOP   Float?    
-  IRSFISEKVERGIILVTOP   Float?    
-  IRSFISEKVERGITOP      Float?    
-  IRSFISDISTIP          Int?      
-  IRSFISDISKOD          String?
+  IRSFISREFNO         Int       @id
+  IRSFISTAR           DateTime?
+  IRSFISTIPI          Int?
+  IRSFISGCFLAG        Int?
+  IRSFISKAYONC        Int?
+  IRSFISIPTALFLAG     Int?
+  IRSFISKAYNAK        Int?
+  IRSFISSTKREFNO      Int?
+  IRSFISFATREFNO      Int?
+  IRSFISFATTAR        DateTime?
+  IRSFISFATKONT       Int?
+  IRSFISFATFLAG       Int?
+  IRSFISKAPFLAG       Int?
+  IRSFISBASFLAG       Int?
+  IRSFISOZELFIS       Int?
+  IRSFISDEPOFLAG      Int?
+  IRSFISIADEFLAG      Int?
+  IRSFISKDVDAHILFLAG  Int?
+  IRSFISTEVKIFATFLAG  Int?
+  IRSFISANADEPO       String?
+  IRSFISPARTIKOD      String?
+  IRSFISODEMEKOD      String?
+  IRSFISSATKOD        String?
+  IRSFISMASMER        String?
+  IRSFISCARKOD        String?
+  IRSFISCARUNVAN      String?
+  IRSFISADRESNO       Int?
+  IRSFISADRES1        String?
+  IRSFISADRES2        String?
+  IRSFISADRES3        String?
+  IRSFISPOSTAKOD      String?
+  IRSFISULKE          String?
+  IRSFISIL            String?
+  IRSFISILCE          String?
+  IRSFISVERDAIRE      String?
+  IRSFISVERHESNO      String?
+  IRSFISSAAT          String?
+  IRSFISVADETAR       DateTime?
+  IRSFISKDVVADETAR    DateTime?
+  IRSFISFATURATAR     DateTime?
+  IRSFISFATURANO      String?
+  IRSFISEVRAKNO1      String?
+  IRSFISEVRAKNO2      String?
+  IRSFISEVRAKNO3      String?
+  IRSFISOZKOD1        String?
+  IRSFISOZKOD2        String?
+  IRSFISOZKOD3        String?
+  IRSFISACIKLAMA1     String?
+  IRSFISACIKLAMA2     String?
+  IRSFISACIKLAMA3     String?
+  IRSFISHAZKOD        String?
+  IRSFISHAZTAR        DateTime?
+  IRSFISHAZNOT        String?
+  IRSFISKONTKOD       String?
+  IRSFISKONTTAR       DateTime?
+  IRSFISKONTNOT       String?
+  IRSFISONAYKOD       String?
+  IRSFISONAYTAR       DateTime?
+  IRSFISONAYNOT       String?
+  IRSFISKDVORANI      Float?
+  IRSFISMALTOP        Float?
+  IRSFISKALINDYTOP    Float?
+  IRSFISKALINDTTOP    Float?
+  IRSFISSATINDTOP     Float?
+  IRSFISGENINDTOP     Float?
+  IRSFISSATMASTOP     Float?
+  IRSFISGENMASTOP     Float?
+  IRSFISBRUTTOPLAM    Float?
+  IRSFISKDVMATRAHI    Float?
+  IRSFISKDVTUTARI     Float?
+  IRSFISARATOPLAM     Float?
+  IRSFISKDVALTIINDTOP Float?
+  IRSFISKDVALTIEKTOP  Float?
+  IRSFISGENTOPLAM     Float?
+  IRSFISTEVTUTAR      Float?
+  IRSFISDOVTAR        DateTime?
+  IRSFISDOVKOD        String?
+  IRSFISDOVTUR        String?
+  IRSFISDOVKUR        Float?
+  IRSFISGENDOVTOP     Float?
+  IRSFISTEVNO         Int?
+  IRSFISTEVORAN       Float?
+  IRSFISSEVNO         Int?
+  IRSFISISYKOD        String?
+  IRSFISOTVFLAG       Int?
+  IRSFISOTVKDVBLOKAJ  Int?
+  IRSFISTOPOTV        Float?
+  IRSFISTOPOTUT       Float?
+  IRSFISTCKIMLIKNO    String?
+  IRSFISTRNTAR        DateTime?
+  IRSFISTRNREFNO      Int?
+  IRSFISTRNTIPI       Int?
+  IRSFISEFATFLAG      Int?
+  IRSFISEKVERGIINDTOP Float?
+  IRSFISEKVERGIILVTOP Float?
+  IRSFISEKVERGITOP    Float?
+  IRSFISDISTIP        Int?
+  IRSFISDISKOD        String?
 }
 
 model STKHAR {
-  STKHARTAR           DateTime
-  STKHARREFNO         Int     
-  STKHARTIPI          Int
-  STKHARGCFLAG        Int
-  STKHARKAYONC        Int
-  STKHARDEPO          Int
-  STKHAROZELFIS       Int
-  STKHARIADE          Int
-  STKHARKAYNAK        Int
-  STKHARCARKOD        String
-  STKHARREFNO2        Int
-  STKHARANADEPO       String?
-  STKHARKARDEPO       String?
-  STKHARSTKKOD        String
-  STKHARSTKCINS       String
-  STKHARSTKBRM        String?
-  STKHARBARKOD        String?
-  STKHAROZDESKOD      String?
-  STKHARBENZERKOD     String?
-  STKHARMIKTAR        Float
-  STKHARMIKTAR2       Float
-  STKHARMIKTAR3       Float
-  STKHARMIKTAR4       Float
-  STKHARMIKTAR5       Float
-  STKHARFIYAT         Float
-  STKHARTUTAR         Float
-  STKHARDOVKOD        String?
-  STKHARDOVTUR        String?
-  STKHARDOVTUTAR      Float
-  STKHAROZKOD         String?
-  STKHARACIKLAMA      String?
-  STKHARKDVYUZ        Float
-  STKHARISKYUZ1       Float
-  STKHARISKYUZ2       Float
-  STKHARISKYUZ3       Float
-  STKHARISKYUZ4       Float
-  STKHARISKYUZ5       Float
-  STKHARISKYTUT1      Float
-  STKHARISKYTUT2      Float
-  STKHARISKYTUT3      Float
-  STKHARISKYTUT4      Float
-  STKHARISKYTUT5      Float
-  STKHARISKGTUT1      Float
-  STKHARISKGTUT2      Float
-  STKHARISKGTUT3      Float
-  STKHARISKGTUT4      Float
-  STKHARISKGTUT5      Float
-  STKHARDIGERIND      Float
-  STKHARTOPLAMIND     Float
-  STKHARKDVMATRAH     Float
-  STKHARKDVTUTAR      Float
-  STKHARTOPLAMTUT     Float
-  STKHARVADETAR       DateTime
-  STKHARACIKLAMA1     String?
-  STKHARACIKLAMA2     String?
-  STKHARACIKLAMA3     String?
-  STKHARPARTINO       String?
-  STKHARMASMER        String?
-  STKHARSERINO1       String?
-  STKHARSERINO2       String?
-  STKHARRB1           Float
-  STKHARRB2           Float
-  STKHARRB3           Float
-  STKHARRB4           Float
-  STKHARRB5           Float
-  STKHARFIYTIP        String?
-  STKHARSIRANO        Int
-  STKHARTOPLAMMAS     Float
-  STKHARNETTUTAR      Float
-  STKHARNETFIYAT      Float
-  STKHARMALIYET       Float
-  STKHAROTVMATRAH     Float
-  STKHAROTVORAN       Float
-  STKHAROTVFIYAT      Float
-  STKHARTOPOTV        Float
-  STKHAROTVTUTAR      Float
-  STKHARDOVFIYAT      Float
-  STKHAREBTEN         Float
-  STKHAREBTBOY        Float
-  STKHAREBTYUK        Float
-  STKHAREBTHCM        Float
-  STKHAREBTAGR        Float
-  STKHAREKCHAR1       String?
-  STKHAREKCHAR2       String?
-  STKHAREKINT1        Int
-  STKHAREKINT2        Int
-  STKHAREKDATE1       DateTime
-  STKHAREKDATE2       DateTime
-  STKHAREKTUT1        Float
-  STKHAREKTUT2        Float
-  STKHAREKMIK1        Float
-  STKHAREKMIK2        Float
-  STKHAREKDOVTUT1     Float
-  STKHAREKDOVTUT2     Float
-  STKHAREKORAN1       Float
-  STKHAREKORAN2       Float
-  STKHARDOVKUR        Float
-  STKHARDISTIP        Int
-  STKHARDISKOD        String?
+  STKHARTAR       DateTime
+  STKHARREFNO     Int
+  STKHARTIPI      Int
+  STKHARGCFLAG    Int
+  STKHARKAYONC    Int
+  STKHARDEPO      Int
+  STKHAROZELFIS   Int
+  STKHARIADE      Int
+  STKHARKAYNAK    Int
+  STKHARCARKOD    String
+  STKHARREFNO2    Int
+  STKHARANADEPO   String?
+  STKHARKARDEPO   String?
+  STKHARSTKKOD    String
+  STKHARSTKCINS   String
+  STKHARSTKBRM    String?
+  STKHARBARKOD    String?
+  STKHAROZDESKOD  String?
+  STKHARBENZERKOD String?
+  STKHARMIKTAR    Float
+  STKHARMIKTAR2   Float
+  STKHARMIKTAR3   Float
+  STKHARMIKTAR4   Float
+  STKHARMIKTAR5   Float
+  STKHARFIYAT     Float
+  STKHARTUTAR     Float
+  STKHARDOVKOD    String?
+  STKHARDOVTUR    String?
+  STKHARDOVTUTAR  Float
+  STKHAROZKOD     String?
+  STKHARACIKLAMA  String?
+  STKHARKDVYUZ    Float
+  STKHARISKYUZ1   Float
+  STKHARISKYUZ2   Float
+  STKHARISKYUZ3   Float
+  STKHARISKYUZ4   Float
+  STKHARISKYUZ5   Float
+  STKHARISKYTUT1  Float
+  STKHARISKYTUT2  Float
+  STKHARISKYTUT3  Float
+  STKHARISKYTUT4  Float
+  STKHARISKYTUT5  Float
+  STKHARISKGTUT1  Float
+  STKHARISKGTUT2  Float
+  STKHARISKGTUT3  Float
+  STKHARISKGTUT4  Float
+  STKHARISKGTUT5  Float
+  STKHARDIGERIND  Float
+  STKHARTOPLAMIND Float
+  STKHARKDVMATRAH Float
+  STKHARKDVTUTAR  Float
+  STKHARTOPLAMTUT Float
+  STKHARVADETAR   DateTime
+  STKHARACIKLAMA1 String?
+  STKHARACIKLAMA2 String?
+  STKHARACIKLAMA3 String?
+  STKHARPARTINO   String?
+  STKHARMASMER    String?
+  STKHARSERINO1   String?
+  STKHARSERINO2   String?
+  STKHARRB1       Float
+  STKHARRB2       Float
+  STKHARRB3       Float
+  STKHARRB4       Float
+  STKHARRB5       Float
+  STKHARFIYTIP    String?
+  STKHARSIRANO    Int
+  STKHARTOPLAMMAS Float
+  STKHARNETTUTAR  Float
+  STKHARNETFIYAT  Float
+  STKHARMALIYET   Float
+  STKHAROTVMATRAH Float
+  STKHAROTVORAN   Float
+  STKHAROTVFIYAT  Float
+  STKHARTOPOTV    Float
+  STKHAROTVTUTAR  Float
+  STKHARDOVFIYAT  Float
+  STKHAREBTEN     Float
+  STKHAREBTBOY    Float
+  STKHAREBTYUK    Float
+  STKHAREBTHCM    Float
+  STKHAREBTAGR    Float
+  STKHAREKCHAR1   String?
+  STKHAREKCHAR2   String?
+  STKHAREKINT1    Int
+  STKHAREKINT2    Int
+  STKHAREKDATE1   DateTime
+  STKHAREKDATE2   DateTime
+  STKHAREKTUT1    Float
+  STKHAREKTUT2    Float
+  STKHAREKMIK1    Float
+  STKHAREKMIK2    Float
+  STKHAREKDOVTUT1 Float
+  STKHAREKDOVTUT2 Float
+  STKHAREKORAN1   Float
+  STKHAREKORAN2   Float
+  STKHARDOVKUR    Float
+  STKHARDISTIP    Int
+  STKHARDISKOD    String?
+
   @@id([STKHARCARKOD, STKHARSTKKOD])
 }
-
 
 model SIRKETLOG {
   SIRLOGMODUL     Int
@@ -632,10 +442,9 @@ model SIRKETLOG {
   @@id([SIRLOGMODUL, SIRLOGKONU, SIRLOGKYTTIPI, SIRLOGKYTREFNO])
 }
 
-
 model IRSHAR {
   IRSHARTAR       DateTime
-  IRSHARREFNO     Int  @id
+  IRSHARREFNO     Int      @id
   IRSHARTIPI      Int
   IRSHARGCFLAG    Int
   IRSHARKAYONC    Int

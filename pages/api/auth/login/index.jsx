@@ -2,10 +2,10 @@
 // import mailStringCheck from "@/functions/other/mailStringCheck";
 // import { NextApiRequest, NextApiResponse } from 'next';
 
-import { getDataByUnique, updateDataByAny } from "@/services/serviceOperations";
 import DecryptPassword from "@/functions/other/cryptology/decryptPassword";
-import PasswordGenerator from "@/functions/other/PasswordGenerator";
 import EncryptPassword from "@/functions/other/cryptology/encryptPassword";
+import PasswordGenerator from "@/functions/other/PasswordGenerator";
+import { getDataByUnique, updateDataByAny } from "@/services/serviceOperations";
 import sendPasswordEmail from "../../mail/sendMail";
 
 const handler = async (req, res) => {
@@ -36,11 +36,15 @@ const handler = async (req, res) => {
               },*/
 
       // CARUNVAN3 VE CAROZKOD3 değerlerine göre sorgulama yapılacak.
-      const findUser = await getDataByUnique("CARKART", {
-        CARUNVAN3: data.email,
-        CAROZKOD1: "A",
-        CAROZKOD3: "B2",
-      });
+      const findUser = await getDataByUnique(
+        "CARKART",
+        {
+          CARUNVAN3: data.email,
+          CAROZKOD1: "A",
+          CAROZKOD3: "B2",
+        },
+        2024
+      ); // 2024 veritabanından sorgulama yapıyoruz
 
       if (
         !findUser ||
@@ -96,7 +100,7 @@ const handler = async (req, res) => {
       ) {
         // Şifre Sıfırlama işlemleri burada yapılacak
         const newPassword = await PasswordGenerator(data.email);
-        console.log("##### 2- ŞİFRE ÜRETİLDİ", newPassword);
+        // console.log("##### 2- ŞİFRE ÜRETİLDİ", newPassword);
 
         // Şifreleme işlemi
         const encryptedPassword = await EncryptPassword(newPassword);
@@ -110,7 +114,8 @@ const handler = async (req, res) => {
         const updatePassword = await updateDataByAny(
           "CARKART",
           { CARKOD: findUser?.CARKOD },
-          { CAROZKOD5: encryptedPassword }
+          { CAROZKOD5: encryptedPassword },
+          2024 // 2024 veritabanında güncelleme yapıyoruz
         );
 
         // ("updatePassword: ", updatePassword);

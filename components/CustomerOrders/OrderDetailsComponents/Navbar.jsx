@@ -3,19 +3,36 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 import Modal from "../Modal";
 
-export default function Navbar({ orderNo, orderStatus }) {
+export default function Navbar({ orderNo, orderStatus, refNo }) {
   const { data: session } = useSession();
   const [isLoading, setIsLoading] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isOrderCancelled, setIsOrderCancelled] = useState(false);
+  const [currentStatus, setCurrentStatus] = useState(orderStatus);
 
-  useEffect(() => {
-    setIsOrderCancelled(orderStatus === "İptal");
-  }, [orderStatus]);
-
-  const handleCancelOrder = () => {
-    setIsModalOpen(true);
+  const handleCancelOrder = async () => {
+    if (!confirm("Bu siparişi iptal etmek istediğinizden emin misiniz?")) {
+      return;
+    }
+    setIsLoading(true);
+    try {
+      const response = await fetch("/api/orders/cancel", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ORDERNO: orderNo, REFNO: refNo }),
+      });
+      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(result.message || "Bir hata oluştu.");
+      }
+      alert("Sipariş başarıyla iptal edildi.");
+      setCurrentStatus("İptal");
+    } catch (error) {
+      console.error("Sipariş iptal hatası:", error);
+      alert(`Hata: ${error.message}`);
+    } finally {
+      setIsLoading(false);
+    }
   };
+
   const getReturnLink = () => {
     if (session?.user?.role === "Admin" || session?.user?.role === "employee") {
       return "/customer-orders-admin";
@@ -24,49 +41,10 @@ export default function Navbar({ orderNo, orderStatus }) {
     }
   };
 
-  const confirmCancelOrder = async (cancelReason) => {
-    setIsLoading(true);
-    try {
-      // Önce TALEP alanını güncelle
-      const sendRequestResponse = await fetch("/api/sendRequest", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ orderNo, talep: cancelReason }),
-      });
-
-      if (!sendRequestResponse.ok) {
-        throw new Error("TALEP alanı güncellenemedi");
-      }
-
-      // Sonra siparişi iptal et
-      const cancelOrderResponse = await fetch("/api/cancel-order", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ orderNo }),
-      });
-
-      if (!cancelOrderResponse.ok) {
-        throw new Error("Sipariş iptal edilemedi");
-      }
-
-      alert("Sipariş başarıyla iptal edildi");
-      setIsOrderCancelled(true);
-      window.location.reload();
-    } catch (error) {
-      console.error("Sipariş iptal edilirken hata oluştu:", error);
-      alert("Sipariş iptal edilirken bir hata oluştu");
-    } finally {
-      setIsLoading(false);
-      setIsModalOpen(false);
-    }
-  };
-
-  const isButtonDisabled =
-    isLoading || isOrderCancelled || orderStatus === "İptal";
+  const isCancellable = !["Fiş Çıkartıldı", "Tamamlandı", "İptal"].includes(
+    currentStatus
+  );
+  const isButtonDisabled = isLoading || !isCancellable;
 
   return (
     <>
@@ -80,15 +58,20 @@ export default function Navbar({ orderNo, orderStatus }) {
         </div>
         {session?.user?.role === "partner" && (
           <button
-            className="bg-red-500 text-white rounded-xl px-2 py-1 w-36 text-sm hover:scale-110 hover:transition-all hover:duration-500 hover:ease-in-out hover:transform md:py-2 disabled:opacity-50 disabled:hover:scale-100 disabled:cursor-not-allowed"
+            className={`rounded-xl px-2 py-1 w-36 text-sm hover:scale-110 hover:transition-all hover:duration-500 hover:ease-in-out hover:transform md:py-2 disabled:opacity-50 disabled:hover:scale-100 disabled:cursor-not-allowed ${
+              isButtonDisabled
+                ? "bg-gray-400 text-gray-700"
+                : "bg-red-500 text-white"
+            }`}
             onClick={handleCancelOrder}
             disabled={isButtonDisabled}
+            title={!isCancellable ? "Bu sipariş iptal edilemez." : ""}
           >
             {isLoading
               ? "İPTAL EDİLİYOR..."
-              : isOrderCancelled
+              : currentStatus === "İptal"
               ? "İPTAL EDİLDİ"
-              : "IPTAL ET"}
+              : "İPTAL ET"}
           </button>
         )}
         <Link href={getReturnLink()}>
@@ -97,13 +80,6 @@ export default function Navbar({ orderNo, orderStatus }) {
           </button>
         </Link>
       </div>
-      <Modal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onConfirm={confirmCancelOrder}
-        title="Siparişi İptal Et"
-        content="Bu siparişi iptal etmek istediğinizden emin misiniz? Lütfen iptal sebebini belirtin."
-      />
     </>
   );
 }

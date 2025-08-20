@@ -1,8 +1,37 @@
-import React from "react";
+import React, { useState } from "react";
 import { FaTimes } from "react-icons/fa";
 
 function OrderEditModal({ isOpen, setIsOpen, order }) {
+  const [selectedStatus, setSelectedStatus] = useState(order.status);
+
   if (!isOpen) return null;
+
+  const handleUpdateStatus = async () => {
+    try {
+      const res = await fetch("/api/orders/update-status", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          siparisNo: order.siparisNo, // Değiştirmen gerekirse bildir
+          yeniDurum: selectedStatus,
+        }),
+      });
+
+      const result = await res.json();
+
+      if (result.success) {
+        alert("Sipariş durumu güncellendi.");
+        setIsOpen(false);
+        window.location.reload();
+      } else {
+        alert(result.message || "Güncelleme başarısız.");
+      }
+    } catch (error) {
+      console.error("Durum güncellenemedi:", error);
+      alert("Sunucu hatası.");
+    }
+  };
+
   return (
     <div className="fixed flex justify-center items-center top-0 left-0 w-full h-full bg-black bg-opacity-60">
       <div className="bg-white md:w-[40%] w-[90%] rounded-md p-7">
@@ -16,16 +45,18 @@ function OrderEditModal({ isOpen, setIsOpen, order }) {
           Sipariş Detayları
         </h1>
 
-        <table className="border w-full mb-5 text-[10px] md:text-base  ">
-          <thead className="text-left ">
-            <th className="p-2">Ürün Adı</th>
-            <th className="pl-3">Adedi</th>
-            <th>Fiyatı</th>
-            <th>Stok Bilgisi</th>
+        <table className="border w-full mb-5 text-[10px] md:text-base">
+          <thead className="text-left">
+            <tr>
+              <th className="p-2">Ürün Adı</th>
+              <th className="pl-3">Adedi</th>
+              <th>Fiyatı</th>
+              <th>Stok Bilgisi</th>
+            </tr>
           </thead>
           <tbody className="border text-center">
             {order.products.map((product, index) => (
-              <tr key={index} className="text-left ">
+              <tr key={index} className="text-left">
                 <td className="p-2 text-LightBlue hover:underline cursor-pointer">
                   {product.name}
                 </td>
@@ -33,15 +64,16 @@ function OrderEditModal({ isOpen, setIsOpen, order }) {
                   <input
                     type="number"
                     min="1"
-                    className="border rounded-md p-2 w-20 text-center my-1 "
+                    className="border rounded-md p-2 w-20 text-center my-1"
                     value={product.productCount}
+                    readOnly
                   />
                 </td>
                 <td>{product.price}₺</td>
                 <td
                   className={`${
                     product.isStock ? "text-green-500" : "text-red-500"
-                  } `}
+                  }`}
                 >
                   {product.isStock === true ? "Stokta Var" : "Stokta Yok"}
                 </td>
@@ -49,42 +81,48 @@ function OrderEditModal({ isOpen, setIsOpen, order }) {
             ))}
           </tbody>
         </table>
-        <div className="  grid grid-cols-3  my-5">
-          <div className=" flex items-center">
-            <h1 className="text-NavyBlue font-[600] text-xs md:text-base ">
-              Sipariş Durumu :
+
+        {/* Sipariş Durumu */}
+        <div className="grid grid-cols-3 my-5">
+          <div className="flex items-center">
+            <h1 className="text-NavyBlue font-[600] text-xs md:text-base">
+              Sipariş Durumu:
             </h1>
           </div>
           <div className="col-span-2">
             <select
-              className={`p-1 border rounded-md text-CustomGray w-36 `}
+              className="p-1 border rounded-md text-CustomGray w-36"
               name="filterActions"
-              value={order.status}
+              value={selectedStatus}
+              onChange={(e) => setSelectedStatus(e.target.value)}
             >
-              <option hidden>Toplu İşlemler</option>
-              <option>Toplu İşlemler</option>
-              <option>Hazırlanıyor</option>
-              <option>Kargoya verildi</option>
-              <option>Ödeme bekleniyor</option>
-              <option>Tamamlandı</option>
-              <option>İptal edildi</option>
+              <option value="SIPARIS_OLUSTURULDU">Sipariş Oluşturuldu</option>
+              <option value="HAZIRLANIYOR">Hazırlanıyor</option>
+              <option value="KARGOYA_VERILDI">Kargoya Verildi</option>
+              <option value="ODEME_BEKLENIYOR">Ödeme Bekleniyor</option>
+              <option value="TAMAMLANDI">Tamamlandı</option>
+              <option value="IPTAL_EDILDI">İptal Edildi</option>
+              <option value="FIS_CIKARILDI">Fiş Çıkarıldı</option>
             </select>
           </div>
         </div>
-        <div className="grid grid-cols-3 mb-5 text-xs md:text-base ">
-          <div className=" flex items-center">
-            <h1 className="text-NavyBlue font-[600]">Sipariş Tarihi :</h1>
-          </div>
 
+        <div className="grid grid-cols-3 mb-5 text-xs md:text-base">
+          <div className="flex items-center">
+            <h1 className="text-NavyBlue font-[600]">Sipariş Tarihi:</h1>
+          </div>
           <div>
-            <p className=" p-2 ">{order.date}</p>
+            <p className="p-2">{order.date}</p>
           </div>
         </div>
+
         <hr />
-        <div className="space-y-5 mt-5 ">
+
+        {/* Müşteri Bilgileri */}
+        <div className="space-y-5 mt-5">
           <h1 className="text-LightBlue font-bold">Müşteri Bilgileri</h1>
-          <div className="grid grid-cols-3 ">
-            <div className=" space-y-10 ">
+          <div className="grid grid-cols-3">
+            <div className="space-y-10">
               <h2 className="text-NavyBlue font-[600]">Bayi Adı:</h2>
               <h2 className="text-NavyBlue font-[600]">Bayi Telefonu:</h2>
               <h2 className="text-NavyBlue font-[600]">Bayi Adresi:</h2>
@@ -94,24 +132,30 @@ function OrderEditModal({ isOpen, setIsOpen, order }) {
                 type="text"
                 className="border rounded-md p-2 w-full"
                 value={order.dealerName}
+                readOnly
               />
-
               <input
                 type="text"
                 className="border rounded-md p-2 w-full"
                 value={order.phone}
+                readOnly
               />
-
               <input
                 type="text"
                 className="border rounded-md p-2 w-full"
                 value={order.dealerAddress}
+                readOnly
               />
             </div>
           </div>
         </div>
-        <div className=" mt-5 flex justify-center items-center">
-          <button className="border p-2 rounded-md bg-LightBlue/90 hover:bg-LightBlue text-white">
+
+        {/* Güncelle Butonu */}
+        <div className="mt-5 flex justify-center items-center">
+          <button
+            onClick={handleUpdateStatus}
+            className="border p-2 rounded-md bg-LightBlue/90 hover:bg-LightBlue text-white"
+          >
             Güncelle
           </button>
         </div>

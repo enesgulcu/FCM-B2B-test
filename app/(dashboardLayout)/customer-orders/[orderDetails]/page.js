@@ -1,16 +1,8 @@
-import React from 'react'
-import OrderDetails from '@/components/CustomerOrders/OrderDetails'
-import { orders } from '@/components/CustomerOrders/data'
+import { orders } from "@/components/CustomerOrders/data";
+import OrderDetails from "@/components/CustomerOrders/OrderDetails";
 
-
-
-function page({params:{orderDetails}}) {
-  const order = orders.find((order) => order?.id?.toString() === orderDetails)
-  return (
-   <OrderDetails order={order}/>
-  )
+export default async function Page({ params }) {
+  const { orderDetails } = await params;
+  const order = orders.find((order) => order?.id?.toString() === orderDetails);
+  return <OrderDetails order={order} />;
 }
-
-
-
-export default page

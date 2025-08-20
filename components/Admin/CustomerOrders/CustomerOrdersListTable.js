@@ -8,6 +8,10 @@ import Link from "next/link";
 import UpdateStatusModal from "../UpdateStatusModal";
 import KargoUpdateModal from "../KargoUpdateModal";
 import { useSearchParams } from "next/navigation";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import CargoInfoModal from "../../CustomerOrders/CargoInfoModal";
+import CargoLabel from "../../CargoLabel/CargoLabel";
 
 const CustomerOrdersListTable = ({ orders, allOrders, updateOrderStatus }) => {
   const searchParams = useSearchParams();
@@ -18,6 +22,9 @@ const CustomerOrdersListTable = ({ orders, allOrders, updateOrderStatus }) => {
   const [isAllChecked, setIsAllChecked] = useState(false);
   const [isOpenReqModal, setIsOpenReqModal] = useState(false);
   const [isOpenOrderCanModal, setIsOpenOrderCanModal] = useState(false);
+  const [isOpenCargoLabelModal, setIsOpenCargoLabelModal] = useState(false);
+  const [showCargoInfo, setShowCargoInfo] = useState(false);
+  const [cargoInfo, setCargoInfo] = useState(null);
   const [selectedOrder, setSelectedOrder] = useState(null);
 
   // statu Renkleri
@@ -69,8 +76,69 @@ const CustomerOrdersListTable = ({ orders, allOrders, updateOrderStatus }) => {
     setIsOpenOrderCanModal(true);
   };
 
+  const handleOpenCargoLabelModal = (order) => {
+    setSelectedOrder(order);
+    setIsOpenCargoLabelModal(true);
+  };
+
+  const handleCargoTrack = async (order) => {
+    try {
+      setShowCargoInfo(true);
+      setCargoInfo({ loading: true });
+
+      const response = await fetch("/api/shipping/track", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          cargoKey: order.KARGOTAKIPNO,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setCargoInfo({
+          loading: false,
+          trackingNo: order.KARGOTAKIPNO,
+          company: "Yurtiçi Kargo",
+          status: data.status || "Durum bilgisi yok",
+          deliveryDate: data.deliveryDate || "Tarih bilgisi yok",
+          receiverName: data.receiverName || order.CARKOD,
+          trackingUrl: data.trackingUrl || "Takip linki yok",
+        });
+      } else {
+        setCargoInfo({
+          loading: false,
+          error: true,
+          message: data.outResult || "Kargo bilgisi alınamadı",
+        });
+      }
+    } catch (error) {
+      console.error("Kargo takip hatası:", error);
+      setCargoInfo({
+        loading: false,
+        error: true,
+        message: "Bağlantı hatası oluştu",
+      });
+    }
+  };
+
   return (
     <>
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
       <div className="overflow-x-auto overflow-y-hidden border">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-NavyBlue text-white ">
@@ -151,12 +219,6 @@ const CustomerOrdersListTable = ({ orders, allOrders, updateOrderStatus }) => {
                     >
                       {order.ORDERSTATUS}
                     </div>
-                    {order.KARGO && order.KARGOTAKIPNO && (
-                      <div className="flex-col text-sm font-bold tracking-wider bg-NavyBlue p-2 rounded-md mt-2 text-white flex items-center justify-center">
-                        <h2>{order.KARGO}</h2>
-                        <h2>{order.KARGOTAKIPNO}</h2>
-                      </div>
-                    )}
                   </div>
                 </td>
                 <td className="text-center px-6 py-4 whitespace-nowrap">
@@ -203,23 +265,78 @@ const CustomerOrdersListTable = ({ orders, allOrders, updateOrderStatus }) => {
                       Durumu Güncelle
                     </button>
                   )}
+
+                  {order.ORDERSTATUS === "Kargoya Verildi" &&
+                    order.KARGOTAKIPNO && (
+                      <button
+                        className="bg-green-600 p-2 rounded-md hover:bg-green-700 text-white flex items-center w-36 justify-center"
+                        onClick={() => handleCargoTrack(order)}
+                      >
+                        <svg
+                          className="w-4 h-4 mr-1"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                          />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                          />
+                        </svg>
+                        <span>Kargom Nerede?</span>
+                      </button>
+                    )}
                 </td>
                 <td className="text-center px-6 py-4 whitespace-nowrap">
-                  <button
-                    className="bg-NavyBlue p-2 rounded-md hover:bg-LightBlue text-white flex items-center w-36 justify-center"
-                    onClick={() => handleOpenKargoUpdateModal(order)}
-                  >
-                    Kargoyu Güncelle
-                  </button>
-                  <span
-                    className={`p-2 rounded-md flex items-center mt-2 w-36 justify-center ${
-                      order.TALEP
-                        ? "bg-orange-500 text-white"
-                        : "bg-gray-300 text-gray-700"
-                    }`}
-                  >
-                    {order.TALEP ? "Talep var!" : "Talep yok"}
-                  </span>
+                  <div className="flex flex-col gap-2">
+                    <button
+                      className="bg-NavyBlue p-2 rounded-md hover:bg-LightBlue text-white flex items-center w-36 justify-center"
+                      onClick={() => handleOpenKargoUpdateModal(order)}
+                    >
+                      Kargoyu Güncelle
+                    </button>
+
+                    {/* Etiket Oluştur Butonu - KARGOTAKIPNO varsa göster */}
+                    {order.KARGOTAKIPNO && (
+                      <button
+                        className="bg-NavyBlue p-2 rounded-md hover:bg-LightBlue text-white flex items-center w-36 justify-center"
+                        onClick={() => handleOpenCargoLabelModal(order)}
+                      >
+                        <svg
+                          className="w-4 h-4 mr-1"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                          />
+                        </svg>
+                        Etiket Oluştur
+                      </button>
+                    )}
+
+                    <span
+                      className={`p-2 rounded-md flex items-center w-36 justify-center ${
+                        order.TALEP
+                          ? "bg-orange-500 text-white"
+                          : "bg-gray-300 text-gray-700"
+                      }`}
+                    >
+                      {order.TALEP ? "Talep var!" : "Talep yok"}
+                    </span>
+                  </div>
                 </td>
               </tr>
             ))}
@@ -256,6 +373,19 @@ const CustomerOrdersListTable = ({ orders, allOrders, updateOrderStatus }) => {
           updateOrderStatus={updateOrderStatus}
         />
       )}
+      {isOpenCargoLabelModal && (
+        <CargoLabel
+          order={selectedOrder}
+          cargoKey={selectedOrder?.KARGOTAKIPNO || selectedOrder?.ORDERNO}
+          onClose={() => setIsOpenCargoLabelModal(false)}
+        />
+      )}
+
+      <CargoInfoModal
+        showCargoInfo={showCargoInfo}
+        setShowCargoInfo={setShowCargoInfo}
+        cargoInfo={cargoInfo}
+      />
     </>
   );
 };

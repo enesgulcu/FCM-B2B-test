@@ -1,44 +1,59 @@
 "use client";
-import React, { useState, useEffect } from "react";
-import Link from "next/link";
-import { Formik, Form, Field, ErrorMessage } from "formik";
-import * as Yup from "yup";
+import { ErrorMessage, Field, Form, Formik } from "formik";
 import { signIn, useSession } from "next-auth/react";
+import dynamic from "next/dynamic";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import Loading from "../Loading";
-import Lottie from "lottie-react";
-import WrongAnimation from "../../public/wronganimation.json";
+import { useEffect, useState } from "react";
+import * as Yup from "yup";
 import SuccessAnimation from "../../public/successanimation.json";
+import WrongAnimation from "../../public/wronganimation.json";
+import Loading from "../Loading";
+
+// Lottie'yi client-side'da yükle
+const Lottie = dynamic(() => import("lottie-react"), {
+  ssr: false,
+  loading: () => <div className="w-60 h-60" />,
+});
 
 // Modal bileşeni
 const Modal = ({ isOpen, onClose, message, type }) => {
+  const [animationData, setAnimationData] = useState(null);
+
+  useEffect(() => {
+    if (type === "success") {
+      setAnimationData(SuccessAnimation);
+    } else {
+      setAnimationData(WrongAnimation);
+    }
+  }, [type]);
+
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white px-6 flex items-center justify-center rounded-lg shadow-lg">
         <div>
-          <Lottie
-            animationData={
-              type === "success" ? SuccessAnimation : WrongAnimation
-            }
-            className="w-60"
-            loop={false}
-          />
+          {animationData && (
+            <Lottie
+              animationData={animationData}
+              className="w-60"
+              loop={false}
+              autoplay={true}
+            />
+          )}
         </div>
         <div className="flex flex-col items-left">
           <h2
             className={`text-xl font-bold mb-4 ${
               type === "success" ? "text-green-600" : "text-red-600"
-            }`}
-          >
+            }`}>
             {type === "success" ? "Başarılı" : "Hata"}
           </h2>
           <p>{message}</p>
           <button
             onClick={onClose}
-            className="mt-4 bg-CustomRed text-white font-bold rounded-md px-4 py-2 hover:bg-CustomRed/80"
-          >
+            className="mt-4 bg-CustomRed text-white font-bold rounded-md px-4 py-2 hover:bg-CustomRed/80">
             Kapat
           </button>
         </div>
@@ -53,17 +68,24 @@ const LoginComponent = ({ pageRole }) => {
   const [modalMessage, setModalMessage] = useState("");
   const [modalType, setModalType] = useState("");
   const [shouldRedirect, setShouldRedirect] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
   const router = useRouter();
   const { data: session, status } = useSession();
 
   useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isMounted) return;
+
     if (status === "authenticated" && shouldRedirect) {
       const redirectPath =
         session.user.role === "employee" ? "/customer-orders-admin" : "/";
       router.push(redirectPath);
     }
-  }, [status, session, router, shouldRedirect]);
+  }, [status, session, router, shouldRedirect, isMounted]);
 
   const initialValues = {
     email: "",
@@ -78,15 +100,19 @@ const LoginComponent = ({ pageRole }) => {
   });
 
   const handleSubmit = async (values) => {
+    if (!isMounted) return;
+
     setIsLoading(true);
 
     try {
       const result = await signIn("credentials", {
         email: values.email,
         password: values.password,
-        role: pageRole,
+        role: pageRole || "partner",
         redirect: false,
       });
+
+      console.log("Login result:", result);
 
       if (
         result.error ===
@@ -101,6 +127,7 @@ const LoginComponent = ({ pageRole }) => {
         return;
       }
       if (result.error) {
+        console.error("Login error:", result.error);
         let response;
         try {
           response = JSON.parse(result.error);
@@ -134,7 +161,7 @@ const LoginComponent = ({ pageRole }) => {
         setTimeout(() => {
           setIsModalOpen(false);
           setShouldRedirect(true);
-        }, 3000);
+        }, 2000);
       }
     } catch (error) {
       console.error("Login error:", error);
@@ -147,6 +174,8 @@ const LoginComponent = ({ pageRole }) => {
     }
   };
 
+  if (!isMounted) return <Loading />;
+
   return (
     <div className="bg-white flex items-center flex-col py-[35px] sm:py-[60px] w-screen lg:w-[1188px] h-screen">
       <h1 className="text-[48px] text-center font-semibold text-CustomGray italic mb-[40px]">
@@ -155,8 +184,7 @@ const LoginComponent = ({ pageRole }) => {
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
-        onSubmit={handleSubmit}
-      >
+        onSubmit={handleSubmit}>
         {() => (
           <Form className="flex flex-col">
             <div className="mb-4 flex flex-col w-[400px]">
@@ -192,11 +220,10 @@ const LoginComponent = ({ pageRole }) => {
                 className="text-red-500 text-xs mt-1"
               />
             </div>
-            <div className="mb-4 flex flex-row items-center justify-end">
+            <div className="flex flex-row items-center justify-center">
               <button
                 type="submit"
-                className="bg-CustomRed text-white font-bold rounded-md px-6 py-2 w-[200px] hover:scale-105 transition-all ease-in-out duration-700 transform"
-              >
+                className="bg-CustomRed text-white font-bold rounded-md px-6 py-2 w-[200px] hover:scale-105 transition-all ease-in-out duration-700 transform">
                 Giriş Yap
               </button>
             </div>
@@ -204,12 +231,14 @@ const LoginComponent = ({ pageRole }) => {
         )}
       </Formik>
       {isLoading && <Loading />}
-      <Modal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        message={modalMessage}
-        type={modalType}
-      />
+      {isMounted && (
+        <Modal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          message={modalMessage}
+          type={modalType}
+        />
+      )}
       <div className="clear" />
       <p className="mt-4 text-CustomRed/75 text-[14px] hover:text-CustomRed  transition-all ease-in-out duration-700 transform hover:scale-105">
         <Link href="/auth/forgot-password">

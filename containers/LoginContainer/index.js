@@ -1,12 +1,11 @@
-import LoginComponent from '@/components/LoginComponent'
-import React from 'react'
+import LoginComponent from "@/components/LoginComponent";
 
 function LoginContainer() {
   return (
     <div>
-        <LoginComponent pageRole="partner"/>
+      <LoginComponent pageRole="partner" />
     </div>
-  )
+  );
 }
 
-export default LoginContainer
+export default LoginContainer;

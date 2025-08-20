@@ -5,7 +5,7 @@ function RequestModal({ isOpen, setIsOpen, order }) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed flex justify-center items-center top-0 left-0 w-full h-full bg-black bg-opacity-60">
+    <div className="fixed flex justify-center items-center top-0 left-0 w-full h-full bg-black bg-opacity-60 z-50">
       <div className="bg-white w-[40%] rounded-sm p-4">
         <div className="flex justify-end text-xl ">
           <div

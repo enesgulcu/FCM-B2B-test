@@ -1,11 +1,11 @@
 "use client";
-import React, { useState, useEffect } from "react";
 import headerStore from "@/utils/headerStore";
-import Link from "next/link";
-import Image from "next/image";
-import MobileMenu from "../MobileMenu";
 import useCartItemCount from "@/utils/useCartItemCount";
 import { signIn, signOut, useSession } from "next-auth/react";
+import Image from "next/image";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import MobileMenu from "../MobileMenu";
 
 const Header = () => {
   const { header } = headerStore();
@@ -15,7 +15,8 @@ const Header = () => {
 
   const { data: session } = useSession();
   const user = session?.user;
-  console.log(user);
+  // console.log(user);
+  console.log("User Role:", user?.role);
 
   const [currentPath, setCurrentPath] = useState("");
 
@@ -41,12 +42,10 @@ const Header = () => {
             key={ordersMenu.id}
             className="relative mr-[25px] leading-[45px]"
             onMouseEnter={() => setHoveredMenu(ordersMenu.id)}
-            onMouseLeave={() => setHoveredMenu(null)}
-          >
+            onMouseLeave={() => setHoveredMenu(null)}>
             <Link
               className="hover:text-HoverGray transition duration-300 ease-in-out transform"
-              href="/customer-orders-admin"
-            >
+              href="/customer-orders">
               Siparişler
             </Link>
           </li>
@@ -69,12 +68,10 @@ const Header = () => {
               key={menu.id}
               className="relative mr-[25px] leading-[45px]"
               onMouseEnter={() => setHoveredMenu(index)}
-              onMouseLeave={() => setHoveredMenu(null)}
-            >
+              onMouseLeave={() => setHoveredMenu(null)}>
               <Link
                 className="hover:text-HoverGray transition duration-300 ease-in-out transform"
-                href={menuHref}
-              >
+                href={menuHref}>
                 {menuText}
               </Link>
             </li>
@@ -86,12 +83,10 @@ const Header = () => {
             key={menu.id}
             className="relative mr-[25px] leading-[45px]"
             onMouseEnter={() => setHoveredMenu(index)}
-            onMouseLeave={() => setHoveredMenu(null)}
-          >
+            onMouseLeave={() => setHoveredMenu(null)}>
             <Link
               className="hover:text-HoverGray transition duration-300 ease-in-out transform"
-              href={menu.href}
-            >
+              href={menu.href}>
               {menu.text}
             </Link>
 
@@ -119,8 +114,7 @@ const Header = () => {
       <div className="hidden lg:flex items-center justify-between ">
         <div
           id="ustmenu"
-          className="h-[50px] bg-DarkBlue max-w-[1200px] flex container mx-auto px-5 justify-between items-center"
-        >
+          className="h-[50px] bg-DarkBlue max-w-[1200px] flex container mx-auto px-5 justify-between items-center">
           <div className="px-[15px] text-white">
             <div className="">
               <ul className="flex flex-row text-[14px] font-semibold ">
@@ -139,11 +133,14 @@ const Header = () => {
               />
 
               <div className="text-sm text-white flex flex-col">
-                <span className="whitespace-nowrap">
-                  {user.name.slice(0, 25)}...
-                </span>
+                {user?.name && (
+                  <span className="whitespace-nowrap">
+                    {user.name.slice(0, 25)}...
+                  </span>
+                )}
                 <span className="text-xs">({user.role})</span>
               </div>
+
               <div className="text-white hover:text-red-500 text-2xl">
                 <Link href="#" onClick={() => signOut({ callbackUrl: "/" })}>
                   <Image

@@ -46,7 +46,7 @@ const OrderList = () => {
       counts[status] = orders.filter((order) => order.status === status).length;
     });
     setOrderCounts(counts);
-  }, [orders]);
+  }, []); // ✅ Uyarı kalkar, çünkü 'orders' değişmiyor ve sabit
 
   const filterOrders = (searchValue, status, date) => {
     let filteredOrders = orders;

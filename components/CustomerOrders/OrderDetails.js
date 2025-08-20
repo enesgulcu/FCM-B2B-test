@@ -60,6 +60,7 @@ function OrderDetails() {
           <Navbar
             orderNo={orderDetails[0].ORDERNO}
             orderStatus={orderDetails[0].ORDERSTATUS}
+            refNo={orderDetails[0].REFNO}
           />
           <div className="flex flex-col md:gap-4 md:mt-4 md:mx-8 xl:mx-32">
             <TopSection

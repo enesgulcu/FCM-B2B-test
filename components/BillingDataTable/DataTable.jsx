@@ -1,7 +1,11 @@
 "use client";
-import React, { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
-import { FaPrint, FaChevronDown, FaChevronUp } from "react-icons/fa";
+import React, { useCallback, useEffect, useState } from "react";
+import { FaChevronDown, FaChevronUp, FaPrint } from "react-icons/fa";
+import { getAPI } from "../../services/fetchAPI/index";
+import Loading from "../Loading";
+import ScrollButtons from "../ScrollButtons/ScrollButtons";
+import ExpandedTable from "./ExpandedTable";
 import {
   Table,
   TableBody,
@@ -11,10 +15,6 @@ import {
   TableRow,
 } from "./TableComponents";
 import "./printdata.css";
-import Loading from "../Loading";
-import { getAPI } from "../../services/fetchAPI/index";
-import ScrollButtons from "../ScrollButtons/ScrollButtons";
-import ExpandedTable from "./ExpandedTable";
 // import { useEmployeeRedirect } from "@/functions/other/useEmployeeRedirect/useEmployeeRedirect";
 
 // DataTable bileşeni: Kullanıcının cari hesap bilgilerini ve işlem geçmişini gösteren ana bileşen
@@ -33,25 +33,17 @@ export default function DataTable() {
   const [carBorcToplam, setCarBorcToplam] = useState(0); // Cari borç toplamı
   const [expandedRows, setExpandedRows] = useState([]); // Genişletilmiş satırlar
   const [allExpanded, setAllExpanded] = useState(false); // Tüm satırların genişletilme durumu
+  const [selectedYear, setSelectedYear] = useState(2023); // Yıl seçimi
 
-  // Kullanıcı oturumu başladığında verileri çekme
-  useEffect(() => {
-    if (session?.user?.id) {
-      fetchData();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [session?.user?.id]);
-
-  // Verileri API'den çeken asenkron fonksiyon
-  async function fetchData() {
+  const fetchData = useCallback(async () => {
     try {
-      // Birden fazla API çağrısını paralel olarak yapma
+      setIsLoading(true);
       const [billingData, tableCartData, detailedBillings, fatfis] =
         await Promise.all([
-          getAPI("/billings"),
-          getAPI("/table-cart"),
-          getAPI("/detailed-billings"),
-          getAPI("/fatfis"),
+          getAPI(`/billings?year=${selectedYear}`),
+          getAPI(`/table-cart?year=${selectedYear}`),
+          getAPI(`/detailed-billings?year=${selectedYear}`),
+          getAPI(`/fatfis?year=${selectedYear}`),
         ]);
 
       // API yanıtlarının geçerliliğini kontrol etme
@@ -103,10 +95,16 @@ export default function DataTable() {
     } catch (error) {
       console.error("Veri çekme hatası:", error);
     } finally {
-      // Yükleme durumunu sonlandırma
       setIsLoading(false);
     }
-  }
+  }, [selectedYear, session?.user?.id]);
+
+  // Kullanıcı oturumu başladığında verileri çekme
+  useEffect(() => {
+    if (session?.user?.id) {
+      fetchData();
+    }
+  }, [fetchData]);
 
   // Detaylı fatura verilerini işleyen yardımcı fonksiyon
   // Bu fonksiyon, farklı API'lerden gelen verileri birleştirerek daha kapsamlı bir veri seti oluşturur
@@ -193,7 +191,6 @@ export default function DataTable() {
   // Yükleme durumunda Loading bileşenini gösterme
   if (isLoading) return <Loading />;
 
-  // Ana bileşen render'ı
   return (
     <div className="print-section  min-h-screen pt-4 bg-[#dbdbdb]">
       {/* Üst bilgi bölümü */}
@@ -223,8 +220,7 @@ export default function DataTable() {
                   <span
                     className={`${
                       borcToplam > 0 ? "text-red-500" : "text-green-500"
-                    }`}
-                  >
+                    }`}>
                     {borcToplam < 0 ? "(ALACAK)" : "(BORÇ)"}
                   </span>
                 </div>
@@ -262,17 +258,26 @@ export default function DataTable() {
         <div className="flex gap-2 text-sm md:text-base">
           <button
             onClick={handleToggleAllRows}
-            className="bg-NavyBlue text-white text-sm w-[90px] lg:w-auto px-2 lg:px-4 py-1 lg:py-2 rounded-full hover:bg-LightBlue transition duration-300 flex items-center no-print"
-          >
+            className="bg-NavyBlue text-white text-sm w-[90px] lg:w-auto px-2 lg:px-4 py-1 lg:py-2 rounded-full hover:bg-LightBlue transition duration-300 flex items-center no-print">
             {allExpanded ? "Hepsini Kapat" : "Hepsini Aç"}
           </button>
           <button
             onClick={handlePrint}
-            className="bg-NavyBlue text-white text-sm px-2 lg:px-4 py-1 lg:py-2 rounded-full hover:bg-LightBlue transition duration-300 flex items-center no-print"
-          >
+            className="bg-NavyBlue text-white text-sm px-2 lg:px-4 py-1 lg:py-2 rounded-full hover:bg-LightBlue transition duration-300 flex items-center no-print">
             <FaPrint className="mr-2" /> Yazdır
           </button>
         </div>
+      </div>
+
+      {/* Üst bilgi bölümünden sonra */}
+      <div className="max-w-[80%] mx-auto mt-4">
+        <select
+          value={selectedYear}
+          onChange={(e) => setSelectedYear(Number(e.target.value))}
+          className="bg-NavyBlue text-white px-4 py-2 rounded-full">
+          <option value={2024}>2024 Cari Takip</option>
+          <option value={2023}>2023 Cari Takip</option>
+        </select>
       </div>
 
       {/* Ana tablo bölümü */}
@@ -319,7 +324,7 @@ export default function DataTable() {
                 );
                 const isExpanded = expandedRows.includes(item.CARHARREFNO);
                 return (
-                  <React.Fragment key={item.CARHARREFNO}>
+                  <React.Fragment key={`${item.CARHARREFNO}-${index}`}>
                     <TableRow
                       className={`${
                         isExpanded
@@ -334,8 +339,7 @@ export default function DataTable() {
                       } transition-all duration-300`}
                       onClick={() =>
                         hasDetailedData && handleRowClick(item.CARHARREFNO)
-                      }
-                    >
+                      }>
                       <TableCell className="py-4 pl-4">
                         {formatDate(item.CARHARTAR)}
                       </TableCell>
@@ -356,15 +360,13 @@ export default function DataTable() {
                       <TableCell
                         className={`py-4 pl-4 ${
                           item.borcAmount > 0 ? "text-red-500" : ""
-                        }`}
-                      >
+                        }`}>
                         {formatCurrency(item.borcAmount)}
                       </TableCell>
                       <TableCell
                         className={`py-4 pl-4 ${
                           item.alacakAmount > 0 ? "text-green-500" : ""
-                        }`}
-                      >
+                        }`}>
                         {formatCurrency(item.alacakAmount)}
                       </TableCell>
                       <TableCell className="py-4 pl-4">

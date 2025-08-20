@@ -4,6 +4,8 @@ import { FaEye } from "react-icons/fa";
 import { ImCancelCircle } from "react-icons/im";
 import RequestModal from "./RequestModal";
 import OrderCancellation from "./OrderCancallation";
+import CargoInfoModal from "./CargoInfoModal";
+
 import Link from "next/link";
 
 const CustomerOrdersListTable = ({ orders, products }) => {
@@ -11,6 +13,8 @@ const CustomerOrdersListTable = ({ orders, products }) => {
   const [isAllChecked, setIsAllChecked] = useState(false);
   const [isOpenReqModal, setIsOpenReqModal] = useState(false);
   const [isOpenOrderCanModal, setIsOpenOrderCanModal] = useState(false);
+  const [cargoInfo, setCargoInfo] = useState(null);
+  const [showCargoInfo, setShowCargoInfo] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
 
   // statu Renkleri
@@ -22,6 +26,7 @@ const CustomerOrdersListTable = ({ orders, products }) => {
     Tamamlandı: "bg-[#c7e1c7] text-[#5d7b45]",
     İptal: "bg-[#e3e5e3] text-[#7a7a7c]",
     Başarısız: "bg-[#eaa4a4] text-[#762024]",
+    "Kargoya Verildi": "bg-[#295F98] text-[#fff]",
   };
 
   // single check process for inputs
@@ -67,6 +72,50 @@ const CustomerOrdersListTable = ({ orders, products }) => {
   const handleOrderCancellation = (order) => {
     setSelectedOrder(order);
     setIsOpenOrderCanModal(true);
+  };
+
+  const handleCargoTrack = async (order) => {
+    try {
+      setShowCargoInfo(true);
+      setCargoInfo({ loading: true });
+
+      const response = await fetch("/api/shipping/track", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          cargoKey: order.KARGOTAKIPNO,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setCargoInfo({
+          loading: false,
+          trackingNo: order.KARGOTAKIPNO,
+          company: "Yurtiçi Kargo",
+          status: data.status || "Durum bilgisi yok",
+          deliveryDate: data.deliveryDate || "Tarih bilgisi yok",
+          receiverName: data.receiverName || order.CARKOD,
+          trackingUrl: data.trackingUrl || "Takip linki yok",
+        });
+      } else {
+        setCargoInfo({
+          loading: false,
+          error: true,
+          message: data.outResult || "Kargo bilgisi alınamadı",
+        });
+      }
+    } catch (error) {
+      console.error("Kargo takip hatası:", error);
+      setCargoInfo({
+        loading: false,
+        error: true,
+        message: "Bağlantı hatası oluştu",
+      });
+    }
   };
 
   return (
@@ -167,6 +216,35 @@ const CustomerOrdersListTable = ({ orders, products }) => {
                       <FaEye /> <span>Sipariş İncele</span>
                     </button>
                   </Link>
+
+                  {order.KARGOTAKIPNO &&
+                    order.ORDERSTATUS === "Kargoya Verildi" && (
+                      <button
+                        className="bg-green-600 p-2 rounded-md hover:bg-green-700 text-white flex items-center w-36 justify-center"
+                        onClick={() => handleCargoTrack(order)}
+                      >
+                        <svg
+                          className="w-4 h-4 mr-1"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                          />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                          />
+                        </svg>
+                        <span>Kargom Nerede?</span>
+                      </button>
+                    )}
                 </td>
               </tr>
             ))}
@@ -187,6 +265,12 @@ const CustomerOrdersListTable = ({ orders, products }) => {
           order={selectedOrder}
         />
       )}
+
+      <CargoInfoModal 
+        showCargoInfo={showCargoInfo}
+        setShowCargoInfo={setShowCargoInfo}
+        cargoInfo={cargoInfo}
+      />
     </>
   );
 };

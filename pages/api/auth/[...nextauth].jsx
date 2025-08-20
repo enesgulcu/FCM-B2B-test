@@ -1,12 +1,10 @@
-import NextAuth from "next-auth";
-import CredentialsProvider, {
-  CredentialsConfig,
-} from "next-auth/providers/credentials";
 import { postAPI } from "@/services/fetchAPI";
+import NextAuth from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
 
 let loginPageRoute = "partner";
 
-export const authOptions = {
+const authOptions = {
   providers: [
     // CredentialsProvider ile email ve şifreyi kullanıcıdan alarak normal giriş yapmasını sağlarız.
     // farklı giriş yöntemleri ile (google - github - facebook) giriş için hazır "provider" ları kullanabiliriz.
@@ -28,36 +26,29 @@ export const authOptions = {
         }
 
         // admin girişi yapılırsa admin paneline yönlendirme yapılır.
-        if (data.findUser?.CARKOD === "7034922") {
+        if (data.findUser.CARKOD === "7034922") {
           loginPageRoute = data.findUser.CARYETKILI;
         }
 
-        //Personel girisi
-        if (data.findUser?.CARKOD === "7034923") {
-          loginPageRoute = data.findUser.CARYETKILI;
-        }
+        // console.log("########## DATA: ", data);
 
         if (!data || data.error || data == null) {
           throw new Error(
             data.error || "Bir hata oluştu. Lütfen tekrar deneyiniz."
           );
         }
+
         // Kullanıcı bilgilerini döndürüyoruz.
+        const user = {
+          id: data.findUser.CARKOD,
+          email: data.findUser.CARUNVAN3,
+          name: data.findUser.CARUNVAN,
+          role: loginPageRoute,
+          isActive: data.findUser.CAROZKOD1,
+          isPartner: data.findUser.CAROZKOD3,
+        };
 
-        if (data?.isNewPassword) {
-          throw new Error(data.message);
-        } else {
-          const user = {
-            id: data.findUser.CARKOD,
-            email: data.findUser.CARUNVAN3,
-            name: data.findUser.CARUNVAN,
-            role: loginPageRoute,
-            isActive: data.findUser.CAROZKOD1,
-            isPartner: data.findUser.CAROZKOD3,
-          };
-
-          return user;
-        }
+        return user;
       },
     }),
   ],

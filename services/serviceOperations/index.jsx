@@ -2,12 +2,25 @@
 // where:     eşleşecek tablodaki verinin anahtar değeri örn: {email: "enes.gulcu@hotmail.com"} (mail) değeri oluyor.
 // newData:   yeni eklenecek veya güncellenecek veri
 
-import prisma from "@/lib/prisma/index";
+import { prisma, prisma2024, prismaEdis } from "@/lib/prisma";
 
 // GET ALL
-export async function getAllData(tableName) {
+export async function getAllData(tableName, year = 2023) {
+  let client;
+
+  switch (year) {
+    case 2024:
+      client = prisma2024;
+      break;
+    case 2025:
+      client = prismaEdis;
+      break;
+    default:
+      client = prisma;
+  }
+
   try {
-    const data = await prisma[tableName].findMany();
+    const data = await client[tableName].findMany();
     return data;
   } catch (error) {
     return { error: error.message };
@@ -25,9 +38,22 @@ export async function createNewData(tableName, newData) {
 }
 
 // GET BY UNIQUE ONE VALUE
-export async function getDataByUnique(tableName, where) {
+export async function getDataByUnique(tableName, where, year = 2023) {
+  let client;
+
+  switch (year) {
+    case 2024:
+      client = prisma2024;
+      break;
+    case 2025:
+      client = prismaEdis;
+      break;
+    default:
+      client = prisma;
+  }
+
   try {
-    const data = await prisma[tableName].findFirst({ where: where });
+    const data = await client[tableName].findFirst({ where: where });
     return data;
   } catch (error) {
     return { error: error.message };
@@ -35,9 +61,27 @@ export async function getDataByUnique(tableName, where) {
 }
 
 // GET SINGLE BY ORDER
-export async function getDataByUniqueSingle(tableName, where, orderBy) {
+export async function getDataByUniqueSingle(
+  tableName,
+  where,
+  orderBy,
+  year = 2023
+) {
+  let client;
+
+  switch (year) {
+    case 2024:
+      client = prisma2024;
+      break;
+    case 2025:
+      client = prismaEdis;
+      break;
+    default:
+      client = prisma;
+  }
+
   try {
-    const data = await prisma[tableName].findFirst({
+    const data = await client[tableName].findFirst({
       where: where,
       orderBy: orderBy,
     });
@@ -48,9 +92,22 @@ export async function getDataByUniqueSingle(tableName, where, orderBy) {
 }
 
 // GET BY UNIQUE MANY VALUE
-export async function getDataByMany(tableName, where) {
+export async function getDataByMany(tableName, where, year = 2023) {
+  let client;
+
+  switch (year) {
+    case 2024:
+      client = prisma2024;
+      break;
+    case 2025:
+      client = prismaEdis;
+      break;
+    default:
+      client = prisma;
+  }
+
   try {
-    const data = await prisma[tableName].findMany({ where: where });
+    const data = await client[tableName].findMany({ where: where });
     return data;
   } catch (error) {
     return { error: error.message };
