@@ -15,7 +15,7 @@ export default withAuth(async function middleware(req) {
   const baseUrl = `${protocol}://${host}`;
 
   if (!session) {
-    return NextResponse.redirect(`${baseUrl}/login`);
+    return NextResponse.redirect(`${baseUrl}/auth/login`);
   }
 
   if (
@@ -37,5 +37,8 @@ export default withAuth(async function middleware(req) {
 
 // ✅ Sadece shipping, auth ve reset-password dışlanır, diğer her şey korunur
 export const config = {
-  matcher: ["/((?!api/shipping|api/auth|api/reset-password|auth/login).*)"],
+  // auth/forgot-password sayfasını ve login'i koruma dışına al
+  matcher: [
+    "/((?!api/shipping|api/auth|api/reset-password|auth/login|auth/forgot-password).*)",
+  ],
 };
