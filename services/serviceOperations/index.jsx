@@ -38,7 +38,7 @@ export async function createNewData(tableName, newData) {
 }
 
 // GET BY UNIQUE ONE VALUE
-export async function getDataByUnique(tableName, where, year = 2023) {
+export async function getDataByUnique(tableName, where, year ) {
   let client;
 
   switch (year) {
@@ -46,7 +46,7 @@ export async function getDataByUnique(tableName, where, year = 2023) {
       client = prisma2024;
       break;
     case 2025:
-      client = prismaEdis;
+      client = prisma; // 2025 ana veritabanı
       break;
     default:
       client = prisma;

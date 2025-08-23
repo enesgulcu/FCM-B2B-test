@@ -43,8 +43,8 @@ const handler = async (req, res) => {
           CAROZKOD1: "A",
           CAROZKOD3: "B2",
         },
-        2024
-      ); // 2024 veritabanından sorgulama yapıyoruz
+        2025
+      ); // 2025 veritabanından sorgulama yapıyoruz
 
       if (
         !findUser ||
@@ -73,6 +73,8 @@ const handler = async (req, res) => {
           findUser.CAROZKOD5 =
             findUser.CAROZKOD5 + "DP2og5Ui3JVGBuDS.WuVH5sjaetpFK";
         }
+
+        // console.log("🔐 Password Check:", { inputPassword: data.password });
 
         const passwordCheck = await DecryptPassword(
           data.password,
@@ -115,7 +117,7 @@ const handler = async (req, res) => {
           "CARKART",
           { CARKOD: findUser?.CARKOD },
           { CAROZKOD5: encryptedPassword },
-          2024 // 2024 veritabanında güncelleme yapıyoruz
+          2025 // 2025 veritabanında güncelleme yapıyoruz
         );
 
         // ("updatePassword: ", updatePassword);
