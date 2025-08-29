@@ -1,4 +1,5 @@
 import LoginContainer from "@/containers/LoginContainer";
+import Bakimda from "@/components/Bakimda";
 
 function LoginPage() {
   return (
