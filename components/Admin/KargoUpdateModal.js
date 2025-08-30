@@ -30,7 +30,10 @@ const kargoFirmalari = [
 const KargoUpdateModal = ({ isOpen, setIsOpen, order, updateOrderStatus }) => {
   const [kargoFirmasi, setKargoFirmasi] = useState("");
   const [kargoTakipNo, setKargoTakipNo] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [loadingQuery, setLoadingQuery] = useState(false);
+  const [loadingCreate, setLoadingCreate] = useState(false);
+  const [loadingManual, setLoadingManual] = useState(false);
+  const [loadingOtherUpdate, setLoadingOtherUpdate] = useState(false);
   const [error, setError] = useState(null);
   const [createdCargoKey, setCreatedCargoKey] = useState(null);
   const [addressInfo, setAddressInfo] = useState(null);
@@ -92,7 +95,7 @@ const KargoUpdateModal = ({ isOpen, setIsOpen, order, updateOrderStatus }) => {
 
   // Yurtiçi Kargo'da kargo oluştur
   const handleCreateShipment = async () => {
-    setIsLoading(true);
+    setLoadingCreate(true);
     setError(null);
     try {
       let receiverAddress = order.ADRES || "";
@@ -172,15 +175,15 @@ const KargoUpdateModal = ({ isOpen, setIsOpen, order, updateOrderStatus }) => {
         setShowCargoInfo(true);
 
         // Kargo durumunu güncelle
-        const updateResponse = await putAPI("/update-kargo-status", {
-          ORDERNO: order.ORDERNO,
-          KARGO: "Yurtiçi Kargo",
+      const updateResponse = await putAPI("/update-kargo-status", {
+        ORDERNO: order.ORDERNO,
+        KARGO: "Yurtiçi Kargo",
           KARGOTAKIPNO: cargoKey,
-          ORDERSTATUS: "Kargoya Verildi",
-        });
+        ORDERSTATUS: "Kargoya Verildi",
+      });
 
-        if (updateResponse.success) {
-          updateOrderStatus(order.ORDERNO, "Kargoya Verildi");
+      if (updateResponse.success) {
+        updateOrderStatus(order.ORDERNO, "Kargoya Verildi");
           // Modal'ı kapatmıyoruz, etiket oluşturmak için açık kalacak
         }
       } else {
@@ -205,13 +208,13 @@ const KargoUpdateModal = ({ isOpen, setIsOpen, order, updateOrderStatus }) => {
       console.error("❌ Create shipment hatası:", error);
       setError(error.message || "Kargo oluşturma başarısız oldu.");
     } finally {
-      setIsLoading(false);
+      setLoadingCreate(false);
     }
   };
 
   // Kargo durumu sorgula
   const handleQueryShipment = async () => {
-    setIsLoading(true);
+    setLoadingQuery(true);
     setError(null);
     try {
       console.log("🔍 Kargo durumu sorgulama başlatılıyor...");
@@ -259,7 +262,7 @@ const KargoUpdateModal = ({ isOpen, setIsOpen, order, updateOrderStatus }) => {
       console.error("❌ Query shipment hatası:", error);
       setError(error.message || "Kargo sorgulama başarısız oldu.");
     } finally {
-      setIsLoading(false);
+      setLoadingQuery(false);
     }
   };
 
@@ -274,7 +277,7 @@ const KargoUpdateModal = ({ isOpen, setIsOpen, order, updateOrderStatus }) => {
       await handleYurticiKargo();
     } else {
       // Mevcut manuel güncelleme mantığı
-      setIsLoading(true);
+      setLoadingOtherUpdate(true);
       setError(null);
       try {
         const response = await putAPI("/update-kargo-status", {
@@ -300,7 +303,7 @@ const KargoUpdateModal = ({ isOpen, setIsOpen, order, updateOrderStatus }) => {
         console.error("Error updating kargo status:", error);
         setError("Bir hata oluştu. Lütfen tekrar deneyin.");
       } finally {
-        setIsLoading(false);
+        setLoadingOtherUpdate(false);
       }
     }
   };
@@ -327,7 +330,7 @@ const KargoUpdateModal = ({ isOpen, setIsOpen, order, updateOrderStatus }) => {
               </option>
             ))}
           </select>
-          {kargoFirmasi !== "Yurtiçi Kargo" && (
+          {/* Manuel takip no girişi (tüm firmalar için, Yurtiçi dahil) */}
             <input
               type="text"
               value={kargoTakipNo}
@@ -335,7 +338,6 @@ const KargoUpdateModal = ({ isOpen, setIsOpen, order, updateOrderStatus }) => {
               placeholder="Kargo Takip No"
               className="mt-4 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             />
-          )}
           {/* Yurtiçi Kargo için özel buton dizilimi */}
           {kargoFirmasi === "Yurtiçi Kargo" ? (
             <div className="mt-6 space-y-3">
@@ -345,7 +347,7 @@ const KargoUpdateModal = ({ isOpen, setIsOpen, order, updateOrderStatus }) => {
                   type="button"
                   className="inline-flex items-center justify-center py-2.5 px-3 border border-transparent shadow-sm text-xs font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200"
                   onClick={handleQueryShipment}
-                  disabled={isLoading}
+                  disabled={loadingQuery || loadingCreate || loadingManual}
                 >
                   <svg
                     className="w-3 h-3 mr-1"
@@ -360,12 +362,12 @@ const KargoUpdateModal = ({ isOpen, setIsOpen, order, updateOrderStatus }) => {
                       d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
                     />
                   </svg>
-                  {isLoading ? "Sorgulanıyor" : "Kargo Sorgula"}
+                  {loadingQuery ? "Sorgulanıyor" : "Kargo Sorgula"}
                 </button>
                 <button
                   type="submit"
                   className="inline-flex items-center justify-center py-2.5 px-3 border border-transparent shadow-sm text-xs font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
-                  disabled={isLoading}
+                  disabled={loadingCreate || loadingQuery || loadingManual}
                 >
                   <svg
                     className="w-3 h-3 mr-1"
@@ -380,7 +382,50 @@ const KargoUpdateModal = ({ isOpen, setIsOpen, order, updateOrderStatus }) => {
                       d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
                     />
                   </svg>
-                  {isLoading ? "Oluşturuluyor" : "Kargo Oluştur"}
+                  {loadingCreate ? "Oluşturuluyor" : "Kargo Oluştur"}
+                </button>
+              </div>
+
+              {/* Manuel takip no ile güncelle */}
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  onClick={async () => {
+                    if (!kargoTakipNo || !kargoTakipNo.trim()) {
+                      setError("Lütfen bir kargo takip no girin.");
+                      return;
+                    }
+                    setLoadingManual(true);
+                    setError(null);
+                    try {
+                      const response = await putAPI("/update-kargo-status", {
+                        ORDERNO: order.ORDERNO,
+                        KARGO: "Yurtiçi Kargo",
+                        KARGOTAKIPNO: kargoTakipNo,
+                        ORDERSTATUS: "Kargoya Verildi",
+                      });
+                      if (response.success) {
+                        updateOrderStatus(order.ORDERNO, "Kargoya Verildi");
+                        setCargoInfo({
+                          loading: false,
+                          success: true,
+                          message: "Kargo takip numarası güncellendi.",
+                        });
+                        setShowCargoInfo(true);
+                        setIsOpen(false);
+                      } else {
+                        setError(response.message || "Güncelleme başarısız oldu.");
+                      }
+                    } catch (err) {
+                      setError(err?.message || "Güncelleme sırasında hata oluştu.");
+                    } finally {
+                      setLoadingManual(false);
+                    }
+                  }}
+                  className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  disabled={loadingManual || loadingCreate || loadingQuery}
+                >
+                  {loadingManual ? "Güncelleniyor..." : "Güncelle"}
                 </button>
               </div>
 
@@ -390,7 +435,7 @@ const KargoUpdateModal = ({ isOpen, setIsOpen, order, updateOrderStatus }) => {
                   type="button"
                   className="inline-flex justify-center py-2 px-8 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-200"
                   onClick={() => setIsOpen(false)}
-                  disabled={isLoading}
+                  disabled={loadingQuery || loadingCreate || loadingManual}
                 >
                   İptal
                 </button>
@@ -399,22 +444,22 @@ const KargoUpdateModal = ({ isOpen, setIsOpen, order, updateOrderStatus }) => {
           ) : (
             /* Diğer kargo firmaları için normal düzen */
             <div className="mt-4 flex justify-end space-x-3">
-              <button
-                type="button"
+            <button
+              type="button"
                 className="inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-                onClick={() => setIsOpen(false)}
-                disabled={isLoading}
-              >
-                İptal
-              </button>
-              <button
-                type="submit"
-                className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                disabled={isLoading}
-              >
-                {isLoading ? "Güncelleniyor..." : "Güncelle"}
-              </button>
-            </div>
+              onClick={() => setIsOpen(false)}
+                disabled={loadingOtherUpdate}
+            >
+              İptal
+            </button>
+            <button
+              type="submit"
+              className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                disabled={loadingOtherUpdate}
+            >
+                {loadingOtherUpdate ? "Güncelleniyor..." : "Güncelle"}
+            </button>
+          </div>
           )}
         </form>
       </div>

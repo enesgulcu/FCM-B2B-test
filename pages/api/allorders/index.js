@@ -1,6 +1,6 @@
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
-import { getAllData, getDataByMany } from "@/services/serviceOperations";
+import { getAllDataCombined, getDataByManyCombined } from "@/services/serviceOperations";
 
 export default async function handler(req, res) {
   try {
@@ -17,12 +17,12 @@ export default async function handler(req, res) {
     let orders;
 
     try {
-      if (session.user.role === "admin") {
-        // Admin için tüm siparişleri getir
-        orders = await getAllData("ALLORDERS");
+      if (session.user.role === "Admin") {
+        // Admin için 2025 + 2024 tüm siparişleri getir
+        orders = await getAllDataCombined("ALLORDERS");
       } else {
-        // Normal kullanıcı için sadece kendi siparişlerini getir
-        orders = await getDataByMany("ALLORDERS", { CARKOD: session.user.id });
+        // Normal kullanıcı için sadece kendi siparişlerini getir (2025 + 2024)
+        orders = await getDataByManyCombined("ALLORDERS", { CARKOD: session.user.id });
       }
 
       if (orders.error) {

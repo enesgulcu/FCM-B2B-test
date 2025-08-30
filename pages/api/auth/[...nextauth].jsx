@@ -2,9 +2,7 @@ import { postAPI } from "@/services/fetchAPI";
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
-let loginPageRoute = "partner";
-
-const authOptions = {
+export const authOptions = {
   providers: [
     // CredentialsProvider ile email ve şifreyi kullanıcıdan alarak normal giriş yapmasını sağlarız.
     // farklı giriş yöntemleri ile (google - github - facebook) giriş için hazır "provider" ları kullanabiliriz.
@@ -17,38 +15,26 @@ const authOptions = {
       },
 
       async authorize(credentials) {
-        let { email, password, role } = credentials;
+        const { email, password, role } = credentials;
 
         const data = await postAPI(`/auth/login`, { role, email, password });
 
-        if (data.error) {
-          throw new Error(data.error);
+        if (!data || data.error) {
+          throw new Error(data?.error || "Bir hata oluştu. Lütfen tekrar deneyiniz.");
         }
 
-        // admin girişi yapılırsa admin paneline yönlendirme yapılır.
-        if (data.findUser.CARKOD === "7034922") {
-          loginPageRoute = data.findUser.CARYETKILI;
-        }
+        // Rolü kullanıcı bazında belirle (global değişken kullanma)
+        const isAdminUser = data.findUser.CARKOD === "7034922";
+        const computedRole = isAdminUser ? "Admin" : (role || "partner");
 
-        // console.log("########## DATA: ", data);
-
-        if (!data || data.error || data == null) {
-          throw new Error(
-            data.error || "Bir hata oluştu. Lütfen tekrar deneyiniz."
-          );
-        }
-
-        // Kullanıcı bilgilerini döndürüyoruz.
-        const user = {
+        return {
           id: data.findUser.CARKOD,
           email: data.findUser.CARUNVAN3,
           name: data.findUser.CARUNVAN,
-          role: loginPageRoute,
+          role: computedRole,
           isActive: data.findUser.CAROZKOD1,
           isPartner: data.findUser.CAROZKOD3,
         };
-
-        return user;
       },
     }),
   ],

@@ -114,6 +114,31 @@ export async function getDataByMany(tableName, where, year = 2023) {
   }
 }
 
+// 2024 + 2025 verilerini birleştiren yardımcılar okuma amaçlı
+export async function getAllDataCombined(tableName) {
+  try {
+    const [data2025, data2024] = await Promise.all([
+      prisma[tableName].findMany(),
+      prisma2024[tableName].findMany(),
+    ]);
+    return [...data2025, ...data2024];
+  } catch (error) {
+    return { error: error.message };
+  }
+}
+
+export async function getDataByManyCombined(tableName, where) {
+  try {
+    const [data2025, data2024] = await Promise.all([
+      prisma[tableName].findMany({ where }),
+      prisma2024[tableName].findMany({ where }),
+    ]);
+    return [...data2025, ...data2024];
+  } catch (error) {
+    return { error: error.message };
+  }
+}
+
 // UPDATE
 export async function updateDataByAny(tableName, where, newData) {
   try {
@@ -234,6 +259,9 @@ export default {
   getDataByUnique,
 
   getDataByUniqueSingle,
+
+  getAllDataCombined,
+  getDataByManyCombined,
 
   updateDataByAny,
 
