@@ -19,7 +19,6 @@
     "path": "/uploads/KDS1-6-1 SINIF 6 SAYI KAZANIM  DEĞ.SINAVI.webp",
     "stkkod": "KDS1-6"
   },
-
   {
     "path": "/uploads/KDS2-5-2 SINIF 6 SAYI KAZANIM DEĞ.SINAVI.webp",
     "stkkod": "KDS2-5"
@@ -630,6 +629,38 @@
   {
     "path": "/uploads/ca_yaz_tatili_4.jpg",
     "stkkod": "ÇAYT4"
+  },
+
+
+
+  {
+    "path": "/uploads/MAS2.jpeg",
+    "stkkod": "MAS2"
+  },
+  {
+    "path": "/uploads/HD4W.png",
+    "stkkod": "HD4W"
+  },
+  {
+    "path": "/uploads/HD3W.png",
+    "stkkod": "HD3W"
+  },
+  {
+    "path": "/uploads/HD2W.png",
+    "stkkod": "HD2W"
+  },
+  {
+    "path": "/uploads/İ2S-2.png",
+    "stkkod": "İ2S-2"
+  },
+  {
+    "path": "/uploads/İ3S-2.png",
+    "stkkod": "İ3S-2"
+  },
+  {
+    "path": "/uploads/İ4S-2.png",
+    "stkkod": "İ4S-2"
   }
+
 
 ]

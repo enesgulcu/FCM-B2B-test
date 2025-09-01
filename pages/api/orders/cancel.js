@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { updateOrderStatus } from "@/services/serviceOperations";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -43,15 +44,16 @@ export default async function handler(req, res) {
       });
     }
 
-    await prisma.aLLORDERS.updateMany({
-      where: {
-        ORDERNO: ORDERNO,
-        REFNO: REFNO,
-      },
-      data: {
-        ORDERSTATUS: "İptal",
-      },
-    });
+    // Admin akışı ile aynı: ALLORDERS durumunu "İptal" yap ve ilişkili tabloları güncelle
+    const result = await updateOrderStatus(
+      "ALLORDERS",
+      { ORDERNO: ORDERNO, REFNO: REFNO },
+      "İptal"
+    );
+
+    if (result?.error) {
+      return res.status(500).json({ success: false, message: result.error });
+    }
 
     return res
       .status(200)
