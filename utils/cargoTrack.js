@@ -1,4 +1,5 @@
 // utils/cargoTrack.js
+import fixieAgent from '@/lib/fixieClient';
 import axios from 'axios';
 
 export const TRACKING_WSDL = process.env.YKARGO_TRACK_PRD_URL || 'https://ws.yurticikargo.com/KOPSWebServices/WsReportWithReferenceServices?wsdl';
@@ -55,9 +56,7 @@ export const trackShipment = async (cargoKey, custParams = {}) => {
                 'User-Agent': 'YurticiKargo-Track/1.0'
             },
             timeout: 30000,
-            httpsAgent: new (require('https').Agent)({
-                rejectUnauthorized: true
-            })
+            httpsAgent: fixieAgent
         });
 
         console.log('✅ Takip sorgusu başarılı!');

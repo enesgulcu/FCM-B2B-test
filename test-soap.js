@@ -1,10 +1,11 @@
 const soap = require("soap");
 const https = require("https");
+const { default: fixieAgent } = require("./lib/fixieClient");
 
 const url =
   "https://testws.yurticikargo.com/KOPSWebServices/ShippingOrderDispatcherServices?wsdl";
 
-const agent = new https.Agent({ rejectUnauthorized: false });
+const agent = fixieAgent;
 
 soap.createClient(
   url,

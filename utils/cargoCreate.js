@@ -1,4 +1,5 @@
 // utils/cargoCreate.js
+import fixieAgent from '@/lib/fixieClient';
 import axios from 'axios';
 
 export const SHIPPING_WSDL = process.env.YKARGO_SHIPPING_PRD_URL || 'https://ws.yurticikargo.com/KOPSWebServices/ShippingOrderDispatcherServices';
@@ -45,9 +46,7 @@ export const createSoapClient = async (params) => {
                 'User-Agent': 'YurticiKargo-Create/1.0'
             },
             timeout: 30000,
-            httpsAgent: new (require('https').Agent)({
-                rejectUnauthorized: false
-            })
+            httpsAgent: fixieAgent
         });
 
         console.log('✅ Kargo oluşturma başarılı!');
