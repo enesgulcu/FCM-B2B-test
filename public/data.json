@@ -1,10 +1,10 @@
 [
   {
-    "path": "/uploads/İ3S-3.SNF İNGİLİZCE SETİ.webp",
+    "path": "/uploads/İ3S.jpg",
     "stkkod": "İ3S"
   },
   {
-    "path": "/uploads/İ4S-4.SNF-İNGİLİZCE-SET.webp",
+    "path": "/uploads/İ4S.jpg",
     "stkkod": "İ4S"
   },
   {
@@ -72,7 +72,7 @@
     "stkkod": "YUES"
   },
   {
-    "path": "/uploads/İ2S-2.SNF İNGİLİZCE SETİ.webp",
+    "path": "/uploads/İ2S.jpg",
     "stkkod": "İ2S"
   },
   {
@@ -156,16 +156,24 @@
     "stkkod": "MÖ4-2"
   },
   {
-    "path": "/uploads/NP4-4.SNF NO PROBLEM.webp",
+    "path": "/uploads/NP4.jpg",
     "stkkod": "NP4"
   },
   {
-    "path": "/uploads/3.SNF-NO-PROBLEM.webp",
+    "path": "/uploads/NP3.jpg",
     "stkkod": "NP3"
   },
   {
-    "path": "/uploads/OA4-4.SNF OKUYORUM ANLIYORUM.webp",
+    "path": "/uploads/OA4.jpg",
     "stkkod": "OA4"
+  },
+  {
+    "path": "/uploads/OA3.jpg",
+    "stkkod": "OA3"
+  },
+  {
+    "path": "/uploads/OA2.jpg",
+    "stkkod": "OA2"
   },
   {
     "path": "/uploads/KAA-KÜÇÜK ARILAR AKADEMİSİ.webp",
@@ -388,7 +396,7 @@
     "stkkod": "YNK2"
   },
   {
-    "path": "/uploads/2.SNF-NO-PROBLEM.webp",
+    "path": "/uploads/NP2.jpg",
     "stkkod": "NP2"
   },
   {
