@@ -123,6 +123,16 @@ const getAndUpdateReferences = async () => {
         { EVRNO: newSatisIrsaliyesiEvrNo }
       ),
     ]);
+
+    // Referans güncellemelerinde hata kontrolü
+    const updateErrors = resultUpdateAll.filter(
+      (result) => result && result.error
+    );
+    if (updateErrors.length > 0) {
+      console.error("Referans güncelleme hataları:", updateErrors);
+      throw new Error("Referans değerleri güncellenemedi");
+    }
+
     //console.log("resultUpdateAll", resultUpdateAll);
 
     return {
@@ -306,10 +316,16 @@ const createIRSHAR = async (orderItem, newIRSFISREFNO, siraNo) => {
     const newIrsharData = await createNewData("IRSHAR", irsharEntry);
 
     if (newIrsharData.error || !newIrsharData) {
-      throw newIrsharData.error;
+      console.error("IRSHAR oluşturma hatası detayları:", {
+        error: newIrsharData.error,
+        refNo: newIRSFISREFNO,
+        siraNo: siraNo,
+        stkkod: orderItem.STKKOD,
+      });
+      throw new Error(newIrsharData.error || "IRSHAR oluşturulamadı");
     }
   } catch (error) {
-    console.error("Yeni IRSHAR verisi oluşturulamadı:", error);
+    console.error("IRSHAR kaydı oluşturma hatası:", error);
     throw error;
   }
 };
@@ -500,10 +516,30 @@ const getLastSTKFISAndIRSFIS = async (orderData) => {
       STKFISMUHREFNO: 0,
     };
 
-    await Promise.all([
+    const [irsfisResult, stkfisResult] = await Promise.all([
       createNewData("IRSFIS", newIRSFISData),
       createNewData("STKFIS", newSTKFISData),
     ]);
+
+    // IRSFIS oluşturma hatalarını kontrol et
+    if (irsfisResult.error) {
+      console.error("IRSFIS oluşturma hatası:", {
+        error: irsfisResult.error,
+        refNo: newIRSFISREFNO,
+        carkod: orderData[0].CARKOD,
+      });
+      throw new Error(`IRSFIS oluşturulamadı: ${irsfisResult.error}`);
+    }
+
+    // STKFIS oluşturma hatalarını kontrol et
+    if (stkfisResult.error) {
+      console.error("STKFIS oluşturma hatası:", {
+        error: stkfisResult.error,
+        refNo: lastSTKFISREFNO,
+        carkod: orderData[0].CARKOD,
+      });
+      throw new Error(`STKFIS oluşturulamadı: ${stkfisResult.error}`);
+    }
 
     let siraNo = 0;
 
@@ -521,6 +557,10 @@ const getLastSTKFISAndIRSFIS = async (orderData) => {
 
 export default async function handler(req, res) {
   if (req.method === "POST") {
+    // Potansiyel geri alma için oluşturulan kayıtları takip et
+    let createdIRSFISREFNO = null;
+    let createdSTKFISREFNO = null;
+
     try {
       const { cartItems, totalPrice, userId, userName, talep } = req.body;
 
@@ -529,7 +569,7 @@ export default async function handler(req, res) {
         await getAndUpdateReferences();
 
       // Sipariş içerisindeki tüm ürünlerin bilgisi ve kaydı burada tutulur. (orderItems)
-      // Tüm siparişler burada tutuluyor (roderItems)
+      // Tüm siparişler burada tutuluyor (orderItems)
       const orderItems = await prepareOrderData(
         cartItems,
         totalPrice,
@@ -541,9 +581,12 @@ export default async function handler(req, res) {
       );
 
       // STKFIS ve IRSFIS verilerini al -> GÜNCELLE -> VERİ TABANINA EKLE -> güncel veriyi döndür.
-
+      // NOT: Bu işlemler atomik olmalı (transaction), ancak mevcut servis mimarisi bunu desteklemiyor
       const { lastSTKFISREFNO, newIRSFISREFNO, newSFNumber, newWEBNumber } =
         await getLastSTKFISAndIRSFIS(orderItems);
+
+      createdIRSFISREFNO = newIRSFISREFNO;
+      createdSTKFISREFNO = lastSTKFISREFNO;
 
       // Tüm siparişlerin kaydı burada yapılıyor
       for (const item of orderItems) {
@@ -558,12 +601,27 @@ export default async function handler(req, res) {
           CEVAP: "",
           REFNO: newIRSFISREFNO,
           KARGO: "",
-          KARGOTAKIPNO: "",
+          // KARGOTAKIPNO'yu boş string yapmak yerine item'dan kullan (unique constraint ihlalini önlemek için)
+          // KARGOTAKIPNO zaten orderItems'da ayarlanmış (satır 57)
           EKXTRA7: null,
           EKXTRA8: null,
           EKXTRA9: null,
         };
+
         const responseCreateNewData = await createNewData("ALLORDERS", entry);
+
+        // Yanıttaki hataları kontrol et
+        if (responseCreateNewData.error) {
+          console.error("ALLORDERS kaydı oluşturma hatası:", {
+            error: responseCreateNewData.error,
+            orderNo: item.ORDERNO,
+            stkkod: item.STKKOD,
+            kargotakipno: item.KARGOTAKIPNO,
+          });
+          throw new Error(
+            `ALLORDERS kaydı oluşturulamadı: ${responseCreateNewData.error}`
+          );
+        }
       }
 
       // CARKART tablosundaki CARCIKIRSTOP değerini güncelle
@@ -589,15 +647,35 @@ export default async function handler(req, res) {
         message: "Order items created successfully",
       });
     } catch (error) {
-      console.error("Order creation error:", error);
+      console.error("Sipariş oluşturma hatası:", {
+        error: error.message,
+        stack: error.stack,
+        userId: req.body?.userId,
+        createdIRSFISREFNO,
+        createdSTKFISREFNO,
+      });
+
+      // Eğer IRSFIS/STKFIS/IRSHAR oluşturulmuş ama ALLORDERS oluşturulamamışsa,
+      // IRSFIS kayıtları veritabanında kalacaktır. Bu bilinen bir sorundur ve
+      // düzgün veritabanı transaction'ları uygulanarak çözülmelidir.
+      // TODO: Tüm tablo işlemlerinde atomikliği sağlamak için Prisma transaction uygula
+
       res.status(500).json({
         success: false,
-        message: "Error creating order items",
+        message: "Sipariş kalemleri oluşturulurken hata",
         error: error.message,
       });
     }
   } else if (req.method === "GET") {
     try {
+      // Her zaman güncel veri dönmesi için önbelleklemeyi devre dışı bırak
+      res.setHeader(
+        "Cache-Control",
+        "no-store, no-cache, must-revalidate, proxy-revalidate"
+      );
+      res.setHeader("Pragma", "no-cache");
+      res.setHeader("Expires", "0");
+
       const allOrders = await getAllData("ALLORDERS");
       //console.log("allOrders", allOrders);
       res.status(200).json({

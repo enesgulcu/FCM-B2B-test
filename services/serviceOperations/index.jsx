@@ -38,7 +38,7 @@ export async function createNewData(tableName, newData) {
 }
 
 // GET BY UNIQUE ONE VALUE
-export async function getDataByUnique(tableName, where, year ) {
+export async function getDataByUnique(tableName, where, year) {
   let client;
 
   switch (year) {
@@ -115,11 +115,20 @@ export async function getDataByMany(tableName, where, year = 2023) {
 }
 
 // 2024 + 2025 verilerini birleştiren yardımcılar okuma amaçlı
-export async function getAllDataCombined(tableName) {
+export async function getAllDataCombined(tableName, options = {}) {
   try {
+    const { select, where, orderBy, take, skip } = options;
+
+    const queryOptions = {};
+    if (select) queryOptions.select = select;
+    if (where) queryOptions.where = where;
+    if (orderBy) queryOptions.orderBy = orderBy;
+    if (take) queryOptions.take = take;
+    if (skip) queryOptions.skip = skip;
+
     const [data2025, data2024] = await Promise.all([
-      prisma[tableName].findMany(),
-      prisma2024[tableName].findMany(),
+      prisma[tableName].findMany(queryOptions),
+      prisma2024[tableName].findMany(queryOptions),
     ]);
     return [...data2025, ...data2024];
   } catch (error) {

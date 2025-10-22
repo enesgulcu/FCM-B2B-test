@@ -30,6 +30,30 @@ export default async function handler(req, res) {
         .json({ success: false, message: "Sipariş bulunamadı." });
     }
 
+    // ✅ YENİ: İrsaliye tablosunda kayıt kontrolü
+    const irsfisRecord = await prisma.IRSFIS.findFirst({
+      where: {
+        IRSFISREFNO: REFNO,
+      },
+    });
+
+    if (!irsfisRecord) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Bu sipariş için irsaliye kaydı bulunamadı. İptal işlemi yapılamaz.",
+      });
+    }
+
+    // İrsaliye kaydı silinmiş veya iptal edilmiş mi kontrol et
+    if (irsfisRecord.IRSFISIPTALFLAG === 1) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Bu siparişin irsaliyesi zaten iptal edilmiş. İptal işlemi yapılamaz.",
+      });
+    }
+
     if (order.ORDERSTATUS === "Fiş Çıkartıldı") {
       return res.status(400).json({
         success: false,
@@ -60,12 +84,10 @@ export default async function handler(req, res) {
       .json({ success: true, message: "Sipariş başarıyla iptal edildi." });
   } catch (error) {
     console.error("Sipariş iptal hatası:", error);
-    return res
-      .status(500)
-      .json({
-        success: false,
-        message: "Sunucu hatası.",
-        error: error.message,
-      });
+    return res.status(500).json({
+      success: false,
+      message: "Sunucu hatası.",
+      error: error.message,
+    });
   }
 }

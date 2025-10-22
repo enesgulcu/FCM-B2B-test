@@ -18,10 +18,12 @@ function OrderDetails() {
   useEffect(() => {
     const fetchOrderDetails = async () => {
       try {
-        const data = await getAPI("/adminorders");
-        const filteredOrders = data.filter(
+        const response = await getAPI("/allorders");
+
+        const filteredOrders = response.filter(
           (order) => order.ORDERNO === orderno
         );
+
         setOrderDetails(filteredOrders);
         // Talep bilgisini al (ilk siparişin TALEP alanını kullanıyoruz)
         if (filteredOrders.length > 0) {

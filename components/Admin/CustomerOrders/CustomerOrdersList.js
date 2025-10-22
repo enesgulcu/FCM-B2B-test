@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import CustomerOrdersListTable from "./CustomerOrdersListTable";
 import {
   MdKeyboardArrowLeft,
@@ -10,87 +10,224 @@ import {
 import { getAPI } from "@/services/fetchAPI";
 import { statusList } from "./data";
 import Loading from "@/components/Loading";
+import CustomerOrdersSkeleton from "./CustomerOrdersSkeleton";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { useDebouncedCallback } from "use-debounce";
+
+// Cache için 10 dakikalık süre (milisaniye cinsinden)
+const CACHE_DURATION = 10 * 60 * 1000; // 10 dakika
 
 const CustomerOrdersList = () => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+
+  const activePage = parseInt(searchParams.get("page") || "1", 10);
+  const activeFilter = searchParams.get("filterBy") || null;
+  const activeSearchCarkod = searchParams.get("searchCarkod") || "";
+  const activeSearchUnvan = searchParams.get("searchUnvan") || "";
+
   const [orders, setOrders] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [searchTermUnvan, setSearchTermUnvan] = useState("");
+  const [allOrders, setAllOrders] = useState([]); // Tüm siparişler için ayrı state
+
   const [filteredOrders, setFilteredOrders] = useState([]);
-  const [page, setPage] = useState(0);
+
+  const [searchTerm, setSearchTerm] = useState(activeSearchCarkod);
+  const [searchTermUnvan, setSearchTermUnvan] = useState(activeSearchUnvan);
+
   const rowsPerPage = 10;
+
   const [selectedStatus, setSelectedStatus] = useState("Tümü");
+
   const [isLoading, setIsLoading] = useState(true);
+
   const [statusCounts, setStatusCounts] = useState({});
 
-  useEffect(() => {
-    const storedPage = localStorage.getItem("currentOrderPage");
-    const currentPage = storedPage ? parseInt(storedPage, 10) : 0;
-    setPage(currentPage);
+  const [totalPages, setTotalPages] = useState(0);
 
+  // Cache için ref kullanıyoruz (component re-render olsa bile cache korunur)
+  const cacheRef = useRef({});
+
+  // Status counts'u ref'te tut - sadece ilk yüklemede ve filtre değişikliğinde güncelle
+  const statusCountsRef = useRef({});
+
+  // Total pages'i de ref'te tut - her sayfada kullanmak için
+  const totalPagesRef = useRef(0);
+
+  // Son filtre değerini takip et - filtre değiştiğinde status counts'u yeniden çek
+  const lastFilterRef = useRef(activeFilter);
+
+  const createPageString = useCallback(
+    (page) => {
+      const params = new URLSearchParams(searchParams.toString());
+
+      if (page === 1) {
+        params.delete("page");
+      } else {
+        params.set("page", page.toString());
+      }
+
+      return params.toString();
+    },
+    [searchParams]
+  );
+
+  function handlePageChange(page) {
+    if (page === activePage) return; // No need to change if the same page is clicked
+
+    const newParams = createPageString(page);
+    router.replace(pathname + "?" + newParams, {
+      scroll: false,
+    });
+  }
+
+  const handleFilter = (filter) => {
+    const params = new URLSearchParams(searchParams.toString());
+
+    if (filter) {
+      if (filter === activeFilter) {
+        params.delete("filterBy");
+      } else {
+        params.set("filterBy", filter);
+      }
+    } else {
+      params.delete("filterBy");
+    }
+
+    // Filtre değiştiğinde sayfayı 1'e sıfırla
+    params.delete("page");
+
+    router.replace(pathname + "?" + params.toString());
+  };
+
+  useEffect(() => {
     const fetch = async () => {
       try {
-        const rawData = await getAPI("/adminorders");
-        const data = Array.isArray(rawData) ? rawData : [rawData];
-        // Group orders by ORDERNO
-        const groupedOrders = data.reduce((acc, order) => {
-          if (!acc[order.ORDERNO]) {
-            acc[order.ORDERNO] = [];
+        // Filtre değişti mi kontrol et
+        const filterChanged = lastFilterRef.current !== activeFilter;
+        if (filterChanged) {
+          lastFilterRef.current = activeFilter;
+        }
+
+        // Search var mı kontrol et
+        const hasSearch = !!(activeSearchCarkod || activeSearchUnvan);
+
+        // Status counts'u sadece ilk yüklemede, filtre değiştiğinde güncelle
+        const shouldFetchStatusCounts =
+          Object.keys(statusCountsRef.current).length === 0 || filterChanged;
+
+        // Cache key oluştur (sayfa + filtre + search kombinasyonu)
+        const cacheKey = `page_${activePage}_filter_${
+          activeFilter || "all"
+        }_carkod_${activeSearchCarkod}_unvan_${activeSearchUnvan}`;
+        const now = Date.now();
+
+        // Cache'de var mı ve süresi dolmamış mı kontrol et
+        if (
+          cacheRef.current[cacheKey] &&
+          now - cacheRef.current[cacheKey].timestamp < CACHE_DURATION
+        ) {
+          // Cache'den veriyi al
+          const cachedData = cacheRef.current[cacheKey].data;
+          setOrders(cachedData.orders || []);
+          setAllOrders(cachedData.orders || []);
+          setFilteredOrders(cachedData.orders || []);
+
+          // Pagination bilgisini güncelle
+          if (
+            cachedData.pagination &&
+            cachedData.pagination.totalPages !== null
+          ) {
+            totalPagesRef.current = cachedData.pagination.totalPages;
+            setTotalPages(cachedData.pagination.totalPages);
+          } else if (totalPagesRef.current) {
+            // Cache'de yoksa ama ref'te varsa onu kullan
+            setTotalPages(totalPagesRef.current);
           }
-          acc[order.ORDERNO].push(order);
-          return acc;
-        }, {});
-        const uniqueOrders = Object.values(groupedOrders)
-          .filter((orders) => orders.length > 0)
-          .map((orders) => ({
-            ORDERNO: orders[0].ORDERNO,
-            CARKOD: orders[0].CARKOD,
-            STKNAME: orders[0].STKNAME,
-            REFNO: orders[0].REFNO,
-            CARUNVAN: orders[0].CARUNVAN,
-            ACIKLAMA: orders[0].ACIKLAMA,
-            STKADET: orders.reduce((total, order) => total + order.STKADET, 0),
-            STKBIRIMFIYAT: orders[0].STKBIRIMFIYAT,
-            STKBIRIMFIYATTOPLAM: orders.reduce(
-              (total, order) => total + order.STKBIRIMFIYATTOPLAM,
-              0
-            ),
-            ORDERSTATUS: orders[0].ORDERSTATUS,
-            ORDERGUN: orders[0].ORDERGUN,
-            ORDERAY: orders[0].ORDERAY,
-            ORDERYIL: orders[0].ORDERYIL,
-            ORDERSAAT: orders[0].ORDERSAAT,
-            TALEP: orders[0].TALEP,
-            KARGO: orders[0].KARGO,
-            KARGOTAKIPNO: orders[0].KARGOTAKIPNO,
-            ID: orders[0].ID,
-          }));
-        uniqueOrders.sort((a, b) => {
-          const dateA = new Date(
-            a.ORDERYIL,
-            a.ORDERAY - 1,
-            a.ORDERGUN,
-            ...a.ORDERSAAT.split(":")
-          );
-          const dateB = new Date(
-            b.ORDERYIL,
-            b.ORDERAY - 1,
-            b.ORDERGUN,
-            ...b.ORDERSAAT.split(":")
-          );
-          return dateB - dateA; // En yeniden en eskiye sıralama
-        });
-        setOrders(uniqueOrders);
-        setFilteredOrders(uniqueOrders);
-        const counts = uniqueOrders.reduce((acc, order) => {
-          acc[order.ORDERSTATUS] = (acc[order.ORDERSTATUS] || 0) + 1;
-          return acc;
-        }, {});
-        counts["Tümü"] = uniqueOrders.length;
-        setStatusCounts(counts);
+
+          // Status counts cache'den alınabiliyorsa al
+          if (
+            cachedData.statusCounts &&
+            Object.keys(cachedData.statusCounts).length > 0
+          ) {
+            statusCountsRef.current = cachedData.statusCounts;
+            setStatusCounts(cachedData.statusCounts);
+          } else if (Object.keys(statusCountsRef.current).length > 0) {
+            // Cache'de yoksa ama ref'te varsa onu kullan
+            setStatusCounts(statusCountsRef.current);
+          }
+
+          if (activeFilter) {
+            setSelectedStatus(activeFilter);
+          } else {
+            setSelectedStatus("Tümü");
+          }
+
+          setIsLoading(false);
+          return; // Cache'den aldık, API'ye istek atmaya gerek yok
+        }
+
+        // Cache'de yoksa veya süresi dolmuşsa API'ye istek at
+        setIsLoading(true);
+        const params = new URLSearchParams();
+        params.append("page", activePage);
+        if (activeFilter && activeFilter !== "Tümü") {
+          params.append("filterBy", activeFilter);
+        }
+
+        // Search parametrelerini ekle
+        if (activeSearchCarkod) {
+          params.append("searchCarkod", activeSearchCarkod);
+        }
+        if (activeSearchUnvan) {
+          params.append("searchUnvan", activeSearchUnvan);
+        }
+
+        // Status counts'u sadece gerektiğinde iste
+        // Search varsa veya shouldFetchStatusCounts true ise iste
+        if (shouldFetchStatusCounts || hasSearch) {
+          params.append("includeStatusCounts", "true");
+        }
+
+        const response = await getAPI(`/adminorders?${params.toString()}`);
+
+        // Pagination bilgisini her zaman güncelle
+        if (response.pagination && response.pagination.totalPages !== null) {
+          totalPagesRef.current = response.pagination.totalPages;
+          setTotalPages(response.pagination.totalPages);
+        } else if (totalPagesRef.current) {
+          // Response'da yoksa ama ref'te varsa onu kullan
+          setTotalPages(totalPagesRef.current);
+        }
+
+        // Status counts geldi mi kontrol et ve kaydet
+        if (
+          response.statusCounts &&
+          Object.keys(response.statusCounts).length > 0
+        ) {
+          statusCountsRef.current = response.statusCounts;
+          setStatusCounts(response.statusCounts);
+        } else {
+          // Status counts gelmedi, ref'teki değeri kullan
+          setStatusCounts(statusCountsRef.current);
+        }
+
+        // Cache'e kaydet
+        cacheRef.current[cacheKey] = {
+          data: response,
+          timestamp: now,
+        };
+
+        setOrders(response.orders || []);
+        setAllOrders(response.orders || []); // allOrders'ı da güncelle
+        setFilteredOrders(response.orders || []);
+
+        // activeFilter varsa selectedStatus'u güncelle
+        if (activeFilter) {
+          setSelectedStatus(activeFilter);
+        } else {
+          setSelectedStatus("Tümü");
+        }
 
         setIsLoading(false);
       } catch (err) {
@@ -99,51 +236,10 @@ const CustomerOrdersList = () => {
       }
     };
     fetch();
-  }, [searchParams]);
-
-  const normalizeText = (text) => {
-    return text
-      .toLowerCase()
-      .replace(/ğ/g, "g")
-      .replace(/ü/g, "u")
-      .replace(/ş/g, "s")
-      .replace(/ı/g, "i")
-      .replace(/ö/g, "o")
-      .replace(/ç/g, "c")
-      .replace(/[^a-z0-9]/g, "");
-  };
-
-  useEffect(() => {
-    const filteredResults = orders.filter((order) => {
-      const normalizedCARKOD = normalizeText(order.CARKOD);
-      const normalizedCARUNVAN = normalizeText(order.CARUNVAN);
-      const normalizedSearchTerm = normalizeText(searchTerm);
-      const normalizedSearchTermUnvan = normalizeText(searchTermUnvan);
-
-      const carkodMatch = normalizedCARKOD.includes(normalizedSearchTerm);
-      const carunvanMatch = normalizedCARUNVAN.includes(
-        normalizedSearchTermUnvan
-      );
-
-      return carkodMatch && carunvanMatch;
-    });
-
-    setFilteredOrders(filteredResults);
-  }, [searchTerm, searchTermUnvan, orders]);
+  }, [activePage, activeFilter, activeSearchCarkod, activeSearchUnvan]);
 
   const filteredProd = (status) => {
-    if (status === "Tümü") {
-      setFilteredOrders(orders);
-      setSelectedStatus(status);
-    } else {
-      setFilteredOrders(orders.filter((order) => order.ORDERSTATUS === status));
-      setSelectedStatus(status);
-    }
-    // Reset to first page when changing filters
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("page", "1");
-    params.delete("returnPage");
-    router.push(`${pathname}?${params.toString()}`);
+    setSelectedStatus(status);
   };
 
   const handleStatusChange = (e) => {
@@ -152,6 +248,9 @@ const CustomerOrdersList = () => {
   };
 
   const updateOrderStatus = (orderno, newStatus) => {
+    // Cache'i temizle (veri değiştiği için)
+    cacheRef.current = {};
+
     setOrders((prevOrders) =>
       prevOrders.map((order) =>
         order.ORDERNO === orderno ? { ...order, ORDERSTATUS: newStatus } : order
@@ -164,47 +263,65 @@ const CustomerOrdersList = () => {
     );
   };
 
-  const handleChangePage = (direction) => {
-    let newPage = page;
-    switch (direction) {
-      case "first":
-        newPage = 0;
-        break;
-      case "prev":
-        newPage = Math.max(0, page - 1);
-        break;
-      case "next":
-        newPage = Math.min(totalPages - 1, page + 1);
-        break;
-      case "last":
-        newPage = totalPages - 1;
-        break;
+  // Pagination is driven by the `page` query param (activePage).
+  // Navigation is done by `handlePageChange`, which updates the URL.
+
+  // Debounced search function - 300ms delay
+  const debouncedSearch = useDebouncedCallback((value, type) => {
+    const params = new URLSearchParams(searchParams.toString());
+
+    if (type === "carkod") {
+      if (value) {
+        params.set("searchCarkod", value);
+      } else {
+        params.delete("searchCarkod");
+      }
+    } else if (type === "unvan") {
+      if (value) {
+        params.set("searchUnvan", value);
+      } else {
+        params.delete("searchUnvan");
+      }
     }
-    setPage(newPage);
-    localStorage.setItem("currentOrderPage", newPage.toString());
+
+    // Search değiştiğinde sayfayı 1'e sıfırla
+    params.delete("page");
+
+    // Cache'i temizle (search değiştiği için)
+    cacheRef.current = {};
+
+    router.replace(pathname + "?" + params.toString());
+  }, 300); // 300ms debounce
+
+  const handleSearch = (e, type) => {
+    const value = e.target.value;
+
+    // State'i hemen güncelle (UI responsiveness için)
+    if (type === "carkod") {
+      setSearchTerm(value);
+    } else if (type === "unvan") {
+      setSearchTermUnvan(value);
+    }
+
+    // Debounced URL update
+    debouncedSearch(value, type);
   };
 
-  const handleSearch = (e) => {
-    setSearchTerm(e.target.value);
-    setPage(0);
-    localStorage.setItem("currentOrderPage", "0");
-  };
-
-  const paginatedOrders = filteredOrders.slice(
-    page * rowsPerPage,
-    page * rowsPerPage + rowsPerPage
-  );
-  const totalPages = Math.ceil(filteredOrders.length / rowsPerPage);
+  // Backend'den gelen veriyi direkt kullanıyoruz
+  const paginatedOrders = filteredOrders;
 
   return (
     <>
-      {isLoading && <Loading />}
       <div className="flex flex-wrap justify-center md:justify-between items-center py-3">
         <div className="justify-between items-center flex flex-wrap">
           <div className="flex gap-2 text-LightBlue flex-wrap mb-4 md:mb-0">
             <select
               value={selectedStatus}
-              onChange={handleStatusChange}
+              onChange={(e) => {
+                handleStatusChange(e);
+
+                handleFilter(e.target.value === "Tümü" ? null : e.target.value);
+              }}
               className="p-2 border rounded-md text-BaseDark"
             >
               {statusList.map((status) => (
@@ -220,14 +337,14 @@ const CustomerOrdersList = () => {
             type="number"
             placeholder="Cari Koda Göre Filtrele.."
             value={searchTerm}
-            onChange={handleSearch}
+            onChange={(e) => handleSearch(e, "carkod")}
             className="p-2 border rounded-md border-NavyBlue text-BaseDark focus:outline-none focus:border-NavyBlue focus:ring-1 focus:ring-NavyBlue"
           />
           <input
             type="text"
             placeholder="Cari Unvana Göre Filtrele.."
             value={searchTermUnvan}
-            onChange={(e) => setSearchTermUnvan(e.target.value)}
+            onChange={(e) => handleSearch(e, "unvan")}
             className="p-2 border rounded-md border-NavyBlue text-BaseDark focus:outline-none focus:border-NavyBlue focus:ring-1 focus:ring-NavyBlue"
           />
         </div>
@@ -235,55 +352,67 @@ const CustomerOrdersList = () => {
           <p className="text-CustomGray">{rowsPerPage} öge</p>
           <div
             className={`border-2 rounded-sm text-[18px] md:p-3 p-1 ${
-              page === 0
+              activePage === 1
                 ? "cursor-not-allowed text-gray-300"
                 : "cursor-pointer hover:bg-gray-200 duration-300 hover:border-NavyBlue hover:rounded-xl"
             }`}
-            onClick={() => handleChangePage("first")}
+            onClick={() => {
+              handlePageChange(1);
+            }}
           >
             <MdKeyboardDoubleArrowLeft />
           </div>
           <div
             className={`border-2 rounded-sm text-[18px] md:p-3 p-1 ${
-              page === 0
+              activePage === 1
                 ? " cursor-not-allowed text-gray-300"
                 : "cursor-pointer hover:bg-gray-200 duration-300 hover:border-NavyBlue hover:rounded-xl"
             }`}
-            onClick={() => handleChangePage("prev")}
+            onClick={() => {
+              handlePageChange(Math.max(activePage - 1, 1));
+            }}
           >
             <MdKeyboardArrowLeft />
           </div>
           <span className="border  md:px-4 md:py-2 py-1 px-3 rounded-full bg-NavyBlue text-white">
-            {page + 1}
+            {activePage}
           </span>
           <span>/ {totalPages}</span>
           <div
             className={`border-2 rounded-sm text-[18px] md:p-3 p-1 ${
-              page === totalPages - 1
+              activePage === totalPages
                 ? " cursor-not-allowed text-gray-300"
                 : "cursor-pointer hover:bg-gray-200 duration-300 hover:border-NavyBlue hover:rounded-xl"
             }`}
-            onClick={() => handleChangePage("next")}
+            onClick={() => {
+              handlePageChange(Math.min(activePage + 1, totalPages));
+            }}
           >
             <MdKeyboardArrowRight />
           </div>
           <div
             className={`border-2 rounded-sm text-[18px] md:p-3 p-1 ${
-              page === totalPages - 1
+              activePage === totalPages
                 ? "cursor-not-allowed text-gray-300 "
                 : "cursor-pointer hover:bg-gray-200 duration-300 hover:border-NavyBlue hover:rounded-xl"
             }`}
-            onClick={() => handleChangePage("last")}
+            onClick={() => {
+              handlePageChange(totalPages);
+            }}
           >
             <MdKeyboardDoubleArrowRight />
           </div>
         </div>
       </div>
-      <CustomerOrdersListTable
-        orders={paginatedOrders}
-        allOrders={orders}
-        updateOrderStatus={updateOrderStatus}
-      />
+      {isLoading ? (
+        <CustomerOrdersSkeleton />
+      ) : (
+        <CustomerOrdersListTable
+          orders={paginatedOrders}
+          allOrders={allOrders}
+          updateOrderStatus={updateOrderStatus}
+        />
+      )}
     </>
   );
 };

@@ -7,6 +7,29 @@ export default function Navbar({ orderNo, orderStatus, refNo }) {
   const { data: session } = useSession();
   const [isLoading, setIsLoading] = useState(false);
   const [currentStatus, setCurrentStatus] = useState(orderStatus);
+  const [hasIrsaliyeRecord, setHasIrsaliyeRecord] = useState(true);
+  const [irsaliyeMessage, setIrsaliyeMessage] = useState("");
+
+  // İrsaliye kaydı kontrolü
+  useEffect(() => {
+    const checkIrsaliye = async () => {
+      if (!refNo) return;
+
+      try {
+        const response = await fetch(`/api/check-irsaliye?refNo=${refNo}`);
+        const data = await response.json();
+
+        setHasIrsaliyeRecord(data.exists && !data.isCancelled);
+        setIrsaliyeMessage(data.message || "");
+      } catch (error) {
+        console.error("İrsaliye kontrol hatası:", error);
+        setHasIrsaliyeRecord(false);
+        setIrsaliyeMessage("İrsaliye kontrolü yapılamadı");
+      }
+    };
+
+    checkIrsaliye();
+  }, [refNo]);
 
   const handleCancelOrder = async () => {
     if (!confirm("Bu siparişi iptal etmek istediğinizden emin misiniz?")) {
@@ -41,9 +64,10 @@ export default function Navbar({ orderNo, orderStatus, refNo }) {
     }
   };
 
-  const isCancellable = !["Fiş Çıkartıldı", "Tamamlandı", "İptal"].includes(
-    currentStatus
-  );
+  const isCancellable =
+    !["Fiş Çıkartıldı", "Tamamlandı", "İptal"].includes(currentStatus) &&
+    hasIrsaliyeRecord; // İrsaliye kontrolü eklendi
+
   const isButtonDisabled = isLoading || !isCancellable;
 
   return (
@@ -65,7 +89,17 @@ export default function Navbar({ orderNo, orderStatus, refNo }) {
             }`}
             onClick={handleCancelOrder}
             disabled={isButtonDisabled}
-            title={!isCancellable ? "Bu sipariş iptal edilemez." : ""}
+            title={
+              // Sipariş iptal edilemiyorsa tooltip göster
+              !isCancellable
+                ? !hasIrsaliyeRecord
+                  ? // İrsaliye kaydı yoksa bu mesajı göster
+                    `İrsaliye kaydı bulunamadı: ${irsaliyeMessage}`
+                  : // İrsaliye var ama sipariş durumu iptal edilemez durumda (Fiş Çıkartıldı, Tamamlandı, İptal)
+                    "Bu sipariş iptal edilemez."
+                : // Sipariş iptal edilebiliyorsa tooltip gösterme
+                  ""
+            }
           >
             {isLoading
               ? "İPTAL EDİLİYOR..."
