@@ -6,6 +6,7 @@ import TopSection from "./OrderDetailsComponents/TopSection";
 import ProductSummary from "./OrderDetailsComponents/ProductSummary";
 import { getAPI } from "@/services/fetchAPI";
 import Loading from "@/components/Loading";
+import { formatPrice } from "@/utils/formatPrice";
 
 function OrderDetails() {
   const searchParams = useSearchParams();
@@ -55,7 +56,7 @@ function OrderDetails() {
               month={orderDetails[0].ORDERAY}
               year={orderDetails[0].ORDERYIL}
               time={orderDetails[0].ORDERSAAT}
-              totalPrice={totalPrice + "₺"}
+              totalPrice={formatPrice(totalPrice) + "₺"}
               totalQuantity={totalQuantity}
               orderStatus={orderDetails[0].ORDERSTATUS}
               orderRequest={orderDetails[0].TALEP}

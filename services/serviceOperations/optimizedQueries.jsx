@@ -73,103 +73,46 @@ export async function getAdminOrdersOptimized(options = {}) {
       { ORDERSAAT: "desc" },
     ];
 
-    // Search varsa TÜM veriyi çek (client-side filtering için)
-    // Search yoksa sadece gerekli sayfayı çek (performance için)
-    const hasSearch = normalizedSearchCarkod || normalizedSearchUnvan;
-
-    let skip, take;
-    if (hasSearch) {
-      // Search varsa tüm veriyi çek
-      skip = 0;
-      take = undefined; // Tüm kayıtları çek
-    } else {
-      // Search yoksa pagination uygula
-      const bufferMultiplier = 2; // Güvenli bir buffer
-      skip = (page - 1) * rowsPerPage;
-      take = rowsPerPage * bufferMultiplier;
-    }
-
-    // Status counts sadece gerektiğinde hesapla
+    // Status counts hesaplama (her zaman paralel çalışsın)
     let statusCounts = {};
+    let statusCountsPromise = null;
 
     if (includeStatusCounts) {
-      // Status counts için ayrı sorgular (paralel)
-      // Unique ORDERNO'ları saymak için sadece ORDERNO ve ORDERSTATUS çek
-      const [data2025, data2024, allOrders2025, allOrders2024] =
-        await Promise.all([
-          prisma.ALLORDERS.findMany({
-            where: whereClause,
-            select: selectFields,
-            orderBy: orderBy,
-            skip: skip,
-            take: take,
-          }),
-          prisma2024.ALLORDERS.findMany({
-            where: whereClause,
-            select: selectFields,
-            orderBy: orderBy,
-            skip: skip,
-            take: take,
-          }),
-          // Sadece ORDERNO ve ORDERSTATUS çek (hafif sorgu)
-          prisma.ALLORDERS.findMany({
-            select: {
-              ORDERNO: true,
-              ORDERSTATUS: true,
-            },
-          }),
-          prisma2024.ALLORDERS.findMany({
-            select: {
-              ORDERNO: true,
-              ORDERSTATUS: true,
-            },
-          }),
-        ]);
-
-      // Unique ORDERNO'ları bul ve status'lerini say
-      const allOrdersForCount = [...allOrders2025, ...allOrders2024];
-      const uniqueOrdersForCount = new Map();
-
-      allOrdersForCount.forEach((order) => {
-        if (!uniqueOrdersForCount.has(order.ORDERNO)) {
-          uniqueOrdersForCount.set(order.ORDERNO, order.ORDERSTATUS);
-        }
-      });
-
-      // Status counts hesapla - UNIQUE ORDERNO'lardan
-      uniqueOrdersForCount.forEach((status) => {
-        statusCounts[status] = (statusCounts[status] || 0) + 1;
-      });
-
-      // Toplam hesapla
-      statusCounts["Tümü"] = uniqueOrdersForCount.size;
-
-      // Verileri birleştir (status counts dahil edildiğinde)
-      var allData = [...data2025, ...data2024];
-    } else {
-      // Status counts gerekmediğinde sadece order verilerini çek
-      const [data2025, data2024] = await Promise.all([
+      // Status counts'u paralel olarak başlat (hafif sorgu - sadece ORDERNO ve ORDERSTATUS)
+      statusCountsPromise = Promise.all([
         prisma.ALLORDERS.findMany({
-          where: whereClause,
-          select: selectFields,
-          orderBy: orderBy,
-          skip: skip,
-          take: take,
+          select: {
+            ORDERNO: true,
+            ORDERSTATUS: true,
+          },
         }),
         prisma2024.ALLORDERS.findMany({
-          where: whereClause,
-          select: selectFields,
-          orderBy: orderBy,
-          skip: skip,
-          take: take,
+          select: {
+            ORDERNO: true,
+            ORDERSTATUS: true,
+          },
         }),
       ]);
-
-      // Verileri birleştir (status counts olmadan)
-      var allData = [...data2025, ...data2024];
     }
 
-    // ORDERNO'ya göre grupla
+    // Ana veri çekme: Her iki DB'den de filtrelenmiş veriyi al
+    const [data2025, data2024] = await Promise.all([
+      prisma.ALLORDERS.findMany({
+        where: whereClause,
+        select: selectFields,
+        orderBy: orderBy,
+      }),
+      prisma2024.ALLORDERS.findMany({
+        where: whereClause,
+        select: selectFields,
+        orderBy: orderBy,
+      }),
+    ]);
+
+    // Verileri birleştir
+    const allData = [...data2025, ...data2024];
+
+    // ORDERNO'ya göre grupla ve unique orders oluştur
     const groupedOrders = allData.reduce((acc, order) => {
       if (!acc[order.ORDERNO]) {
         acc[order.ORDERNO] = [];
@@ -178,7 +121,7 @@ export async function getAdminOrdersOptimized(options = {}) {
       return acc;
     }, {});
 
-    // Unique orders oluştur
+    // Unique orders oluştur (aynı ORDERNO'daki kayıtları birleştir)
     let uniqueOrders = Object.values(groupedOrders)
       .filter((orders) => orders.length > 0)
       .map((orders) => ({
@@ -226,7 +169,7 @@ export async function getAdminOrdersOptimized(options = {}) {
       });
     }
 
-    // Tarihe göre tekrar sırala (birleştirme sonrası)
+    // Tarihe göre sırala (birleştirme sonrası - en yakın tarihten en uzak tarihe)
     uniqueOrders.sort((a, b) => {
       const dateA = new Date(
         a.ORDERYIL,
@@ -240,33 +183,36 @@ export async function getAdminOrdersOptimized(options = {}) {
         b.ORDERGUN,
         ...b.ORDERSAAT.split(":")
       );
-      return dateB - dateA;
+      return dateB - dateA; // desc order (newest first)
     });
 
-    // Toplam item sayısı hesaplama
-    let totalItems;
+    // Status counts hesaplama bitir (eğer başlatılmışsa)
+    if (statusCountsPromise) {
+      const [allOrders2025, allOrders2024] = await statusCountsPromise;
+      const allOrdersForCount = [...allOrders2025, ...allOrders2024];
+      const uniqueOrdersForCount = new Map();
 
-    // Eğer search varsa, filtrelenmiş sonuçların sayısını kullan
-    if (normalizedSearchCarkod || normalizedSearchUnvan) {
-      totalItems = uniqueOrders.length;
-    } else if (includeStatusCounts) {
-      // Search yoksa status counts'tan al
-      totalItems =
-        filterBy && filterBy !== "Tümü"
-          ? statusCounts[filterBy] || 0
-          : statusCounts["Tümü"];
-    } else {
-      totalItems = null;
+      allOrdersForCount.forEach((order) => {
+        if (!uniqueOrdersForCount.has(order.ORDERNO)) {
+          uniqueOrdersForCount.set(order.ORDERNO, order.ORDERSTATUS);
+        }
+      });
+
+      // Status counts hesapla - UNIQUE ORDERNO'lardan
+      uniqueOrdersForCount.forEach((status) => {
+        statusCounts[status] = (statusCounts[status] || 0) + 1;
+      });
+
+      // Toplam hesapla
+      statusCounts["Tümü"] = uniqueOrdersForCount.size;
     }
 
-    const totalPages =
-      totalItems !== null ? Math.ceil(totalItems / rowsPerPage) : null;
+    // Toplam item sayısı: Filtrelenmiş ve unique'lenmiş siparişlerin sayısı
+    const totalItems = uniqueOrders.length;
+    const totalPages = Math.ceil(totalItems / rowsPerPage);
 
-    // Final pagination uygula (search varsa manual pagination)
-    const startIndex =
-      normalizedSearchCarkod || normalizedSearchUnvan
-        ? (page - 1) * rowsPerPage
-        : 0; // Search yoksa zaten skip ile veri çektik
+    // Pagination uygula (slice ile)
+    const startIndex = (page - 1) * rowsPerPage;
     const endIndex = startIndex + rowsPerPage;
     const paginatedOrders = uniqueOrders.slice(startIndex, endIndex);
 

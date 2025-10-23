@@ -8,6 +8,7 @@ import { getAPI } from "@/services/fetchAPI";
 import Loading from "../Loading";
 import RequestInfo from "./RequestInfo";
 import KargoInfo from "./KargoInfo";
+import { formatPrice } from "@/utils/formatPrice";
 
 function OrderDetails() {
   const searchParams = useSearchParams();
@@ -70,7 +71,7 @@ function OrderDetails() {
               month={orderDetails[0].ORDERAY}
               year={orderDetails[0].ORDERYIL}
               time={orderDetails[0].ORDERSAAT}
-              totalPrice={totalPrice + "₺"}
+              totalPrice={formatPrice(totalPrice) + "₺"}
               totalQuantity={totalQuantity}
               orderStatus={orderDetails[0].ORDERSTATUS}
               orderKargoCompany={orderDetails[0].KARGO}
