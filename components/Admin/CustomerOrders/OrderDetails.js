@@ -16,11 +16,8 @@ function OrderDetails() {
   useEffect(() => {
     const fetchOrderDetails = async () => {
       try {
-        const data = await getAPI("/allorders");
-        const filteredOrders = data.filter(
-          (order) => order.ORDERNO === orderno
-        );
-        setOrderDetails(filteredOrders);
+        const data = await getAPI(`/orders/by-orderno?orderno=${orderno}`);
+        setOrderDetails(data);
       } catch (err) {}
     };
     fetchOrderDetails();

@@ -19,16 +19,12 @@ function OrderDetails() {
   useEffect(() => {
     const fetchOrderDetails = async () => {
       try {
-        const response = await getAPI("/allorders");
+        const response = await getAPI(`/orders/by-orderno?orderno=${orderno}`);
 
-        const filteredOrders = response.filter(
-          (order) => order.ORDERNO === orderno
-        );
-
-        setOrderDetails(filteredOrders);
+        setOrderDetails(response);
         // Talep bilgisini al (ilk siparişin TALEP alanını kullanıyoruz)
-        if (filteredOrders.length > 0) {
-          setRequestInfo(filteredOrders[0].TALEP || "");
+        if (response.length > 0) {
+          setRequestInfo(response[0].TALEP || "");
         }
       } catch (err) {
         console.error("Sipariş detayları alınırken hata oluştu:", err);
