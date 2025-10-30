@@ -55,10 +55,10 @@ function SubProductsList({ params }) {
 
     if (existingItemIndex !== -1) {
       // Ürün sepette zaten var, sadece miktarını artır
-      updatedCartItems[existingItemIndex].quantity += +quantity;
+      updatedCartItems[existingItemIndex].quantity += quantity;
     } else {
       // Ürün sepette yok, yeni ürün olarak ekle
-      const newItem = { ...product, quantity: +quantity };
+      const newItem = { ...product, quantity };
       updatedCartItems.push(newItem);
     }
 

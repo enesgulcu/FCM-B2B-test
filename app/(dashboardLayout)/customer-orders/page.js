@@ -1,13 +1,10 @@
-import CustomerOrdersContainer from "@/containers/CustomerOrders";
-import React, { Suspense } from "react";
-import Loading from "@/components/Loading";
+import CustomerOrdersContainer from '@/containers/CustomerOrders'
+import React from 'react'
 
 function page() {
   return (
-    <Suspense fallback={<Loading />}>
-      <CustomerOrdersContainer />
-    </Suspense>
-  );
+    <CustomerOrdersContainer/>
+  )
 }
 
-export default page;
+export default page
