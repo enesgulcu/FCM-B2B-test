@@ -351,8 +351,26 @@ const getLastSTKFISAndIRSFIS = async (orderData) => {
       { IRSFISREFNO: "desc" }
     );
 
+    // STKFIS yorum satırına alındığı için 1.evrak numarası 1 olarak kabul ediliyor.
     let newSFNumber = 1;
+
+    // Son IRSFIS kaydından WEB numarasını çıkar ve arttır
     let newWEBNumber = 1;
+    if (lastIRSFIS?.IRSFISEVRAKNO1) {
+      // "WEB-005051" formatını parçala -> "005051" kısmını çıkar -> sayıya çevir -> bir artır
+      const match = lastIRSFIS.IRSFISEVRAKNO1.match(/WEB-(\d+)/);
+      if (match && match[1]) {
+        const lastNumber = parseInt(match[1], 10);
+        if (!isNaN(lastNumber)) {
+          // eğer son rakam 1 se 16010 ekle unique olabilmesi için
+          if (lastNumber === 1) {
+            newWEBNumber = lastNumber + 1 + 16010;
+          } else {
+            newWEBNumber = lastNumber + 1;
+          }
+        }
+      }
+    }
 
     const irsFisDate = new Date();
     const irsFisHour = irsFisDate.getHours().toString().padStart(2, "0");
