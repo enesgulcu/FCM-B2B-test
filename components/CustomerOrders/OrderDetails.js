@@ -8,6 +8,7 @@ import { getAPI } from "@/services/fetchAPI";
 import Loading from "../Loading";
 import RequestInfo from "./RequestInfo";
 import KargoInfo from "./KargoInfo";
+import { formatPrice } from "@/utils/formatPrice";
 
 function OrderDetails() {
   const searchParams = useSearchParams();
@@ -18,16 +19,12 @@ function OrderDetails() {
   useEffect(() => {
     const fetchOrderDetails = async () => {
       try {
-        const response = await getAPI("/allorders");
+        const response = await getAPI(`/orders/by-orderno?orderno=${orderno}`);
 
-        const filteredOrders = response.filter(
-          (order) => order.ORDERNO === orderno
-        );
-
-        setOrderDetails(filteredOrders);
+        setOrderDetails(response);
         // Talep bilgisini al (ilk siparişin TALEP alanını kullanıyoruz)
-        if (filteredOrders.length > 0) {
-          setRequestInfo(filteredOrders[0].TALEP || "");
+        if (response.length > 0) {
+          setRequestInfo(response[0].TALEP || "");
         }
       } catch (err) {
         console.error("Sipariş detayları alınırken hata oluştu:", err);
@@ -70,7 +67,7 @@ function OrderDetails() {
               month={orderDetails[0].ORDERAY}
               year={orderDetails[0].ORDERYIL}
               time={orderDetails[0].ORDERSAAT}
-              totalPrice={totalPrice + "₺"}
+              totalPrice={formatPrice(totalPrice) + "₺"}
               totalQuantity={totalQuantity}
               orderStatus={orderDetails[0].ORDERSTATUS}
               orderKargoCompany={orderDetails[0].KARGO}

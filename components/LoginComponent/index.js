@@ -47,13 +47,15 @@ const Modal = ({ isOpen, onClose, message, type }) => {
           <h2
             className={`text-xl font-bold mb-4 ${
               type === "success" ? "text-green-600" : "text-red-600"
-            }`}>
+            }`}
+          >
             {type === "success" ? "Başarılı" : "Hata"}
           </h2>
           <p>{message}</p>
           <button
             onClick={onClose}
-            className="mt-4 bg-CustomRed text-white font-bold rounded-md px-4 py-2 hover:bg-CustomRed/80">
+            className="mt-4 bg-CustomRed text-white font-bold rounded-md px-4 py-2 hover:bg-CustomRed/80"
+          >
             Kapat
           </button>
         </div>
@@ -82,7 +84,12 @@ const LoginComponent = ({ pageRole }) => {
 
     if (status === "authenticated" && shouldRedirect) {
       const redirectPath =
-        session.user.role === "employee" ? "/customer-orders-admin" : "/";
+        session.user.role === "Admin"
+          ? "/customer-orders-admin"
+          : session.user.role === "partner"
+          ? "/customer-orders"
+          : "/";
+
       router.push(redirectPath);
     }
   }, [status, session, router, shouldRedirect, isMounted]);
@@ -184,7 +191,8 @@ const LoginComponent = ({ pageRole }) => {
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
-        onSubmit={handleSubmit}>
+        onSubmit={handleSubmit}
+      >
         {() => (
           <Form className="flex flex-col">
             <div className="mb-4 flex flex-col w-[400px]">
@@ -223,7 +231,8 @@ const LoginComponent = ({ pageRole }) => {
             <div className="flex flex-row items-center justify-center">
               <button
                 type="submit"
-                className="bg-CustomRed text-white font-bold rounded-md px-6 py-2 w-[200px] hover:scale-105 transition-all ease-in-out duration-700 transform">
+                className="bg-CustomRed text-white font-bold rounded-md px-6 py-2 w-[200px] hover:scale-105 transition-all ease-in-out duration-700 transform"
+              >
                 Giriş Yap
               </button>
             </div>

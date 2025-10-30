@@ -1,3 +1,5 @@
+import { formatPrice } from "@/utils/formatPrice";
+
 export default function ProductsTable({ orders }) {
   return (
     <div id="table">
@@ -19,7 +21,7 @@ export default function ProductsTable({ orders }) {
                   {order.STKNAME}
                 </td>
                 <td className="text-xs md:text-sm text-center py-0.5 px-1">
-                  {order.STKBIRIMFIYAT}
+                  {formatPrice(order.STKBIRIMFIYAT)}
                 </td>
                 <td className="text-xs md:text-sm text-center py-0.5 px-1">
                   %0
@@ -28,7 +30,7 @@ export default function ProductsTable({ orders }) {
                   {order.STKADET}
                 </td>
                 <td className="text-xs md:text-sm text-center py-0.5 px-1">
-                  {order.STKBIRIMFIYATTOPLAM} ₺
+                  {formatPrice(order.STKBIRIMFIYATTOPLAM)} ₺
                 </td>
               </tr>
             ))}

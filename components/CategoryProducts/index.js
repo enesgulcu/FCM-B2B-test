@@ -232,7 +232,8 @@ function CategoryProducts({ showSearchAndCart = false }) {
     return filteredUrunler.map((urun) => (
       <div
         key={urun.STKKOD}
-        className="relative p-[10px] sm:p-[20px] border border-ProductsBorder rounded-md shadow-sm transition duration-300 ease-in-out transform hover:shadow-[0_0_20px_rgba(0,0,0,0.1)] overflow-hidden flex flex-row sm:flex-col items-center sm:justify-center">
+        className="relative p-[10px] sm:p-[20px] border border-ProductsBorder rounded-md shadow-sm transition duration-300 ease-in-out transform hover:shadow-[0_0_20px_rgba(0,0,0,0.1)] overflow-hidden flex flex-row sm:flex-col items-center sm:justify-center"
+      >
         <p className="absolute flex flex-col items-center justify-center top-16 -right-12 transform origin-top-right rotate-45 text-[12px] sm:text-[16px] font-bold text-white bg-gradient-to-r from-yellow-400 to-orange-600 px-2 w-40 shadow-md shadow-orange-200">
           {urun.STKOZKOD1 === "A" ? (
             <>
@@ -271,7 +272,8 @@ function CategoryProducts({ showSearchAndCart = false }) {
             <Link
               onClick={() => changeProductDetail(urun.STKKOD, urun.STKOZKOD1)}
               href={`/products/productDetail`}
-              className="font-bold text-[14px] md:text-[16px] text-CustomGray leading-tight">
+              className="font-bold text-[14px] md:text-[16px] text-CustomGray leading-tight"
+            >
               <p>{urun.STKCINSI}</p>
               <p>{urun.STKKOD}</p>
             </Link>
@@ -317,8 +319,16 @@ function CategoryProducts({ showSearchAndCart = false }) {
               onSubmit={(values, { resetForm }) => {
                 handleAddToCart(values, urun);
                 resetForm();
-              }}>
-              {({ values, handleChange, handleSubmit, errors, touched }) => (
+              }}
+            >
+              {({
+                values,
+                handleChange,
+                handleSubmit,
+                errors,
+                touched,
+                setFieldValue,
+              }) => (
                 <Form>
                   <div className="flex flex-col items-center justify-center text-LightBlue">
                     <div className="flex flex-row items-center justify-center">
@@ -328,32 +338,25 @@ function CategoryProducts({ showSearchAndCart = false }) {
                           className="text-sm sm:text-md text-LightBlue hover:scale-110 transition duration-500 ease-in-out transform"
                           onClick={() => {
                             if (values.quantity > 1) {
-                              handleChange({
-                                target: {
-                                  name: "quantity",
-                                  value: values.quantity - 1,
-                                },
-                              });
+                              setFieldValue("quantity", values.quantity - 1);
                             }
-                          }}>
+                          }}
+                        >
                           <FaMinus />
                         </button>
                         <Field
+                          type="number"
                           min="1"
                           name="quantity"
-                          className="w-8 text-center outline-none text-CustomGray"
+                          className="w-8 text-center outline-none text-CustomGray [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [&]:m-0"
                         />
                         <button
                           type="button"
                           className="text-LightBlue hover:scale-110 text-sm sm:text-md transition duration-500 ease-in-out transform"
                           onClick={() =>
-                            handleChange({
-                              target: {
-                                name: "quantity",
-                                value: values.quantity + 1,
-                              },
-                            })
-                          }>
+                            setFieldValue("quantity", values.quantity + 1)
+                          }
+                        >
                           <FaPlus />
                         </button>
                       </div>
@@ -375,7 +378,8 @@ function CategoryProducts({ showSearchAndCart = false }) {
                             handleSubmit(e);
                           }
                         }}
-                        disabled={urun.STKOZKOD1 === "2" || isDisabled}>
+                        disabled={urun.STKOZKOD1 === "2" || isDisabled}
+                      >
                         {urun.addingToCart ? (
                           <div className="flex flex-row items-center justify-center gap-1">
                             <div className="h-2 w-2 rounded-full animate-pulse bg-blue-900"></div>
@@ -392,7 +396,8 @@ function CategoryProducts({ showSearchAndCart = false }) {
                             urun.STKOZKOD1 === "2" || isDisabled
                               ? "from-gray-500 to-gray-600"
                               : "from-sky-600 to-cyan-700"
-                          } p-3 border-4 border-white rounded-full transition-all duration-500 ease-out transform`}>
+                          } p-3 border-4 border-white rounded-full transition-all duration-500 ease-out transform`}
+                        >
                           {isInCart(urun) ? (
                             <FaCheck
                               className={`transition-all duration-1000 ease-in-out transform ${
@@ -424,7 +429,8 @@ function CategoryProducts({ showSearchAndCart = false }) {
         {classes.map((classType) => (
           <div
             key={classType}
-            className="mb-4 relative flex items-center justify-center">
+            className="mb-4 relative flex items-center justify-center"
+          >
             <button
               onClick={() => {
                 setSelectedClass(classType);
@@ -434,7 +440,8 @@ function CategoryProducts({ showSearchAndCart = false }) {
                 selectedClass === classType
                   ? "border-[3px] border-LightBlue text-LightBlue"
                   : "border-[3px] border-CategoriesTitle text-CategoriesTitle"
-              }`}>
+              }`}
+            >
               {classType}
               {classType !== "OKUL ÖNCESİ" &&
                 classType !== "İNGİLİZCE" &&
@@ -443,7 +450,8 @@ function CategoryProducts({ showSearchAndCart = false }) {
                     onClick={() => {
                       toggleDropdown(classType);
                     }}
-                    className="cursor-pointer">
+                    className="cursor-pointer"
+                  >
                     <IoIosArrowDown className="w-5 h-5 hover:scale-110 transition-all duration-500 ease-in-out transform cursor-pointer hover:text-cyan-700" />
                   </span>
                 )}
@@ -457,7 +465,8 @@ function CategoryProducts({ showSearchAndCart = false }) {
                     onClick={() => {
                       setSelectedCategory("hepsi");
                       toggleDropdown(classType);
-                    }}>
+                    }}
+                  >
                     GENEL
                   </div>
                   {getClassCategories(classType).map((category) => (
@@ -467,7 +476,8 @@ function CategoryProducts({ showSearchAndCart = false }) {
                       onClick={() => {
                         setSelectedCategory(category);
                         toggleDropdown(classType);
-                      }}>
+                      }}
+                    >
                       {category}
                     </div>
                   ))}
@@ -479,13 +489,15 @@ function CategoryProducts({ showSearchAndCart = false }) {
           <div className="flex flex-row items-center justify-end gap-4 mb-4">
             <button
               onClick={toggleSearchPanel}
-              className="flex flex-row items-center justify-center gap-2 text-[14px] font-bold text-CustomGray hover:text-LightBlue hover:scale-105 transition-all duration-500 ease-in-out transform cursor-pointer">
+              className="flex flex-row items-center justify-center gap-2 text-[14px] font-bold text-CustomGray hover:text-LightBlue hover:scale-105 transition-all duration-500 ease-in-out transform cursor-pointer"
+            >
               <FaSearch className="w-5 h-5" />
               Arama
             </button>
             <Link
               className="flex flex-col items-center justify-center hover:text-LightBlue hover:scale-110 transition-all duration-700 ease-in-out transform relative"
-              href="/cart">
+              href="/cart"
+            >
               <span>
                 <RiShoppingBasketFill className="w-6 h-6" />
               </span>

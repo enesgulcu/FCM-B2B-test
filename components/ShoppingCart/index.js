@@ -30,22 +30,6 @@ const ShoppingCart = () => {
   const [imageMap, setImageMap] = useState({});
   const [editingIndex, setEditingIndex] = useState(null);
   const [confirmClearCart, setConfirmClearCart] = useState(false);
-  const [orders, setOrders] = useState([]);
-
-  useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        const data = await getAPI("/allorders");
-        setOrders(data);
-        setIsLoading(false);
-      } catch (err) {
-        console.error(err);
-        setIsLoading(false);
-      }
-    };
-
-    fetchOrders();
-  }, []);
 
   const handleConfirmOrder = async (requestMessage) => {
     if (session?.user?.id) {
@@ -83,9 +67,6 @@ const ShoppingCart = () => {
           setStoredCart([]);
           localStorage.setItem("cart", JSON.stringify([]));
           updateTotalPrice([]);
-
-          const allOrdersResponse = await fetch("/api/orders");
-          const allOrdersData = await allOrdersResponse.json();
         } else {
           toast.error("Sipariş oluşturulamadı. Lütfen tekrar deneyin.");
         }

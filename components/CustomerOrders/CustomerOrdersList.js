@@ -7,12 +7,17 @@ import {
   MdKeyboardDoubleArrowLeft,
   MdKeyboardDoubleArrowRight,
 } from "react-icons/md";
+import { useRouter, useSearchParams } from "next/navigation";
 import { getAPI } from "@/services/fetchAPI";
 import { statusList } from "./data";
 
 import Loading from "../Loading";
 
 const CustomerOrdersList = () => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const pageFromUrl = parseInt(searchParams.get("page") || "0", 10);
+
   const [orders, setOrders] = useState([]);
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [page, setPage] = useState(0);
@@ -20,6 +25,27 @@ const CustomerOrdersList = () => {
   const [selectedStatus, setSelectedStatus] = useState("Tümü");
   const [isLoading, setIsLoading] = useState(true);
   const [statusCounts, setStatusCounts] = useState({});
+
+  // URL'den sayfa ve localStorage'dan status restore et
+  useEffect(() => {
+    const savedStatus = localStorage.getItem("customerOrdersStatus");
+    if (savedStatus && pageFromUrl === 0) {
+      // Sadece URL'den page gelmiyorsa localStorage'dan oku
+      setSelectedStatus(savedStatus);
+    }
+  }, []);
+
+  // URL'den sayfa oku
+  useEffect(() => {
+    setPage(pageFromUrl);
+  }, [pageFromUrl]);
+
+  // Sayfa değiştiğinde localStorage'a kaydet
+  useEffect(() => {
+    localStorage.setItem("customerOrdersPage", page);
+    // URL'yi güncelle
+    router.push(`?page=${page}`, { scroll: false });
+  }, [page, router]);
 
   useEffect(() => {
     const fetch = async () => {
@@ -99,6 +125,10 @@ const CustomerOrdersList = () => {
       setFilteredOrders(orders.filter((order) => order.ORDERSTATUS === status));
       setSelectedStatus(status);
     }
+    // Status'u localStorage'a kaydet
+    localStorage.setItem("customerOrdersStatus", status);
+    setPage(0); // Filter değiştiğinde sayfa 0'a reset et
+    router.push("?page=0", { scroll: false }); // URL'yi güncelle
   };
 
   const handleStatusChange = (e) => {

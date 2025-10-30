@@ -93,6 +93,9 @@ const CustomerOrdersListTable = ({ orders, allOrders, updateOrderStatus }) => {
         },
         body: JSON.stringify({
           cargoKey: order.KARGOTAKIPNO,
+          invCustId: (order.CARKOD || "").toString().replace(/\s+/g, ""), // Fatura müşteri kodu (boşluklar temizlendi)
+          senderCustId: "312852446", // Gönderici müşteri kodu (firma kodu)
+          receiverCustId: (order.CARKOD || "").toString().replace(/\s+/g, ""), // Alıcı müşteri kodu (boşluklar temizlendi)
         }),
       });
 
