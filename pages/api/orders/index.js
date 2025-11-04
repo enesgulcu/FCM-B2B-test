@@ -362,12 +362,7 @@ const getLastSTKFISAndIRSFIS = async (orderData) => {
       if (match && match[1]) {
         const lastNumber = parseInt(match[1], 10);
         if (!isNaN(lastNumber)) {
-          // eğer son rakam 1 se 16010 ekle unique olabilmesi için
-          if (lastNumber === 1) {
-            newWEBNumber = lastNumber + 1 + 16010;
-          } else {
-            newWEBNumber = lastNumber + 1;
-          }
+          newWEBNumber = lastNumber + 1;
         }
       }
     }
