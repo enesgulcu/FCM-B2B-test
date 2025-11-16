@@ -13,7 +13,7 @@ export async function getAllData(tableName, year = 2023) {
       client = prisma2024;
       break;
     case 2025:
-      client = prismaEdis;
+      client = prisma; // 2025 ana veritabanı
       break;
     default:
       client = prisma;
@@ -74,7 +74,7 @@ export async function getDataByUniqueSingle(
       client = prisma2024;
       break;
     case 2025:
-      client = prismaEdis;
+      client = prisma; // 2025 ana veritabanı
       break;
     default:
       client = prisma;
@@ -100,7 +100,7 @@ export async function getDataByMany(tableName, where, year = 2023) {
       client = prisma2024;
       break;
     case 2025:
-      client = prismaEdis;
+      client = prisma; // 2025 ana veritabanı
       break;
     default:
       client = prisma;

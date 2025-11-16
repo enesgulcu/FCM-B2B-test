@@ -17,7 +17,15 @@ const Lottie = dynamic(() => import("lottie-react"), {
 });
 
 // Modal bileşeni
-const Modal = ({ isOpen, onClose, message, type }) => {
+const Modal = ({
+  isOpen,
+  onClose,
+  message,
+  type,
+  shouldRedirect,
+  session,
+  router,
+}) => {
   const [animationData, setAnimationData] = useState(null);
 
   useEffect(() => {
@@ -27,6 +35,43 @@ const Modal = ({ isOpen, onClose, message, type }) => {
       setAnimationData(WrongAnimation);
     }
   }, [type]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    // Başarılı login ise 3 saniye sonra otomatik kapat ve yönlendir
+    if (shouldRedirect) {
+      const timer = setTimeout(() => {
+        const redirectPath =
+          session?.user?.role === "Admin"
+            ? "/customer-orders-admin"
+            : session?.user?.role === "partner"
+            ? "/customer-orders"
+            : "/";
+
+        router.push(redirectPath);
+        onClose();
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+
+    // Hata ise sadece kapat (başka yerde handleClose çağrılacak)
+  }, [isOpen, shouldRedirect, session, router, onClose]);
+
+  const handleClose = () => {
+    if (shouldRedirect) {
+      const redirectPath =
+        session?.user?.role === "Admin"
+          ? "/customer-orders-admin"
+          : session?.user?.role === "partner"
+          ? "/customer-orders"
+          : "/";
+
+      router.push(redirectPath);
+    }
+    onClose();
+  };
 
   if (!isOpen) return null;
 
@@ -53,7 +98,7 @@ const Modal = ({ isOpen, onClose, message, type }) => {
           </h2>
           <p>{message}</p>
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className="mt-4 bg-CustomRed text-white font-bold rounded-md px-4 py-2 hover:bg-CustomRed/80"
           >
             Kapat
@@ -78,21 +123,6 @@ const LoginComponent = ({ pageRole }) => {
   useEffect(() => {
     setIsMounted(true);
   }, []);
-
-  useEffect(() => {
-    if (!isMounted) return;
-
-    if (status === "authenticated" && shouldRedirect) {
-      const redirectPath =
-        session.user.role === "Admin"
-          ? "/customer-orders-admin"
-          : session.user.role === "partner"
-          ? "/customer-orders"
-          : "/";
-
-      router.push(redirectPath);
-    }
-  }, [status, session, router, shouldRedirect, isMounted]);
 
   const initialValues = {
     email: "",
@@ -129,8 +159,9 @@ const LoginComponent = ({ pageRole }) => {
           "Oluşturulan şifreniz mailinize gönderilmiştir. Lütfen kontrol ediniz."
         );
         setModalType("success");
+        setShouldRedirect(false);
         setIsModalOpen(true);
-        setTimeout(() => setIsModalOpen(false), 3000);
+        setTimeout(() => setIsModalOpen(false), 1500);
         return;
       }
       if (result.error) {
@@ -159,23 +190,22 @@ const LoginComponent = ({ pageRole }) => {
           }
           setModalType("error");
         }
+        setShouldRedirect(false);
         setIsModalOpen(true);
-        setTimeout(() => setIsModalOpen(false), 3000);
+        setTimeout(() => setIsModalOpen(false), 1500);
       } else if (result.ok) {
         setModalMessage("Başarıyla giriş yaptınız. Yönlendiriliyorsunuz.");
         setModalType("success");
+        setShouldRedirect(true);
         setIsModalOpen(true);
-        setTimeout(() => {
-          setIsModalOpen(false);
-          setShouldRedirect(true);
-        }, 2000);
       }
     } catch (error) {
       console.error("Login error:", error);
       setModalMessage("Bir hata oluştu. Lütfen tekrar deneyiniz.");
       setModalType("error");
+      setShouldRedirect(false);
       setIsModalOpen(true);
-      setTimeout(() => setIsModalOpen(false), 3000);
+      setTimeout(() => setIsModalOpen(false), 1500);
     } finally {
       setIsLoading(false);
     }
@@ -246,6 +276,9 @@ const LoginComponent = ({ pageRole }) => {
           onClose={() => setIsModalOpen(false)}
           message={modalMessage}
           type={modalType}
+          shouldRedirect={shouldRedirect}
+          session={session}
+          router={router}
         />
       )}
       <div className="clear" />
