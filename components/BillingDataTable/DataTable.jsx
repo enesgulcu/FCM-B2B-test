@@ -33,7 +33,7 @@ export default function DataTable() {
   const [carBorcToplam, setCarBorcToplam] = useState(0); // Cari borç toplamı
   const [expandedRows, setExpandedRows] = useState([]); // Genişletilmiş satırlar
   const [allExpanded, setAllExpanded] = useState(false); // Tüm satırların genişletilme durumu
-  const [selectedYear, setSelectedYear] = useState(2023); // Yıl seçimi
+  const [selectedYear, setSelectedYear] = useState(2025); // Yıl seçimi
 
   const fetchData = useCallback(async () => {
     try {

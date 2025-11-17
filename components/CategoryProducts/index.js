@@ -45,6 +45,7 @@ function CategoryProducts({ showSearchAndCart = false }) {
     "OKUL ÖNCESİ",
     "İNGİLİZCE",
     "HİKAYE",
+    "SÖZLÜK"
   ];
 
   useEffect(() => {
@@ -120,6 +121,8 @@ function CategoryProducts({ showSearchAndCart = false }) {
           urun.STKOZKOD2.trim() !== "" &&
           urun.STKOZKOD1 === "2")
     );
+
+   
 
     const categories = [
       ...new Set(filteredUrunler.map((urun) => urun.STKOZKOD2)),
@@ -198,7 +201,9 @@ function CategoryProducts({ showSearchAndCart = false }) {
   // Kitapları render et
   const renderBooks = () => {
     let filteredUrunler = urunler.filter(
-      (urun) => urun.STKOZKOD3 === selectedClass && parseFloat(urun.STKOZKOD5)
+      (urun) => 
+        urun.STKOZKOD3 === selectedClass && 
+        (selectedClass === "SÖZLÜK" || parseFloat(urun.STKOZKOD5))
     );
 
     filteredUrunler = filteredUrunler.filter(
@@ -208,7 +213,8 @@ function CategoryProducts({ showSearchAndCart = false }) {
     if (
       selectedClass !== "OKUL ÖNCESİ" &&
       selectedClass !== "İNGİLİZCE" &&
-      selectedClass !== "HİKAYE"
+      selectedClass !== "HİKAYE" &&
+      selectedClass !== "SÖZLÜK"
     ) {
       if (selectedCategory === "hepsi") {
         // Tüm kategorileri göster
@@ -291,7 +297,10 @@ function CategoryProducts({ showSearchAndCart = false }) {
           </div>
           <div className="flex-none">
             <div>
-              {urun.STKOZKOD5 !== " " ? (
+              {urun.STKOZKOD5 && 
+               urun.STKOZKOD5.trim() !== "" && 
+               !isNaN(parseFloat(urun.STKOZKOD5)) && 
+               parseFloat(urun.STKOZKOD5) > 0 ? (
                 <>
                   <p className="line-through text-gray-500 text-[16px] md:text-[18px]">
                     {parseFloat(urun.STKOZKOD5) * 2.5}₺
@@ -445,7 +454,8 @@ function CategoryProducts({ showSearchAndCart = false }) {
               {classType}
               {classType !== "OKUL ÖNCESİ" &&
                 classType !== "İNGİLİZCE" &&
-                classType !== "HİKAYE" && (
+                classType !== "HİKAYE" &&
+                classType !== "SÖZLÜK" && (
                   <span
                     onClick={() => {
                       toggleDropdown(classType);
@@ -458,7 +468,9 @@ function CategoryProducts({ showSearchAndCart = false }) {
             </button>
             {dropdownOpen[classType] &&
               classType !== "OKUL ÖNCESİ" &&
-              classType !== "İNGİLİZCE" && (
+              classType !== "İNGİLİZCE" &&
+              classType !== "HİKAYE" &&
+              classType !== "SÖZLÜK" && (
                 <div className="absolute top-10 mt-2 w-36 rounded-2xl bg-white shadow-lg border border-gray-300 z-[1000]">
                   <div
                     className="p-2 hover:bg-LightBlue/25 hover:rounded-2xl hover:text-LightBlue duration-300 ease-in-out transform cursor-pointer"
