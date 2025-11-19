@@ -20,6 +20,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import * as Yup from "yup";
 import Loading from "../Loading";
+import { isValidPrice, parsePrice } from "@/utils/formatPrice";
 
 function CategoryProducts({ showSearchAndCart = false }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -116,7 +117,8 @@ function CategoryProducts({ showSearchAndCart = false }) {
       (urun) =>
         (urun.STKOZKOD3 === classType &&
           urun.STKOZKOD2.trim() !== "" &&
-          parseFloat(urun.STKOZKOD5) > 0) ||
+          // parseFloat(urun.STKOZKOD5) > 0) ||
+          parsePrice(urun.STKOZKOD5, NaN) > 0) ||
         (urun.STKOZKOD3 === classType &&
           urun.STKOZKOD2.trim() !== "" &&
           urun.STKOZKOD1 === "2")
@@ -201,9 +203,11 @@ function CategoryProducts({ showSearchAndCart = false }) {
   // Kitapları render et
   const renderBooks = () => {
     let filteredUrunler = urunler.filter(
-      (urun) => 
-        urun.STKOZKOD3 === selectedClass && 
-        (selectedClass === "SÖZLÜK" || parseFloat(urun.STKOZKOD5))
+      (urun) =>
+        urun.STKOZKOD3 === selectedClass &&
+        (selectedClass === "SÖZLÜK" ||
+          // parseFloat(urun.STKOZKOD5))
+          parsePrice(urun.STKOZKOD5, NaN) > 0)
     );
 
     filteredUrunler = filteredUrunler.filter(
@@ -297,13 +301,16 @@ function CategoryProducts({ showSearchAndCart = false }) {
           </div>
           <div className="flex-none">
             <div>
-              {urun.STKOZKOD5 && 
-               urun.STKOZKOD5.trim() !== "" && 
-               !isNaN(parseFloat(urun.STKOZKOD5)) && 
-               parseFloat(urun.STKOZKOD5) > 0 ? (
+              {urun.STKOZKOD5 &&
+              urun.STKOZKOD5.trim() !== "" &&
+              // !isNaN(parseFloat(urun.STKOZKOD5)) &&
+              // parseFloat(urun.STKOZKOD5) > 0
+              isValidPrice(urun.STKOZKOD5) &&
+              parsePrice(urun.STKOZKOD5, NaN) > 0 ? (
                 <>
                   <p className="line-through text-gray-500 text-[16px] md:text-[18px]">
-                    {parseFloat(urun.STKOZKOD5) * 2.5}₺
+                    {/* {parseFloat(urun.STKOZKOD5) * 2.5}₺ */}
+                    {parsePrice(urun.STKOZKOD5) * 2.5}₺
                   </p>
                   <p className="italic text-LightBlue text-[20px] md:text-[23px] font-semibold">
                     {urun.STKOZKOD5}

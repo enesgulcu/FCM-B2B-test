@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { RiShoppingCartLine } from "react-icons/ri";
 import { AiOutlineWarning } from "react-icons/ai";
+import { parsePrice } from "@/utils/formatPrice";
 
 const OrderSummary = ({
   storedCart,
@@ -39,7 +40,8 @@ const OrderSummary = ({
                 {item.STKCINSI} (x{item.quantity})
               </span>
               <span className="font-bold text-CustomGray">
-                {(parseFloat(item.STKOZKOD5) * item.quantity).toLocaleString(
+                {/* (parseFloat(item.STKOZKOD5) * item.quantity).toLocaleString("tr-TR", { ... }) */}
+                {(parsePrice(item.STKOZKOD5) * item.quantity).toLocaleString(
                   "tr-TR",
                   { minimumFractionDigits: 2, maximumFractionDigits: 2 }
                 )}

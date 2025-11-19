@@ -15,6 +15,7 @@ import BoxAnimation from "../../public/boxanimation.json";
 import OrderSummary from "./OrderSummary";
 import { getAPI } from "@/services/fetchAPI";
 import { useSession } from "next-auth/react";
+import { parsePrice } from "@/utils/formatPrice";
 // import { useEmployeeRedirect } from "@/functions/other/useEmployeeRedirect/useEmployeeRedirect";
 
 const ShoppingCart = () => {
@@ -172,7 +173,8 @@ const ShoppingCart = () => {
 
   const updateTotalPrice = (cart) => {
     const totalPrice = cart.reduce((acc, item) => {
-      return acc + parseFloat(item.STKOZKOD5) * item.quantity;
+      // return acc + parseFloat(item.STKOZKOD5) * item.quantity;
+      return acc + parsePrice(item.STKOZKOD5) * item.quantity;
     }, 0);
     setTotalPrice(totalPrice);
   };
@@ -313,8 +315,9 @@ const ShoppingCart = () => {
                       </td>
                       <td className="px-5 py-3">
                         <p className="w-full flex items-center justify-center">
+                          {/* (parseFloat(item.STKOZKOD5) * item.quantity).toLocaleString("tr-TR", { ... }) */}
                           {(
-                            parseFloat(item.STKOZKOD5) * item.quantity
+                            parsePrice(item.STKOZKOD5) * item.quantity
                           ).toLocaleString("tr-TR", {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 2,

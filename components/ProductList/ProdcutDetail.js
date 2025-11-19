@@ -11,6 +11,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { RiShoppingBasketFill } from "react-icons/ri";
 import useCartItemCount from "@/utils/useCartItemCount";
+import { parsePrice } from "@/utils/formatPrice";
 
 function ProdcutDetail({ product, img }) {
   const cartItemCount = useCartItemCount();
@@ -76,7 +77,8 @@ function ProdcutDetail({ product, img }) {
   const isProductOnSale = product.STKOZKOD1 === "A";
   // fiyat etiketi
   function PriceTag() {
-    const originalPrice = parseFloat(product.STKOZKOD5);
+    // const originalPrice = parseFloat(product.STKOZKOD5);
+    const originalPrice = parsePrice(product.STKOZKOD5);
     const discountedPrice = originalPrice;
     const inflatedPrice = (originalPrice * 2.5).toFixed(2);
 

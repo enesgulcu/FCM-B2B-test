@@ -6,6 +6,7 @@ import {
   updateDataByAny,
 } from "@/services/serviceOperations";
 import { generateDeterministic12CharKey } from "@/utils/generateCargoKey";
+import { parsePrice } from "@/utils/formatPrice";
 
 const now = new Date(new Date().getTime() + 3 * 60 * 60 * 1000);
 
@@ -59,8 +60,10 @@ const prepareOrderData = (
     STKNAME: item.STKCINSI || null,
     STKCINSI: item.STKCINSI || null,
     STKADET: parseInt(item.quantity),
-    STKBIRIMFIYAT: parseFloat(item.STKOZKOD5) || 0,
-    STKBIRIMFIYATTOPLAM: (parseFloat(item.STKOZKOD5) || 0) * item.quantity,
+    // STKBIRIMFIYAT: parseFloat(item.STKOZKOD5) || 0,
+    STKBIRIMFIYAT: parsePrice(item.STKOZKOD5),
+    // STKBIRIMFIYATTOPLAM: (parseFloat(item.STKOZKOD5) || 0) * item.quantity,
+    STKBIRIMFIYATTOPLAM: parsePrice(item.STKOZKOD5) * item.quantity,
     CIKISFISEVRNO: cikisFisEvrNo,
     SATISIRSEVRNO: satisIrsaliyesiEvrNo,
     HARREFDEGER1: harRefDeger,
