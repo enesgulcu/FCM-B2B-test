@@ -690,6 +690,34 @@
   {
     "path": "/uploads/RTS.jpg",
     "stkkod": "RTS"
+  },
+
+  
+
+
+
+
+  
+
+  {
+    "path": "/uploads/NAOA.png",
+    "stkkod": "NAOA"
+  },
+  {
+    "path": "/uploads/OA.png",
+    "stkkod": "OA"
+  },
+  {
+    "path": "/uploads/HD.png",
+    "stkkod": "HD"
+  },
+  {
+    "path": "/uploads/HECE.png",
+    "stkkod": "HECE"
+  },
+  {
+    "path": "/uploads/PMD.png",
+    "stkkod": "PMD"
   }
 
 
