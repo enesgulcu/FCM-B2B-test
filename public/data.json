@@ -692,14 +692,6 @@
     "stkkod": "OA"
   },
   {
-    "path": "/uploads/HD.png",
-    "stkkod": "HD"
-  },
-  {
-    "path": "/uploads/HECE.png",
-    "stkkod": "HECE"
-  },
-  {
     "path": "/uploads/PMD.png",
     "stkkod": "PMD"
   },
@@ -730,8 +722,25 @@
   {
     "path": "/uploads/ÇAYT4.jpeg",
     "stkkod": "ÇAYT4"
-  }
+  },
 
+
+
+
+
+
+  {
+    "path": "/uploads/EÇ.jpeg",
+    "stkkod": "EÇ"
+  },
+  {
+    "path": "/uploads/HD.jpeg",
+    "stkkod": "HD"
+  },
+  {
+    "path": "/uploads/HECE.jpeg",
+    "stkkod": "HECE"
+  }
 
 
 
