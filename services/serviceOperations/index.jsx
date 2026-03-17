@@ -5,18 +5,23 @@
 import { prisma, prisma2024, prismaEdis } from "@/lib/prisma";
 
 // GET ALL
-export async function getAllData(tableName, year = 2023) {
+export async function getAllData(tableName, yearOrDb = 2023) {
   let client;
 
-  switch (year) {
-    case 2024:
-      client = prisma2024;
-      break;
-    case 2025:
-      client = prisma; // 2025 ana veritabanı
-      break;
-    default:
-      client = prisma;
+  // 'edis' string değeri EDIS veritabanını seçer
+  if (yearOrDb === 'edis') {
+    client = prismaEdis;
+  } else {
+    switch (yearOrDb) {
+      case 2024:
+        client = prisma2024;
+        break;
+      case 2025:
+        client = prisma; // 2025 ana veritabanı (ADNAN)
+        break;
+      default:
+        client = prisma;
+    }
   }
 
   try {
@@ -38,18 +43,23 @@ export async function createNewData(tableName, newData) {
 }
 
 // GET BY UNIQUE ONE VALUE
-export async function getDataByUnique(tableName, where, year) {
+export async function getDataByUnique(tableName, where, yearOrDb) {
   let client;
 
-  switch (year) {
-    case 2024:
-      client = prisma2024;
-      break;
-    case 2025:
-      client = prisma; // 2025 ana veritabanı
-      break;
-    default:
-      client = prisma;
+  // 'edis' string değeri EDIS veritabanını seçer
+  if (yearOrDb === 'edis') {
+    client = prismaEdis;
+  } else {
+    switch (yearOrDb) {
+      case 2024:
+        client = prisma2024;
+        break;
+      case 2025:
+        client = prisma; // 2025 ana veritabanı (ADNAN)
+        break;
+      default:
+        client = prisma;
+    }
   }
 
   try {
@@ -65,19 +75,24 @@ export async function getDataByUniqueSingle(
   tableName,
   where,
   orderBy,
-  year = 2023
+  yearOrDb = 2023
 ) {
   let client;
 
-  switch (year) {
-    case 2024:
-      client = prisma2024;
-      break;
-    case 2025:
-      client = prisma; // 2025 ana veritabanı
-      break;
-    default:
-      client = prisma;
+  // 'edis' string değeri EDIS veritabanını seçer
+  if (yearOrDb === 'edis') {
+    client = prismaEdis;
+  } else {
+    switch (yearOrDb) {
+      case 2024:
+        client = prisma2024;
+        break;
+      case 2025:
+        client = prisma; // 2025 ana veritabanı (ADNAN)
+        break;
+      default:
+        client = prisma;
+    }
   }
 
   try {
@@ -92,18 +107,23 @@ export async function getDataByUniqueSingle(
 }
 
 // GET BY UNIQUE MANY VALUE
-export async function getDataByMany(tableName, where, year = 2023) {
+export async function getDataByMany(tableName, where, yearOrDb = 2023) {
   let client;
 
-  switch (year) {
-    case 2024:
-      client = prisma2024;
-      break;
-    case 2025:
-      client = prisma; // 2025 ana veritabanı
-      break;
-    default:
-      client = prisma;
+  // 'edis' string değeri EDIS veritabanını seçer
+  if (yearOrDb === 'edis') {
+    client = prismaEdis;
+  } else {
+    switch (yearOrDb) {
+      case 2024:
+        client = prisma2024;
+        break;
+      case 2025:
+        client = prisma; // 2025 ana veritabanı (ADNAN)
+        break;
+      default:
+        client = prisma;
+    }
   }
 
   try {

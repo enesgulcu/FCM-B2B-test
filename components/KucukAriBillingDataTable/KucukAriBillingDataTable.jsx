@@ -24,6 +24,7 @@ export default function KucukAriBillingDataTable() {
   const [data, setData] = useState([]); // Ana tablo verisi
   const [detailedData, setDetailedData] = useState([]); // Detaylı tablo verisi
   const [userCarBakiye, setUserCarBakiye] = useState(null); // Kullanıcı cari bakiyesi
+  const [edisCarkod, setEdisCarkod] = useState(null); // EDIS Cari Kodu
   const [isLoading, setIsLoading] = useState(true); // Yükleme durumu
   const [borcToplam, setBorcToplam] = useState(0); // Toplam borç
   const [alacakToplam, setAlacakToplam] = useState(0); // Toplam alacak
@@ -38,20 +39,28 @@ export default function KucukAriBillingDataTable() {
       const carkodRes = await fetch(
         `/api/get-user-vergi-no/get-edis-carkod?userId=${session.user.id}`
       );
-      const { edisCarkod } = await carkodRes.json();
-      console.log("EDIS CARKOD:", edisCarkod);
+      const carkodData = await carkodRes.json();
+      const { edisCarkod: fetchedEdisCarkod, disambiguation, debug } = carkodData;
+      
+      // State'e kaydet
+      setEdisCarkod(fetchedEdisCarkod);
+      
+      console.log("===== EDIS CARKOD DEBUG =====");
+      console.log("ADNAN USER ID:", session.user.id);
+      console.log("EDIS CARKOD:", fetchedEdisCarkod);
+      console.log("Eşleşme Yöntemi:", disambiguation);
+      console.log("Debug Bilgisi:", debug);
+      console.log("=============================");
 
-      console.log("USER ID:", session.user.id);
+      if (!fetchedEdisCarkod) throw new Error("EDIS CARKOD bulunamadı!");
 
-      if (!edisCarkod) throw new Error("EDIS CARKOD bulunamadı!");
-
-      // 2. Diğer verileri çek
+      // 2. Diğer verileri EDIS veritabanından çek (year=edis parametresi ile)
       const [billingData, tableCartData, detailedBillings, fatfis] =
         await Promise.all([
-          getAPI(`/billings?year=2025`),
-          getAPI(`/table-cart?year=2025`),
-          getAPI(`/detailed-billings?year=2025`),
-          getAPI(`/fatfis?year=2025`),
+          getAPI(`/billings?year=edis`),
+          getAPI(`/table-cart?year=edis`),
+          getAPI(`/detailed-billings?year=edis`),
+          getAPI(`/fatfis?year=edis`),
         ]);
 
       // API yanıtlarının geçerliliğini kontrol etme
@@ -61,7 +70,7 @@ export default function KucukAriBillingDataTable() {
 
       // 3. Filtrelemeleri EDIS CARKOD ile yap
       const filteredData = billingData.data.filter(
-        (item) => item.CARHARCARKOD === edisCarkod
+        (item) => item.CARHARCARKOD === fetchedEdisCarkod
       );
 
       // Verileri tarih sırasına göre sıralama (eskiden yeniye)
@@ -89,13 +98,13 @@ export default function KucukAriBillingDataTable() {
           //   "edisCarkod:",
           //   edisCarkod
           // );
-          return item.FATHARCARKOD === edisCarkod;
+          return item.FATHARCARKOD === fetchedEdisCarkod;
         })
       );
 
       // Kullanıcının cari kart bilgilerini bulma
       const userTableCartData = tableCartData.data.find(
-        (item) => item.CARKOD === edisCarkod
+        (item) => item.CARKOD === fetchedEdisCarkod
       );
       if (userTableCartData) {
         // Kullanıcı cari bilgilerini state'e atama
@@ -118,13 +127,13 @@ export default function KucukAriBillingDataTable() {
     if (session?.user?.id) {
       fetchData();
     }
-  }, [fetchData]);
+  }, [fetchData, session?.user?.id]);
 
   // Detaylı fatura verilerini işleyen yardımcı fonksiyon
   function enhanceBillingData(detailedBillings, fatfisData, billingsData) {
     return detailedBillings.reduce((acc, billing) => {
       // Eşleşen fatura fişini bulma
-      const matchingFatfis = fatfisData.find(
+      const matchingFatfis = fatfisData?.find(
         (ff) => ff.FATFISREFNO === billing.FATHARREFNO
       );
       if (matchingFatfis) {
@@ -215,7 +224,7 @@ export default function KucukAriBillingDataTable() {
               <div>
                 <div className="font-normal">
                   <span className="font-bold text-NavyBlue">Cari Kodu:</span>{" "}
-                  <span>{session?.user?.id}</span>
+                  <span>{edisCarkod || "-"}</span>
                 </div>
               </div>
               <div>

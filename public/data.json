@@ -718,7 +718,39 @@
   {
     "path": "/uploads/PMD.png",
     "stkkod": "PMD"
+  },
+
+
+
+
+
+
+
+
+  {
+    "path": "/uploads/KÇ1.jpeg",
+    "stkkod": "KÇ1"
+  },
+  {
+    "path": "/uploads/ÇAYT1.jpeg",
+    "stkkod": "ÇAYT1"
+  },
+  {
+    "path": "/uploads/ÇAYT2.jpeg",
+    "stkkod": "ÇAYT2"
+  },
+  {
+    "path": "/uploads/ÇAYT3.jpeg",
+    "stkkod": "ÇAYT3"
+  },
+  {
+    "path": "/uploads/ÇAYT4.jpeg",
+    "stkkod": "ÇAYT4"
   }
+
+
+
+
 
 
 ]

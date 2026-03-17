@@ -104,7 +104,7 @@ export default function DataTable() {
     if (session?.user?.id) {
       fetchData();
     }
-  }, [fetchData]);
+  }, [fetchData, session?.user?.id]);
 
   // Detaylı fatura verilerini işleyen yardımcı fonksiyon
   // Bu fonksiyon, farklı API'lerden gelen verileri birleştirerek daha kapsamlı bir veri seti oluşturur

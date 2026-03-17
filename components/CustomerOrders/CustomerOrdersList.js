@@ -33,7 +33,7 @@ const CustomerOrdersList = () => {
       // Sadece URL'den page gelmiyorsa localStorage'dan oku
       setSelectedStatus(savedStatus);
     }
-  }, []);
+  }, [pageFromUrl]);
 
   // URL'den sayfa oku
   useEffect(() => {
