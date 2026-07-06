@@ -1,8 +1,8 @@
 import { getToken } from "next-auth/jwt";
-import { withAuth } from "next-auth/middleware";
 import { NextResponse } from "next/server";
+import { isMaintenanceModeEnabled } from "@/lib/maintenanceMode";
 
-export default withAuth(async function middleware(req) {
+export default async function middleware(req) {
   const session = await getToken({
     req,
     secret: process.env.NEXTAUTH_SECRET,
@@ -13,6 +13,18 @@ export default withAuth(async function middleware(req) {
   const protocol = process.env.NODE_ENV === "development" ? "http" : "https";
   const host = req.headers.get("host") || "localhost:3000";
   const baseUrl = `${protocol}://${host}`;
+
+  if (isMaintenanceModeEnabled() && currentPath !== "/maintenance") {
+    return NextResponse.redirect(`${baseUrl}/maintenance`);
+  }
+
+  if (
+    currentPath === "/maintenance" ||
+    currentPath === "/auth/login" ||
+    currentPath === "/auth/forgot-password"
+  ) {
+    return NextResponse.next();
+  }
 
   if (!session) {
     return NextResponse.redirect(`${baseUrl}/auth/login`);
@@ -33,12 +45,12 @@ export default withAuth(async function middleware(req) {
   }
 
   return NextResponse.next();
-});
+}
 
 // ✅ Sadece shipping, auth ve reset-password dışlanır, diğer her şey korunur
 export const config = {
   // auth/forgot-password sayfasını ve login'i koruma dışına al
   matcher: [
-    "/((?!api/shipping|api/auth|api/reset-password|auth/login|auth/forgot-password).*)",
+    "/((?!_next/static|_next/image|favicon.ico|api/shipping|api/auth|api/reset-password).*)",
   ],
 };

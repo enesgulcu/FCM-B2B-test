@@ -1,12 +1,11 @@
 "use client";
-import { useState, useEffect } from "react";
 import useFooterStore from "@/utils/footerStore"; // Assuming it's a hook
 import Image from "next/image";
 function Bakimda() {
     const { footerLogo } = useFooterStore();
 
     return (
-        <div className="absolute inset-0 bg-gradient-to-br from-red-500 via-red-650 to-purple-900 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-gradient-to-br from-red-500 via-red-650 to-purple-900 flex items-center justify-center z-50">
           <div className="bg-white rounded-2xl shadow-2xl p-10 max-w-lg w-full text-center">
             <div className="relative w-20 h-20 mx-auto mb-6">
               <div className="absolute inset-0 animate-ping bg-red-500 rounded-full opacity-75"></div>
