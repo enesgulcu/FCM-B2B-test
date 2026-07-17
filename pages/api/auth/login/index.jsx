@@ -43,8 +43,8 @@ const handler = async (req, res) => {
           CAROZKOD1: "A",
           CAROZKOD3: "B2",
         },
-        2025
-      ); // 2025 veritabanından sorgulama yapıyoruz
+        2026
+      ); // 2026 aktif veritabanından sorgulama yapıyoruz
 
       if (
         !findUser ||
@@ -116,8 +116,7 @@ const handler = async (req, res) => {
         const updatePassword = await updateDataByAny(
           "CARKART",
           { CARKOD: findUser?.CARKOD },
-          { CAROZKOD5: encryptedPassword },
-          2025 // 2025 veritabanında güncelleme yapıyoruz
+          { CAROZKOD5: encryptedPassword }
         );
 
         // ("updatePassword: ", updatePassword);

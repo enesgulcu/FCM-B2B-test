@@ -10,7 +10,7 @@ export default async function TestPage() {
       return <div className="p-4">Giriş Yapılmamış</div>;
     }
 
-    // ADNAN (ETA_ADNAN_2025) veritabanından kullanıcı bilgileri
+    // Aktif ADNAN veritabanından kullanıcı bilgileri
     const resultAdnan = await prisma.CARKART.findFirst({
       where: { CARKOD: session.user.id },
       select: { CARKOD: true, CARVERHESNO: true, CARUNVAN: true, CARUNVAN3: true },
@@ -40,7 +40,7 @@ export default async function TestPage() {
 
     return (
       <div className="p-4">
-        <h2 className="text-lg font-semibold mb-2">ADNAN (ETA_ADNAN_2025) CARKART</h2>
+        <h2 className="text-lg font-semibold mb-2">ADNAN Aktif CARKART</h2>
         <pre className="bg-gray-100 p-4 rounded text-sm overflow-auto mb-4">
           {resultAdnan
             ? JSON.stringify(resultAdnan, null, 2)

@@ -18,10 +18,10 @@ export default async function handler(req, res) {
 
     try {
       if (session.user.role === "Admin") {
-        // Admin için 2025 + 2024 tüm siparişleri getir
+        // Admin için 2026 + 2025 tüm siparişleri getir
         orders = await getAllDataCombined("ALLORDERS");
       } else {
-        // Normal kullanıcı için sadece kendi siparişlerini getir (2025 + 2024)
+        // Normal kullanıcı için sadece kendi siparişlerini getir (2026 + 2025)
         orders = await getDataByManyCombined("ALLORDERS", { CARKOD: session.user.id });
       }
 

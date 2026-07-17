@@ -1,5 +1,5 @@
 import { Prisma } from "@prisma/client";
-import { prisma, prisma2024 } from "@/lib/prisma";
+import { prisma, prisma2025 } from "@/lib/prisma";
 
 const DEFAULT_ROWS_PER_PAGE = 10;
 
@@ -292,7 +292,7 @@ const mergeSummaries = (summaryA = [], summaryB = []) => {
 
 /**
  * Admin orders için optimize edilmiş sorgu
- * Bu fonksiyon iki veritabanından veri çekerken performans için optimize edilmiştir
+ * Bu fonksiyon aktif yıl ve geçmiş yıl veritabanından veri çekerken performans için optimize edilmiştir
  */
 export async function getAdminOrdersOptimized(options = {}) {
   const {
@@ -319,13 +319,13 @@ export async function getAdminOrdersOptimized(options = {}) {
     const startIndex = (safePage - 1) * safeRowsPerPage;
     const fetchLimit = startIndex + safeRowsPerPage;
 
-    const [orders2025, orders2024] = await Promise.all([
+    const [orders2026, orders2025] = await Promise.all([
       fetchAggregatedOrders(prisma, {
         rowConditions: queryConditions.rowConditions,
         statusCondition: queryConditions.statusCondition,
         fetchLimit,
       }),
-      fetchAggregatedOrders(prisma2024, {
+      fetchAggregatedOrders(prisma2025, {
         rowConditions: queryConditions.rowConditions,
         statusCondition: queryConditions.statusCondition,
         fetchLimit,
@@ -333,8 +333,8 @@ export async function getAdminOrdersOptimized(options = {}) {
     ]);
 
     const aggregatedOrders = aggregateOrdersAcrossSources([
+      ...orders2026,
       ...orders2025,
-      ...orders2024,
     ]);
 
     const paginatedOrders = aggregatedOrders.slice(
@@ -397,29 +397,29 @@ export async function getAdminOrdersMetrics(options = {}) {
 
   try {
     const [
-      [filteredSummary2025, filteredSummary2024],
-      [countSummary2025, countSummary2024],
+      [filteredSummary2026, filteredSummary2025],
+      [countSummary2026, countSummary2025],
     ] = await Promise.all([
       Promise.all([
         fetchOrderSummaries(prisma, paginationConditions),
-        fetchOrderSummaries(prisma2024, paginationConditions),
+        fetchOrderSummaries(prisma2025, paginationConditions),
       ]),
       Promise.all([
         fetchOrderSummaries(prisma, countConditions),
-        fetchOrderSummaries(prisma2024, countConditions),
+        fetchOrderSummaries(prisma2025, countConditions),
       ]),
     ]);
 
     const filteredCombined = mergeSummaries(
+      filteredSummary2026,
       filteredSummary2025,
-      filteredSummary2024
     );
 
     const totalItems = filteredCombined.size;
     const totalPages =
       totalItems > 0 ? Math.ceil(totalItems / safeRowsPerPage) : 1;
 
-    const statusCombined = mergeSummaries(countSummary2025, countSummary2024);
+    const statusCombined = mergeSummaries(countSummary2026, countSummary2025);
 
     const statusCounts = {};
 

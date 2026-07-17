@@ -5,7 +5,7 @@ export default async function handler(req, res) {
     const { userId } = req.query;
     if (!userId) return res.status(400).json({ error: "userId gerekli" });
 
-    // 1) ADNAN (ETA_ADNAN_2025) veritabanından kullanıcının bilgilerini al
+    // 1) Aktif ADNAN veritabanından kullanıcının bilgilerini al
     let userInfo = await prisma.$queryRaw`
       SELECT CARUNVAN3, CARVERHESNO, CARUNVAN FROM CARKART WHERE CARKOD = ${userId}
     `;
@@ -113,7 +113,7 @@ export default async function handler(req, res) {
 
 /*
 
-Bu endpoint, 2024 veritabanındaki bir kullanıcı ID'sinden (CARKOD) önce kullanıcının
+Bu endpoint, aktif ADNAN veritabanındaki bir kullanıcı ID'sinden (CARKOD) önce kullanıcının
 CARUNVAN3 (email) ve CARVERHESNO değerlerini alır. EDIS tarafında öncelik email (CARUNVAN3)
 eşleşmesindedir. Aynı email'e bağlı birden fazla EDIS CARKOD varsa seçim sırası:
   1) Oturumdaki userId ile aynı CARKOD

@@ -9,7 +9,7 @@ generator client {
 
 datasource db {
   provider = "sqlserver"
-  url      = env("DATABASE_URL_2025")
+  url      = env("DATABASE_URL_2026")
 }
 
 model CARKART {

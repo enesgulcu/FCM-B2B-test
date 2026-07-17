@@ -6,7 +6,7 @@ const handler = async (req, res) => {
   }
   if (req.method === "GET") {
     try {
-      // 2025 veritabanı (varsayılan prisma istemcisi)
+      // 2026 veritabanı (varsayılan prisma istemcisi)
       const dataA = await getDataByMany("STKKART", { STKOZKOD1: "A" });
       const data2 = await getDataByMany("STKKART", { STKOZKOD1: "2" });
 

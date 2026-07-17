@@ -2,10 +2,10 @@
 // where:     eşleşecek tablodaki verinin anahtar değeri örn: {email: "enes.gulcu@hotmail.com"} (mail) değeri oluyor.
 // newData:   yeni eklenecek veya güncellenecek veri
 
-import { prisma, prisma2024, prismaEdis } from "@/lib/prisma";
+import { prisma, prisma2025, prismaEdis } from "@/lib/prisma";
 
 // GET ALL
-export async function getAllData(tableName, yearOrDb = 2023) {
+export async function getAllData(tableName, yearOrDb = 2026) {
   let client;
 
   // 'edis' string değeri EDIS veritabanını seçer
@@ -13,11 +13,11 @@ export async function getAllData(tableName, yearOrDb = 2023) {
     client = prismaEdis;
   } else {
     switch (yearOrDb) {
-      case 2024:
-        client = prisma2024;
-        break;
       case 2025:
-        client = prisma; // 2025 ana veritabanı (ADNAN)
+        client = prisma2025; // 2025 geçmiş yıl veritabanı (ADNAN)
+        break;
+      case 2026:
+        client = prisma; // 2026 ana veritabanı (ADNAN)
         break;
       default:
         client = prisma;
@@ -51,11 +51,11 @@ export async function getDataByUnique(tableName, where, yearOrDb) {
     client = prismaEdis;
   } else {
     switch (yearOrDb) {
-      case 2024:
-        client = prisma2024;
-        break;
       case 2025:
-        client = prisma; // 2025 ana veritabanı (ADNAN)
+        client = prisma2025; // 2025 geçmiş yıl veritabanı (ADNAN)
+        break;
+      case 2026:
+        client = prisma; // 2026 ana veritabanı (ADNAN)
         break;
       default:
         client = prisma;
@@ -75,7 +75,7 @@ export async function getDataByUniqueSingle(
   tableName,
   where,
   orderBy,
-  yearOrDb = 2023
+  yearOrDb = 2026
 ) {
   let client;
 
@@ -84,11 +84,11 @@ export async function getDataByUniqueSingle(
     client = prismaEdis;
   } else {
     switch (yearOrDb) {
-      case 2024:
-        client = prisma2024;
-        break;
       case 2025:
-        client = prisma; // 2025 ana veritabanı (ADNAN)
+        client = prisma2025; // 2025 geçmiş yıl veritabanı (ADNAN)
+        break;
+      case 2026:
+        client = prisma; // 2026 ana veritabanı (ADNAN)
         break;
       default:
         client = prisma;
@@ -107,7 +107,7 @@ export async function getDataByUniqueSingle(
 }
 
 // GET BY UNIQUE MANY VALUE
-export async function getDataByMany(tableName, where, yearOrDb = 2023) {
+export async function getDataByMany(tableName, where, yearOrDb = 2026) {
   let client;
 
   // 'edis' string değeri EDIS veritabanını seçer
@@ -115,11 +115,11 @@ export async function getDataByMany(tableName, where, yearOrDb = 2023) {
     client = prismaEdis;
   } else {
     switch (yearOrDb) {
-      case 2024:
-        client = prisma2024;
-        break;
       case 2025:
-        client = prisma; // 2025 ana veritabanı (ADNAN)
+        client = prisma2025; // 2025 geçmiş yıl veritabanı (ADNAN)
+        break;
+      case 2026:
+        client = prisma; // 2026 ana veritabanı (ADNAN)
         break;
       default:
         client = prisma;
@@ -134,7 +134,7 @@ export async function getDataByMany(tableName, where, yearOrDb = 2023) {
   }
 }
 
-// 2024 + 2025 verilerini birleştiren yardımcılar okuma amaçlı
+// 2025 + 2026 verilerini birleştiren yardımcılar okuma amaçlı
 export async function getAllDataCombined(tableName, options = {}) {
   try {
     const { select, where, orderBy, take, skip } = options;
@@ -146,11 +146,11 @@ export async function getAllDataCombined(tableName, options = {}) {
     if (take) queryOptions.take = take;
     if (skip) queryOptions.skip = skip;
 
-    const [data2025, data2024] = await Promise.all([
+    const [data2026, data2025] = await Promise.all([
       prisma[tableName].findMany(queryOptions),
-      prisma2024[tableName].findMany(queryOptions),
+      prisma2025[tableName].findMany(queryOptions),
     ]);
-    return [...data2025, ...data2024];
+    return [...data2026, ...data2025];
   } catch (error) {
     return { error: error.message };
   }
@@ -158,11 +158,11 @@ export async function getAllDataCombined(tableName, options = {}) {
 
 export async function getDataByManyCombined(tableName, where) {
   try {
-    const [data2025, data2024] = await Promise.all([
+    const [data2026, data2025] = await Promise.all([
       prisma[tableName].findMany({ where }),
-      prisma2024[tableName].findMany({ where }),
+      prisma2025[tableName].findMany({ where }),
     ]);
-    return [...data2025, ...data2024];
+    return [...data2026, ...data2025];
   } catch (error) {
     return { error: error.message };
   }

@@ -33,7 +33,7 @@ export default function DataTable() {
   const [carBorcToplam, setCarBorcToplam] = useState(0); // Cari borç toplamı
   const [expandedRows, setExpandedRows] = useState([]); // Genişletilmiş satırlar
   const [allExpanded, setAllExpanded] = useState(false); // Tüm satırların genişletilme durumu
-  const [selectedYear, setSelectedYear] = useState(2025); // Yıl seçimi
+  const [selectedYear, setSelectedYear] = useState(2026); // Aktif yıl (geçmiş: 2025)
 
   const fetchData = useCallback(async () => {
     try {
@@ -275,7 +275,7 @@ export default function DataTable() {
           value={selectedYear}
           onChange={(e) => setSelectedYear(Number(e.target.value))}
           className="bg-NavyBlue text-white px-4 py-2 rounded-full">
-          <option value={2024}>2024 Cari Takip</option>
+          <option value={2026}>2026 Cari Takip</option>
           <option value={2025}>2025 Cari Takip</option>
         </select>
       </div>
