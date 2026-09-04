@@ -2,6 +2,24 @@ import { getToken } from "next-auth/jwt";
 import { NextResponse } from "next/server";
 import { isMaintenanceModeEnabled } from "@/lib/maintenanceMode";
 
+function getSessionToken(req) {
+  const isSecure =
+    process.env.VERCEL === "1" ||
+    process.env.NODE_ENV === "production" ||
+    req.nextUrl.protocol === "https:";
+
+  return getToken({
+    req,
+    secret: process.env.NEXTAUTH_SECRET,
+    secureCookie: isSecure,
+  });
+}
+
+function homeForRole(role) {
+  if (role === "Admin") return "/customer-orders-admin";
+  return "/shop";
+}
+
 export default async function middleware(req) {
   const currentPath = req.nextUrl.pathname;
 
@@ -20,6 +38,16 @@ export default async function middleware(req) {
     return NextResponse.redirect(`${baseUrl}/`);
   }
 
+  const session = await getSessionToken(req);
+
+  // Giriş yapmış kullanıcı login/forgot-password görmesin → mağaza
+  if (
+    session &&
+    (currentPath === "/auth/login" || currentPath === "/auth/forgot-password")
+  ) {
+    return NextResponse.redirect(`${baseUrl}${homeForRole(session.role)}`);
+  }
+
   if (
     currentPath === "/maintenance" ||
     currentPath === "/auth/login" ||
@@ -27,19 +55,6 @@ export default async function middleware(req) {
   ) {
     return NextResponse.next();
   }
-
-  // Production/HTTPS'te cookie __Secure- prefix kullanır.
-  // NEXTAUTH_URL yanlış (http/localhost) olsa bile isteğin kendisine göre çöz.
-  const isSecure =
-    process.env.VERCEL === "1" ||
-    process.env.NODE_ENV === "production" ||
-    req.nextUrl.protocol === "https:";
-
-  const session = await getToken({
-    req,
-    secret: process.env.NEXTAUTH_SECRET,
-    secureCookie: isSecure,
-  });
 
   if (!session) {
     return NextResponse.redirect(`${baseUrl}/auth/login`);
@@ -56,7 +71,7 @@ export default async function middleware(req) {
     session.role === "partner" &&
     currentPath.startsWith("/customer-orders-admin")
   ) {
-    return NextResponse.redirect(`${baseUrl}/`);
+    return NextResponse.redirect(`${baseUrl}/shop`);
   }
 
   return NextResponse.next();

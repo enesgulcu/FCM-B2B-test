@@ -45,9 +45,7 @@ const Modal = ({
         const redirectPath =
           session?.user?.role === "Admin"
             ? "/customer-orders-admin"
-            : session?.user?.role === "partner"
-            ? "/customer-orders"
-            : "/";
+            : "/shop";
 
         router.push(redirectPath);
         onClose();
@@ -64,9 +62,7 @@ const Modal = ({
       const redirectPath =
         session?.user?.role === "Admin"
           ? "/customer-orders-admin"
-          : session?.user?.role === "partner"
-          ? "/customer-orders"
-          : "/";
+          : "/shop";
 
       router.push(redirectPath);
     }
