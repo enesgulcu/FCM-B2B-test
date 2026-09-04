@@ -14,8 +14,15 @@ export default async function middleware(req) {
   const host = req.headers.get("host") || "localhost:3000";
   const baseUrl = `${protocol}://${host}`;
 
-  if (isMaintenanceModeEnabled() && currentPath !== "/maintenance") {
+  const maintenanceOn = isMaintenanceModeEnabled();
+
+  if (maintenanceOn && currentPath !== "/maintenance") {
     return NextResponse.redirect(`${baseUrl}/maintenance`);
+  }
+
+  // Mode kapalıysa /maintenance'ta kalma — ana sayfaya dön
+  if (!maintenanceOn && currentPath === "/maintenance") {
+    return NextResponse.redirect(`${baseUrl}/`);
   }
 
   if (
