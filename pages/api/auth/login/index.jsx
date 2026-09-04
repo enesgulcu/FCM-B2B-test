@@ -108,7 +108,11 @@ const handler = async (req, res) => {
         const encryptedPassword = await EncryptPassword(newPassword);
 
         // Şifreleme işlemi başarılı mı kontrol et.
-        if (!encryptedPassword) {
+        if (
+          !encryptedPassword ||
+          typeof encryptedPassword !== "string" ||
+          encryptedPassword.length !== 60
+        ) {
           throw new Error("Şifre hash sırasında bir hata oluştu.");
         }
 

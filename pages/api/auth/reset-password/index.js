@@ -38,7 +38,11 @@ export default async function handler(req, res) {
       // Yeni şifreyi şifrele
       encryptedPassword = await EncryptPassword(newPassword);
 
-      if (!encryptedPassword) {
+      if (
+        !encryptedPassword ||
+        typeof encryptedPassword !== "string" ||
+        encryptedPassword.length !== 60
+      ) {
         throw new Error("Şifre şifrelenemedi.");
       }
     } catch (passwordError) {

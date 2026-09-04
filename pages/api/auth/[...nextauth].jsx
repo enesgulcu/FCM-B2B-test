@@ -23,6 +23,18 @@ export const authOptions = {
           throw new Error(data?.error || "Bir hata oluştu. Lütfen tekrar deneyiniz.");
         }
 
+        // Empty-password flow: new password emailed, no session yet
+        if (data.isNewPassword) {
+          throw new Error(
+            data.message ||
+              "Yeni şifreniz e-posta adresinize gönderildi. Lütfen e-postanızı kontrol edin."
+          );
+        }
+
+        if (!data.findUser?.CARKOD) {
+          throw new Error("Kullanıcı bilgileri alınamadı. Lütfen tekrar deneyiniz.");
+        }
+
         // Rolü kullanıcı bazında belirle (global değişken kullanma)
         const isAdminUser = data.findUser.CARKOD === "7034922";
         const computedRole = isAdminUser ? "Admin" : (role || "partner");
