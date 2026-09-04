@@ -11,7 +11,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { RiShoppingBasketFill } from "react-icons/ri";
 import useCartItemCount from "@/utils/useCartItemCount";
-import { parsePrice } from "@/utils/formatPrice";
+import { formatPrice, parsePrice } from "@/utils/formatPrice";
 
 function ProdcutDetail({ product, img }) {
   const cartItemCount = useCartItemCount();
@@ -77,10 +77,9 @@ function ProdcutDetail({ product, img }) {
   const isProductOnSale = product.STKOZKOD1 === "A";
   // fiyat etiketi
   function PriceTag() {
-    // const originalPrice = parseFloat(product.STKOZKOD5);
     const originalPrice = parsePrice(product.STKOZKOD5);
-    const discountedPrice = originalPrice;
-    const inflatedPrice = (originalPrice * 2.5).toFixed(2);
+    const discountedPrice = formatPrice(originalPrice);
+    const inflatedPrice = formatPrice(originalPrice * 2.5);
 
     return (
       <div>
@@ -93,7 +92,7 @@ function ProdcutDetail({ product, img }) {
               <span className="font-medium text-lg">₺{discountedPrice}</span>
             </>
           ) : (
-            <span className="font-medium text-lg">₺{originalPrice}</span>
+            <span className="font-medium text-lg">₺{formatPrice(originalPrice)}</span>
           )}
           <span className="h-7 w-7 absolute top-1 right-[-14px] rotate-45 bg-gray-50"></span>
         </div>
