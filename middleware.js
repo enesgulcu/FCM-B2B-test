@@ -3,11 +3,6 @@ import { NextResponse } from "next/server";
 import { isMaintenanceModeEnabled } from "@/lib/maintenanceMode";
 
 export default async function middleware(req) {
-  const session = await getToken({
-    req,
-    secret: process.env.NEXTAUTH_SECRET,
-  });
-
   const currentPath = req.nextUrl.pathname;
 
   const protocol = process.env.NODE_ENV === "development" ? "http" : "https";
@@ -33,6 +28,19 @@ export default async function middleware(req) {
     return NextResponse.next();
   }
 
+  // Production/HTTPS'te cookie __Secure- prefix kullanır.
+  // NEXTAUTH_URL yanlış (http/localhost) olsa bile isteğin kendisine göre çöz.
+  const isSecure =
+    process.env.VERCEL === "1" ||
+    process.env.NODE_ENV === "production" ||
+    req.nextUrl.protocol === "https:";
+
+  const session = await getToken({
+    req,
+    secret: process.env.NEXTAUTH_SECRET,
+    secureCookie: isSecure,
+  });
+
   if (!session) {
     return NextResponse.redirect(`${baseUrl}/auth/login`);
   }
@@ -54,10 +62,12 @@ export default async function middleware(req) {
   return NextResponse.next();
 }
 
-// ✅ Sadece shipping, auth ve reset-password dışlanır, diğer her şey korunur
 export const config = {
-  // auth/forgot-password sayfasını ve login'i koruma dışına al
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|api/shipping|api/auth|api/reset-password).*)",
+    /*
+     * Auth gerektiren sayfalar. Statik dosyalar, uploads, data.json ve
+     * auth API'leri hariç — aksi halde mağaza görselleri/login cookie kırılır.
+     */
+    "/((?!_next/static|_next/image|favicon.ico|uploads/|data\\.json|api/shipping|api/auth|api/reset-password|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|css|js|map)$).*)",
   ],
 };

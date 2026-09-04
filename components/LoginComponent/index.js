@@ -198,6 +198,8 @@ const LoginComponent = ({ pageRole }) => {
         setModalType("success");
         setShouldRedirect(true);
         setIsModalOpen(true);
+        // Cookie'nin middleware tarafından okunabilmesi için session'ı yenile
+        router.refresh();
       }
     } catch (error) {
       console.error("Login error:", error);

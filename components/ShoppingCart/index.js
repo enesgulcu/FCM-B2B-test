@@ -235,7 +235,7 @@ const ShoppingCart = () => {
             </span>
           </div>
 
-          <Link href={"/"}>
+          <Link href={"/shop"}>
             <button className="bg-LightBlue text-white px-[24px] py-[10px] rounded-md font-bold text-[14px] mt-[50px] mb-[15px] hover:scale-105 transition-all duration-500 transform ease-in-out hover:bg-LightBlue/50">
               Mağazaya geri dön
             </button>

@@ -102,11 +102,7 @@ const MobileMenu = ({ header, user }) => {
                     <div className="flex-row hidden lg:flex pt-4 text-CustomGray">
                       <Link
                         className="flex flex-col items-center justify-center group"
-                        href={
-                          !user
-                            ? "/auth/login"
-                            : "https://caliskanari.com/shop/"
-                        }
+                        href={!user ? "/auth/login" : "/shop"}
                       >
                         <span className="w-[60px] h-[60px] flex items-center justify-center group-hover:scale-105 group-hover:text-LightBlue transition-all duration-1000 ease-in-out transform">
                           <CiShop className="w-[40px] h-[40px]" />

@@ -53,34 +53,43 @@ export const authOptions = {
 
   secret: process.env.NEXTAUTH_SECRET,
 
-  jwt: {
-    secret: process.env.NEXTAUTH_SECRET,
-    encryption: true,
-  },
-
-  // kullanıcı giriş yaptıktan sonra giriş yapan kullanıcının bilgilerini token değişkenine atıyoruz.
+  // JWT imzalı kalsın (encryption Edge middleware'de getToken'ı bozabiliyor)
   session: {
     strategy: "jwt",
-    maxAge: 1 * 24 * 60 * 60, // 1 days * 24 hours * 60 minutes * 60 seconds
+    maxAge: 1 * 24 * 60 * 60, // 1 day
   },
 
   callbacks: {
     // jwt fonksiyonu ile kullanıcı giriş yaptıktan sonra giriş yapan kullanıcının bilgilerini token değişkenine atıyoruz.
     // bu bilgileri session fonksiyonunda kullanacağız.
     async jwt({ token, user }) {
-      return { ...token, ...user };
+      if (user) {
+        token.id = user.id;
+        token.email = user.email;
+        token.name = user.name;
+        token.role = user.role;
+        token.isActive = user.isActive;
+        token.isPartner = user.isPartner;
+      }
+      return token;
     },
     // session fonksiyonu ile kullanıcı giriş yaptıktan sonra giriş yapan kullanıcının bilgilerini session değişkenine atıyoruz.
     async session({ session, token }) {
-      session.user = token;
+      session.user = {
+        id: token.id,
+        email: token.email,
+        name: token.name,
+        role: token.role,
+        isActive: token.isActive,
+        isPartner: token.isPartner,
+      };
       return session;
     },
   },
 
   pages: {
     // signIn fonksiyonu çalıştığında kulanıcıyı yönlendireceğimiz sayfayı belirtiyoruz.
-    signIn: `/auth/login/`,
-    encryption: true,
+    signIn: `/auth/login`,
   },
 };
 
