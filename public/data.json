@@ -459,7 +459,6 @@
     "path": "/uploads/1H2-YAĞMUR İLE YAPRAK HİKAYE SETİ.webp",
     "stkkod": "1H2"
   },
-
   {
     "path": "/uploads/1ÖD-1.SINIF ÖYKÜ DÜNYAM 50 KİTAP.webp",
     "stkkod": "1ÖD"
@@ -560,7 +559,6 @@
     "path": "/uploads/TÖ4Y-4.SINIF TÜRKÇEMİZİ ÖĞRENİYORUZ.webp",
     "stkkod": "TÖ4Y"
   },
-
   {
     "path": "/uploads/PDH4-PRATİK DİL HAZİNEM 4.SINIF.webp",
     "stkkod": "PDH4"
@@ -573,7 +571,6 @@
     "path": "/uploads/PDH2-PRATİK DİL HAZİNEM 2.SINIF.webp",
     "stkkod": "PDH2"
   },
-
   {
     "path": "/uploads/MAY4-4 SNF MAY'DAN HİKAYELER.webp",
     "stkkod": "MAY4"
@@ -622,9 +619,6 @@
     "path": "/uploads/Hafta Sonu ev ödevlerim - NAHEÖ.webp",
     "stkkod": "NAHEÖ"
   },
-
-
-
   {
     "path": "/uploads/MAS2.jpeg",
     "stkkod": "MAS2"
@@ -653,8 +647,6 @@
     "path": "/uploads/İ4S-2.png",
     "stkkod": "İ4S-2"
   },
-
-
   {
     "path": "/uploads/YK.jpg",
     "stkkod": "YK"
@@ -675,14 +667,6 @@
     "path": "/uploads/RTS.jpg",
     "stkkod": "RTS"
   },
-
-  
-
-
-
-
-  
-
   {
     "path": "/uploads/NAOA.png",
     "stkkod": "NAOA"
@@ -695,14 +679,6 @@
     "path": "/uploads/PMD.png",
     "stkkod": "PMD"
   },
-
-
-
-
-
-
-
-
   {
     "path": "/uploads/KÇ1.jpeg",
     "stkkod": "KÇ1"
@@ -723,12 +699,6 @@
     "path": "/uploads/ÇAYT4.jpeg",
     "stkkod": "ÇAYT4"
   },
-
-
-
-
-
-
   {
     "path": "/uploads/EÇ.jpeg",
     "stkkod": "EÇ"
@@ -740,10 +710,125 @@
   {
     "path": "/uploads/HECE.jpeg",
     "stkkod": "HECE"
+  },
+  {
+    "path": "/uploads/AS2.png",
+    "stkkod": "AS2"
+  },
+  {
+    "path": "/uploads/AS3.png",
+    "stkkod": "AS3"
+  },
+  {
+    "path": "/uploads/AS4.png",
+    "stkkod": "AS4"
+  },
+  {
+    "path": "/uploads/FS2-1.png",
+    "stkkod": "FS2-1"
+  },
+  {
+    "path": "/uploads/FS2-2.png",
+    "stkkod": "FS2-2"
+  },
+  {
+    "path": "/uploads/FS2.png",
+    "stkkod": "FS2"
+  },
+  {
+    "path": "/uploads/FS2EÖ2.png",
+    "stkkod": "FS2EÖ2"
+  },
+  {
+    "path": "/uploads/FS2H.png",
+    "stkkod": "FS2H"
+  },
+  {
+    "path": "/uploads/FS2K.jpeg",
+    "stkkod": "FS2K"
+  },
+  {
+    "path": "/uploads/FS2SD2.png",
+    "stkkod": "FS2SD2"
+  },
+  {
+    "path": "/uploads/FS2T.png",
+    "stkkod": "FS2T"
+  },
+  {
+    "path": "/uploads/FS3-1.png",
+    "stkkod": "FS3-1"
+  },
+  {
+    "path": "/uploads/FS3-2.png",
+    "stkkod": "FS3-2"
+  },
+  {
+    "path": "/uploads/FS3.png",
+    "stkkod": "FS3"
+  },
+  {
+    "path": "/uploads/FS3EÖ3.png",
+    "stkkod": "FS3EÖ3"
+  },
+  {
+    "path": "/uploads/FS3FB3.png",
+    "stkkod": "FS3FB3"
+  },
+  {
+    "path": "/uploads/FS3H.png",
+    "stkkod": "FS3H"
+  },
+  {
+    "path": "/uploads/FS3SD3.png",
+    "stkkod": "FS3SD3"
+  },
+  {
+    "path": "/uploads/FS3T.png",
+    "stkkod": "FS3T"
+  },
+  {
+    "path": "/uploads/FS4.png",
+    "stkkod": "FS4"
+  },
+  {
+    "path": "/uploads/FS4FB.png",
+    "stkkod": "FS4FB"
+  },
+  {
+    "path": "/uploads/FS4SB.png",
+    "stkkod": "FS4SB"
+  },
+  {
+    "path": "/uploads/FS4T.png",
+    "stkkod": "FS4T"
+  },
+  {
+    "path": "/uploads/FSEÖ4.png",
+    "stkkod": "FSEÖ4"
+  },
+  {
+    "path": "/uploads/FSMÖ4-1.png",
+    "stkkod": "FSMÖ4-1"
+  },
+  {
+    "path": "/uploads/FSMÖ4-2.png",
+    "stkkod": "FSMÖ4-2"
+  },
+  {
+    "path": "/uploads/FSSD4.png",
+    "stkkod": "FSSD4"
+  },
+  {
+    "path": "/uploads/NA2SD2.png",
+    "stkkod": "NA2SD2"
+  },
+  {
+    "path": "/uploads/NA3SD3.png",
+    "stkkod": "NA3SD3"
+  },
+  {
+    "path": "/uploads/NA4SSD.png",
+    "stkkod": "NA4SSD"
   }
-
-
-
-
-
 ]
